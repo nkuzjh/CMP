@@ -1,5 +1,12 @@
+
+# For the first time you use wordnet
+# import nltk
+# nltk.download('wordnet')
+
 import os
 import argparse
+
+from datetime import datetime
 
 
 # Set it correctly for distributed training across nodes
@@ -45,6 +52,16 @@ def run(args):
             f"--checkpoint {args.checkpoint} --bs {args.bs} --epo {args.epo} --lr {args.lr} --seed {args.seed} "
             f"{'--evaluate' if args.evaluate else ''}")
 
+    elif 'tta' in args.task:
+        args.config = 'configs/' + args.task + '.yaml'
+        args.output_dir = 'out/' + args.task + f'/{datetime.now().strftime("%Y%m%d%H%M%S")[:-1]}'
+        print(args.task, args.config)
+
+        os.system(
+            f"CUDA_VISIBLE_DEVICES= python3 tta.py --config {args.config} --task {args.task} --output_dir {args.output_dir} "
+            f"--checkpoint {args.checkpoint} --bs {args.bs} --epo {args.epo} --lr {args.lr} --seed {args.seed} "
+            f"{'--tta' if args.tta else ''}")
+
     else:
         raise NotImplementedError(f"task == {args.task}")
 
@@ -61,6 +78,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', default=0.0, type=float)
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--evaluate', action='store_true', help="directly evaluation")
+    parser.add_argument('--tta', action='store_true', help="run test time adaptation & evaluation")
     args = parser.parse_args()
 
     run(args)
