@@ -199,6 +199,8 @@ class search_test_dataset(Dataset):
                 self.q_pids.append(ann['image_id'])
                 self.text.append(pre_caption(caption, self.max_words))
 
+        pass
+
     def __len__(self):
         return len(self.image)
 

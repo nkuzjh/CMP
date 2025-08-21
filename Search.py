@@ -53,13 +53,13 @@ def main(args, config):
     cudnn.benchmark = True
 
     print("### output_dir:", args.output_dir)
-    
+
     print("### Creating model")
     tokenizer = BertTokenizer.from_pretrained(config['text_encoder'])
     model = Search(config=config)
     if config['load_pretrained']:
         model.load_pretrained(args.checkpoint)
-    model = model.to(device)
+    model = model.to_empty(device)
     print("Total Params: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
 
     model_without_ddp = model

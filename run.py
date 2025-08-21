@@ -14,7 +14,7 @@ NNODES = 1
 NODE_RANK = 0
 MASTER_ADDR = '127.0.0.1'
 MASTER_PORT = 1612  # 0~65536
-NPROC_PER_NODE = 4  # e.g. 4 gpus
+NPROC_PER_NODE = 2 # 4  # e.g. 4 gpus
 
 print("NNODES, ", NNODES)
 print("NODE_RANK, ", NODE_RANK)
@@ -54,13 +54,17 @@ def run(args):
 
     elif 'tta' in args.task:
         args.config = 'configs/' + args.task + '.yaml'
-        args.output_dir = 'out/' + args.task + f'/{datetime.now().strftime("%Y%m%d%H%M%S")[:-1]}'
-        print(args.task, args.config)
+        args.output_dir = 'output/' + args.task + f'/{datetime.now().strftime("%Y%m%d%H%M%S")[:-1]}'
+        print("task: ", args.task)
+        print("config: ", args.config)
+        print("output_dir: ", args.output_dir)
 
-        os.system(
-            f"CUDA_VISIBLE_DEVICES= python3 tta.py --config {args.config} --task {args.task} --output_dir {args.output_dir} "
-            f"--checkpoint {args.checkpoint} --bs {args.bs} --epo {args.epo} --lr {args.lr} --seed {args.seed} "
-            f"{'--tta' if args.tta else ''}")
+        os_command_str = f"CUDA_VISIBLE_DEVICES=2 python3 tta.py --config {args.config} --task {args.task} --output_dir {args.output_dir} --checkpoint {args.checkpoint} --bs {args.bs} --epo {args.epo} --lr {args.lr} --seed {args.seed} {'--tta' if args.tta else ''}"
+
+        print(os_command_str)
+        # CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs/tta_debug.yaml --task tta_debug --output_dir output/tta_debug/2025081715503  --checkpoint checkpoint/cmp.pth --bs 1 --epo 10 --lr 0.0001 --seed 42  --tta
+
+        os.system(os_command_str)
 
     else:
         raise NotImplementedError(f"task == {args.task}")
@@ -72,7 +76,7 @@ if __name__ == '__main__':
     parser.add_argument('--task', default='cmp', type=str)
     parser.add_argument('--dist', default='f4', type=str, help="see func get_dist_launch for details")
     parser.add_argument('--output_dir', default='out/cmp', type=str, help='local path')
-    parser.add_argument('--checkpoint', default='checkpoint/16m_base_model_state_step_199999.th', type=str)
+    parser.add_argument('--checkpoint', default='checkpoint/cmp.pth', type=str)
     parser.add_argument('--bs', default=0, type=int, help="mini batch size")
     parser.add_argument('--epo', default=0, type=int, help="epoch")
     parser.add_argument('--lr', default=0.0, type=float)

@@ -3,21 +3,33 @@ from torch.optim import AdamW
 from torch.optim.lr_scheduler import LambdaLR
 
 
+from torch import nn
+
+
 
 def configure_model_xvlm_itm(model):
     """Configure model for use with tent."""
     # train mode, because tent optimizes the model to minimize entropy
-    model.train()
+    # model.train()
     # disable grad, to (re-)enable only what tent updates
     model.requires_grad_(False)
     # configure norm for tent updates: enable grad + force batch statisics
-    for m in model.text_encoder.modules(): # 针对xvlm模型结构，仅tta更新Qformer参数；freeze visual_encoder/query_tokens/temp(erature)/image_proj/text_proj/itm_head的参数；
+    for m in model.text_encoder.modules(): # 针对blip模型结构，仅tta更新Qformer参数；freeze visual_encoder/query_tokens/temp(erature)/image_proj/text_proj/itm_head的参数；
         if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.LayerNorm):
             m.requires_grad_(True)
             # force use of batch stats in train and eval modes
             m.track_running_stats = False
             m.running_mean = None
             m.running_var = None
+    for text_encoder_layer_index in range(0,6): # 针对cmp_xvlm模型关闭bert前6层仅用作text_encoder的梯度更新功能
+        text_encoder_layer = model.text_encoder.bert.encoder.layer[text_encoder_layer_index]
+        for m in text_encoder_layer.modules(): # 针对blip模型结构，仅tta更新Qformer参数；freeze visual_encoder/query_tokens/temp(erature)/image_proj/text_proj/itm_head的参数；
+            if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.LayerNorm):
+                m.requires_grad_(False)
+                # force use of batch stats in train and eval modes
+                m.track_running_stats = False
+                m.running_mean = None
+                m.running_var = None
 
     for m in model.itm_head.modules(): # tta更新itm_head参数；freeze others: visual_encoder/query_tokens/temp(erature)/image_proj/text_proj
         if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.LayerNorm):
@@ -39,6 +51,7 @@ def collect_params_xvlm_itm(model):
     params = []
     names = []
     for nm, m in model.text_encoder.named_modules():
+
         if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.LayerNorm):
             for np, p in m.named_parameters():
                 if np in ['weight', 'bias']:  # weight is scale, bias is shift
@@ -72,7 +85,7 @@ def create_tta_optimizer(args, model):
     lr = args.lr
     wd = args.weight_decay
     lr_mult = getattr(args, 'lr_mult', 1)
-    print("### lr: ", lr, "   lr_mult: ", lr_mult, flush=True)
+    print("     lr: ", lr, "   lr_mult: ", lr_mult, flush=True)
 
     optimizer_grouped_parameters = [
         {"params": [], "weight_decay": wd, "lr": lr},
@@ -93,7 +106,7 @@ def create_tta_optimizer(args, model):
 
     if hasattr(model, 'init_params'):
         large_lr = model.init_params
-        print("model has 'init_params', ", len(large_lr))
+        print("     model has 'init_params', ", len(large_lr))
     else:
         large_lr = {}
 
@@ -127,7 +140,7 @@ def create_tta_scheduler(args, optimizer):
         args['num_warmup_steps'] = int(args['num_tta_steps'] * args['num_warmup_steps'])
     print("     num_warmup_steps: ", args['num_warmup_steps'], flush=True)
 
-    print('sched:', args.sched, flush=True)
+    print('     sched:', args.sched, flush=True)
 
     if args.sched == 'linear':
         def lr_lambda(current_step: int):

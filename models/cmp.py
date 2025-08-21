@@ -64,8 +64,8 @@ def build_text_encoder(config, vision_width):
 
     config_text = BertConfig.from_json_file(config['text_config'])
     config_text.encoder_width = vision_width
-    text_encoder, msg = BertForMaskedLM.from_pretrained(config['text_encoder'], config=config_text,
-                                                        output_loading_info=True)
+    text_encoder, msg = BertForMaskedLM.from_pretrained(config['text_encoder'], config=config_text, output_loading_info=True)
+    # text_encoder = text_encoder.cuda()
     if config['load_params']:
         print("build_text_encoder: load bert ====>")
         for k, v in msg.items():
@@ -94,7 +94,7 @@ class CMP(nn.Module):
         self.vision_width = vision_width
 
         # text & cross encoder
-        self.text_encoder = build_text_encoder(config, vision_width=self.vision_width)
+        self.text_encoder = build_text_encoder(config, vision_width=self.vision_width)# text_encoder.cls.predictions.decoder.bias: copying from a non-meta parameter in the checkpoint to a meta parameter in the current model, which is a no-op. # set config['load_params']=True to fix up this error!
         self.text_width = self.text_encoder.config.hidden_size  # i.e. cross_width
 
         self.embed_dim = config['embed_dim']
@@ -138,7 +138,7 @@ class CMP(nn.Module):
     def load_pretrained(self, ckpt_rpath):
         checkpoint = torch.load(ckpt_rpath, map_location='cpu')
         state_dict = checkpoint['model'] if 'model' in checkpoint.keys() else checkpoint
-        msg = self.load_state_dict(state_dict, strict=False)
+        msg = self.load_state_dict(state_dict, strict=False, assign=True)
         print('load checkpoint from %s' % ckpt_rpath)
         print("missing_keys: ", [p for p in msg.missing_keys])
         print("unexpected_keys: ", msg.unexpected_keys)
@@ -152,18 +152,20 @@ class CMP(nn.Module):
 
     def get_text_embeds(self, text_ids, text_atts):
         encoder = self.text_encoder.bert
-        return encoder(text_ids, attention_mask=text_atts, return_dict=True, mode='text').last_hidden_state
+        text_embeds = encoder(text_ids, attention_mask=text_atts, return_dict=True, mode='text').last_hidden_state
+        return text_embeds
 
 
     def get_cross_embeds(self, image_embeds, image_atts, text_embeds, text_atts,):
         encoder = self.text_encoder.bert
-        return encoder(encoder_embeds=text_embeds,
-                       attention_mask=text_atts,
-                       encoder_hidden_states=image_embeds,
-                       encoder_attention_mask=image_atts,
+        cross_embeds = encoder(encoder_embeds=text_embeds,#([24, 56])
+                       attention_mask=text_atts,#([24, 56])
+                       encoder_hidden_states=image_embeds,#([24, 50, 1024])
+                       encoder_attention_mask=image_atts,#([24, 50])
                        return_dict=True,
                        mode='fusion',
-                       ).last_hidden_state
+                       ).last_hidden_state#last_hidden_state=torch.Size([24, 56, 768])
+        return cross_embeds #([8, 56, 768])
 
 
     def get_image_feat(self, image_embeds):

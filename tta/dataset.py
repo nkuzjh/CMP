@@ -20,86 +20,138 @@ from dataset.utils import pre_caption, read_json_to_list
 
 
 
+def create_test_dataset(config):
+
+    normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
+
+    # tta_transform = transforms.Compose([
+    #     transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
+    #     transforms.RandomHorizontalFlip(),
+    #     transforms.ToTensor(),
+    #     normalize,
+    #     RandomErasing(probability=config['erasing_p'], mean=[0.0, 0.0, 0.0])
+    # ])
+
+    test_transform = transforms.Compose([
+        transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
+        transforms.ToTensor(),
+        normalize,
+    ])
+
+    test_dataset = search_test_dataset(config, test_transform)
+
+    # tta_dataset = search_tta_dataset(config, tta_transform)
+
+    # return tta_dataset, test_dataset
+    return test_dataset
+
+
+def create_test_loader(datasets, batch_size, num_workers, is_trains, collate_fns):
+    loaders = []
+    for dataset, bs, n_worker, is_train, collate_fn in zip(datasets, batch_size, num_workers, is_trains, collate_fns):
+        if is_train:
+            shuffle = True
+            drop_last = True
+        else:
+            shuffle = False
+            drop_last = False
+
+        loader = DataLoader(
+            dataset,
+            batch_size=bs,
+            num_workers=n_worker,
+            pin_memory=True,
+            shuffle=shuffle,
+            collate_fn=collate_fn,
+            drop_last=drop_last,
+        )
+        loaders.append(loader)
+
+    if len(loaders) <= 1:
+        print(f"### be careful: func create_loader returns a list length of {len(loaders)}")
+
+    return loaders
+
+
+
 class search_tta_dataset:
-    def __init__(self, config, transform):
-        self.image_root = config['image_root']
-        self.transform = transform
-        self.max_words = config['max_words']
-        self.eda_p = config['eda_p']
+    def __init__(self, config, tta_transform, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list):
+        # ann_file = config['tta_file']
+        # self.transform = transform
+        # self.image_root = config.get('image_root_tta', config['image_root'])
+        # self.max_words = config['max_words']# 56
 
-        self.be_hard = config.get('be_hard', False)
-        self.be_pose_img = config.get('be_pose_img', False)
-        print('tta dataset -->    be_hard:', self.be_hard, '    be_pose_img:', self.be_pose_img)
+        # self.ann = read_json_to_list(ann_file)
 
-        ann_file = config['tta_file']
-        self.ann = []
-        for f in ann_file:
-            anns = read_json_to_list(f)
-            for item in anns:
-                self.ann.append(item)
+        # self.be_pose_img = config.get('be_pose_img', False)
+        # print('tta dataset -->    be_pose_img:', self.be_pose_img)
 
-        self.img_ids = {}
-        n = 0
-        for ann in self.ann:
-            img_id = ann['image_id']
-            if img_id not in self.img_ids.keys():
-                self.img_ids[img_id] = n
-                n += 1
+        # self.text = []
+        # self.image = []
+        # self.g_pids = []
+        # self.q_pids = []
+        # for img_id, ann in enumerate(self.ann):
+        #     self.g_pids.append(ann['image_id'])
+        #     self.image.append(ann['image'])
+        #     for i, caption in enumerate(ann['caption']):
+        #         self.q_pids.append(ann['image_id'])
+        #         self.text.append(pre_caption(caption, self.max_words))
+        self.config = config
+        # self.transform = tta_transform
+        self.sims_matrix_t2i = sims_matrix_t2i
+        self.image_embeds= image_embeds
+        self.text_embeds = text_embeds
+        self.text_atts = text_atts
+        # self.recall_types = recall_types
+        # self.ss_idxs_list = ss_idxs_list
+        self.uncertaintys_list = uncertaintys_list
+        # if config.get('uncertainty_temper_is_learnable', False) == True:
+        if 1:
+            self.proba_top1_sim_list = proba_top1_sim_list
+            self.proba_inversed_sim_list = proba_inversed_sim_list
 
-            if self.be_hard:
-                img_id = ann['hard_i_id']
-                if img_id not in self.img_ids.keys():
-                    self.img_ids[img_id] = n
-                    n += 1
-        print('image ids:', n)
+        if config.get('sample_selection', 'all') == 'top1':
+            self.sims_matrix_t2i = sims_matrix_t2i[ss_idxs_list]
+            #### self.image_embeds= image_embeds[ss_idxs_list]
+            self.text_embeds = text_embeds[ss_idxs_list]
+            self.text_atts = text_atts[ss_idxs_list]
+            # self.labels = [labels[i] for i in ss_idxs_list]
+            # self.recall_types = [recall_types[i] for i in ss_idxs_list]
+            self.uncertaintys_list = [uncertaintys_list[i] for i in ss_idxs_list]
+            # if config.get('uncertainty_temper_is_learnable', False) == True:
+            if 1:
+                self.proba_top1_sim_list = [proba_top1_sim_list[i] for i in ss_idxs_list]
+                self.proba_inversed_sim_list = [proba_inversed_sim_list[i] for i in ss_idxs_list]
 
     def __len__(self):
-        return len(self.ann)
+        return len(self.sims_matrix_t2i)
 
     def __getitem__(self, index):
-        ann = self.ann[index]
-        image_path = os.path.join(self.image_root, ann['image'])
-        image = Image.open(image_path).convert('RGB')
-        image = self.transform(image)
+        # image_path = os.path.join(self.image_root, self.ann[index]['image'])
+        # image = Image.open(image_path).convert('RGB')
+        # image = self.transform(image)
 
-        img_id = ann['image_id']
+        # if self.be_pose_img:
+        #     pose_path = os.path.join(self.image_root, 'pose/' + self.ann[index]['image'])
+        #     pose = Image.open(pose_path).convert('RGB')
+        #     pose = self.transform(pose)
+        # else:
+        #     pose = {}
 
-        cap = ann['caption']
-        caption = pre_caption(cap, self.max_words)
+        # return image, pose, index
+        topk_sim, topk_idx = self.sims_matrix_t2i[index].topk(k=self.config['k_tta'], dim=0) #[k_tta]
+        encoder_output = self.image_embeds[topk_idx] #[k_tta, 50, 1024]
+        encoder_att = torch.ones(encoder_output.size()[:-1], dtype=torch.long) #[k_tta, 50])
+        text_embeds = self.text_embeds[index].repeat(self.config['k_tta'], 1, 1) #k_tta, 56, 768])
+        text_atts = self.text_atts[index].repeat(self.config['k_tta'], 1) #k_tta, 56
+        uncertainty = self.uncertaintys_list[index]
+        proba_top1_sim_list = self.proba_top1_sim_list[index]
+        proba_inversed_sim_list = self.proba_inversed_sim_list[index]
 
-        if self.be_hard:
-            hard_caption = pre_caption(ann['hard_c'], self.max_words)
-        else:
-            hard_caption = {}
-
-        caption_eda = pre_caption(cap, self.max_words, True, self.eda_p)
-
-        if self.be_pose_img:
-            pose_path = os.path.join(self.image_root, 'pose/' + ann['image'])
-            pose = Image.open(pose_path).convert('RGB')
-            pose = self.transform(pose)
-        else:
-            pose = {}
-
-        if self.be_hard:
-            hard_path = os.path.join(self.image_root, 'train/' + ann['hard_i'])
-            hard_i = Image.open(hard_path).convert('RGB')
-            hard_i= self.transform(hard_i)
-            if self.be_pose_img:
-                hard_pose_path = os.path.join(self.image_root, 'pose/train/' + ann['hard_i'])
-                hard_i_pose = Image.open(hard_pose_path).convert('RGB')
-                hard_i_pose = self.transform(hard_i_pose)
-            else:
-                hard_i_pose = {}
-        else:
-            hard_i = {}
-            hard_i_pose = {}
-
-        return image, caption, caption_eda, self.img_ids[img_id], pose, hard_i, hard_i_pose, hard_caption
+        return encoder_output, encoder_att, text_embeds, text_atts, uncertainty, proba_top1_sim_list, proba_inversed_sim_list
 
 
-
-def create_tta_dataset(config, tta=False):
+def create_tta_dataset(config, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list,):
 
     normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
 
@@ -111,17 +163,9 @@ def create_tta_dataset(config, tta=False):
         RandomErasing(probability=config['erasing_p'], mean=[0.0, 0.0, 0.0])
     ])
 
-    test_transform = transforms.Compose([
-        transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
-        transforms.ToTensor(),
-        normalize,
-    ])
+    tta_dataset = search_tta_dataset(config, tta_transform, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list)
 
-    test_dataset = search_test_dataset(config, test_transform)
-
-    tta_dataset = search_tta_dataset(config, tta_transform)
-
-    return tta_dataset, test_dataset
+    return tta_dataset
 
 
 def create_tta_loader(datasets, batch_size, num_workers, is_trains, collate_fns):

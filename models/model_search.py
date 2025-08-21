@@ -3,6 +3,7 @@ from torch.nn import init
 from models.cmp import CMP
 from models.pose import Block, ConvExpandReduce
 
+import torch
 
 class Search(CMP):
     def __init__(self, config):
@@ -18,6 +19,13 @@ class Search(CMP):
                 print('pose_conv')
                 self.pose_conv = ConvExpandReduce()
                 self.init_params.extend(['pose_conv.' + n for n, _ in self.pose_conv.named_parameters()])
+
+        # new parameter adding
+        ## Coeffi Exp Temperature
+        self.uncertainty_temper = torch.nn.Parameter(torch.ones(1) * config.get('uncertainty_temper', 1.0))
+        ## Learnable Empty Embedding for Prompt Learning
+        self.is_prompt_learning = config.get('is_prompt_learning', False)
+        self.prompt_learning_embedding = torch.nn.Parameter(torch.zeros(1, 1, self.text_encoder.config.hidden_size))
 
 
     def forward(self, image, text_ids, text_atts, text_ids_masked=None, masked_pos=None, masked_ids=None,
