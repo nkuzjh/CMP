@@ -8,6 +8,7 @@ mkdir -p $log_dir
 
 # 定义日志文件名
 log_files=(
+    "tta_exp1.log"
     "tta_exp1.1.log"
     "tta_exp1.2.log"
     "tta_exp1.3.log"
@@ -17,6 +18,7 @@ log_files=(
 
 # 定义参数文件名
 task_names=(
+    "tta_exp1"
     "tta_exp1.1"
     "tta_exp1.2"
     "tta_exp1.3"

@@ -145,10 +145,10 @@ class search_tta_dataset:
         text_embeds = self.text_embeds[index].repeat(self.config['k_tta'], 1, 1) #k_tta, 56, 768])
         text_atts = self.text_atts[index].repeat(self.config['k_tta'], 1) #k_tta, 56
         uncertainty = self.uncertaintys_list[index]
-        proba_top1_sim_list = self.proba_top1_sim_list[index]
-        proba_inversed_sim_list = self.proba_inversed_sim_list[index]
+        proba_top1_sim = self.proba_top1_sim_list[index]
+        proba_inversed_sim = self.proba_inversed_sim_list[index]
 
-        return encoder_output, encoder_att, text_embeds, text_atts, uncertainty, proba_top1_sim_list, proba_inversed_sim_list
+        return encoder_output, encoder_att, text_embeds, text_atts, uncertainty, proba_top1_sim, proba_inversed_sim
 
 
 def create_tta_dataset(config, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list,):

@@ -45,14 +45,14 @@ def compute_uncertainty_itc(config, sims_matrix_t2i, sims_matrix_i2t):
         proba_inversed_sim_i2t_top1_idx_t2i = torch.zeros(1)
         topk_sim_i2t_top1_idx_t2i, topk_idx_i2t_top1_idx_t2i = sims_matrix_i2t[topk_idx_t2i[0]].topk(k=k_test, dim=0)
         if i in topk_idx_i2t_top1_idx_t2i:
-            idx_i_in_topk_idx_i2t_top1_idx_t2i = torch.where(topk_idx_i2t_top1_idx_t2i == i)
+            idx_i_in_topk_idx_i2t_top1_idx_t2i = torch.where(topk_idx_i2t_top1_idx_t2i == i)[0][0]
             proba_inversed_sim_i2t_top1_idx_t2i = F.softmax(topk_sim_i2t_top1_idx_t2i * uncertainty_i2t_temper, dim=0)[idx_i_in_topk_idx_i2t_top1_idx_t2i]
 
         uncertainty = torch.exp( (1 - (proba_top1_sim_t2i + proba_inversed_sim_i2t_top1_idx_t2i) / 2) * uncertainty_temper )
 
         uncertaintys_list.append(uncertainty)
         proba_top1_sim_list.append(proba_top1_sim_t2i)
-        proba_inversed_sim_list.append(proba_inversed_sim_i2t_top1_idx_t2i[0])
+        proba_inversed_sim_list.append(proba_inversed_sim_i2t_top1_idx_t2i)
     return uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list
 
 

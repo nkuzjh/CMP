@@ -38,7 +38,7 @@ from tta.utils import preprocess_tta_coefficients
 
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 
 
@@ -98,9 +98,12 @@ def main(args, config):
     if config['load_pretrained']:
         model.load_pretrained(args.checkpoint)
     model = model.to(device)
-    print("     Total Params: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
+    print("     Total Params Sum: ", sum(p.numel() for p in model.parameters()))# if p.requires_grad))
 
     print("### Inference ITC similiarity matrix")
+    ## 由于使用run.py调用tta.py开启新的子进程，会导致 itc阶段输出的特征 和 itm tta前创建tta_loader输入的特征 被不同进程的device加载，从而产生关于多进程共用cuda的报错；
+    ## 因此，进行首次tta前，先运行evaluation_itc和np.save保存itc 特征到本地，后续每次tta实验使用np.load加载即可。
+    ## run only at first time to avoid error, then using np.load() to load itm input features.
     # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
     #     model,
     #     test_loader,
@@ -188,8 +191,13 @@ def main(args, config):
         # print(sample)
 
         print("### Configure adapted weights")
-        arg_tm = utils.AttrDict(config['tta_model'])
-        model = configure_tta_model(arg_tm, model)
+        # arg_tm = utils.AttrDict(config['tta_model'])
+        model = configure_tta_model(config, model)
+        print("     TTA Dropout Modules: \r\n", [(n,m,m.training) for n,m in model.named_modules() if isinstance(m, torch.nn.Dropout) and m.training==True] )
+        print("     TTA Require Gradient Params: \r\n", [(n, p.shape) for n,p in model.named_parameters() if p.requires_grad] )
+        print("     TTA Dropout Modules Number: \r\n", sum([ 1 for n,m in model.named_modules() if isinstance(m, torch.nn.Dropout) and m.training==True ]) )
+        print("     TTA Require Gradient Params Sum: \r\n", sum(p.numel() for p in model.parameters() if p.requires_grad) )
+
         arg_opt = utils.AttrDict(config['optimizer'])
         optimizer = create_tta_optimizer(arg_opt, model)
         arg_sche = utils.AttrDict(config['schedular'])

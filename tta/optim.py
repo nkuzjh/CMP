@@ -66,14 +66,14 @@ def collect_params_xvlm_itm(model):
                     names.append(f"{nm}.{np}")
     return params, names
 
-def configure_tta_model(args, model):
+def configure_tta_model(config, model):
     model = configure_model_xvlm_itm(model)
-    # if getattr(cfg.config.tta, "coeffi_exp_temper_is_learnable", False) == True:
-    #     model.coeffi_exp_temper.requires_grad_(True)
-    # if getattr(cfg.config.tta, "is_prompt_learning", False) == True:
-    #     model.learnable_empty_embedding.requires_grad_(True)
-    #     model.is_prompt_learning=True
-    params, param_names = collect_params_xvlm_itm(model)
+    if config.get("uncertainty_temper_is_learnable", False) == True:
+        model.uncertainty_temper.requires_grad_(True)
+    if config.get("is_prompt_learning", False) == True:
+        model.prompt_learning_embedding.requires_grad_(True)
+        model.is_prompt_learning=True
+    # params, param_names = collect_params_xvlm_itm(model)
     # if getattr(cfg.config.tta, "coeffi_exp_temper_is_learnable", False) == True:
     #     params.append(model.coeffi_exp_temper)
     # if getattr(cfg.config.tta, "is_prompt_learning", False) == True:

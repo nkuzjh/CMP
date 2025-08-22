@@ -24,13 +24,16 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
     header = '      TTA Epoch: [{}]'.format(epoch)
     print_freq = 100
 
-    for iter, (encoder_output, encoder_att, text_embeds, text_atts, uncertainty, proba_top1_sim_list, proba_inversed_sim_list) in enumerate(metric_logger.log_every(dataloader, print_freq, header)):
+    for iter, (encoder_output, encoder_att, text_embeds, text_atts, uncertainty, proba_top1_sim, proba_inversed_sim) in enumerate(metric_logger.log_every(dataloader, print_freq, header)):
 
         encoder_output = encoder_output.reshape(-1, encoder_output.size(-2), encoder_output.size(-1)).to(device)
         encoder_att = encoder_att.reshape(-1, encoder_att.size(-1)).to(device)
         text_embeds = text_embeds.reshape(-1, text_embeds.size(-2), text_embeds.size(-1)).to(device)
         text_atts = text_atts.reshape(-1, text_atts.size(-1)).to(device)
         uncertainty = uncertainty.to(device)
+        if config.get('uncertainty', None) == 'inversed_recall_proba' and config.get('uncertainty_temper_is_learnable', False):
+            proba_top1_sim =  proba_top1_sim.to(device)
+            proba_inversed_sim = proba_inversed_sim.to(device)
 
         with torch.autocast(device_type='cuda', dtype=torch.bfloat16):
             output = model.get_cross_embeds(
@@ -43,6 +46,9 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
             logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
             score = logits[..., 1] # (bs, tta)
             entropy = -(F.softmax(score * config['score_temper'], dim=-1) * F.log_softmax(score * config['score_temper'], dim=-1)).sum(-1)
+            if config.get('uncertainty', None) == 'inversed_recall_proba' and config.get('uncertainty_temper_is_learnable', False):
+                uncertainty_temper = model.uncertainty_temper
+                uncertainty = torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) * uncertainty_temper )
             if config.get('uncertainty', None) is not None:
                 loss = entropy / uncertainty + uncertainty
             else:

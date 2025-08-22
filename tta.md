@@ -713,7 +713,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss**
     nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
         {"epo": "3", "R1": "84.833", "R5": "98.787", "R10": "99.343", "mAP": "91.35", "mINP": "91.35", "lr": "0.000924", "entropy": "0.043405", "loss": "0.043405"}
-## exp1.1-5
+### exp1.1-5
     1.1 {"epo": "4", "R1": "84.783", "R5": "98.787", "R10": "99.343", "mAP": "91.405", "mINP": "91.405", "lr": "0.000445", "entropy": "0.059843", "loss": "0.059843"}
     1.2 {"epo": "0", "R1": "84.783", "R5": "98.989", "R10": "99.596", "mAP": "91.505", "mINP": "91.505", "lr": "4e-05", "entropy": "0.331566", "loss": "0.331566"}
     1.3 {"epo": "0", "R1": "84.681", "R5": "98.888", "R10": "99.494", "mAP": "91.378", "mINP": "91.378", "lr": "0.0002", "entropy": "0.289342", "loss": "0.289342"}
@@ -724,20 +724,166 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss + unc**
     nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
         {"epo": "3", "R1": "84.783", "R5": "98.736", "R10": "99.343", "mAP": "91.308", "mINP": "91.308", "lr": "0.000924", "entropy": "0.043163", "loss": "2.704784"}
-## exp2.1-5
+### exp2.1-5
     2.1 {"epo": "3", "R1": "84.884", "R5": "98.736", "R10": "99.343", "mAP": "91.382", "mINP": "91.382", "lr": "0.000924", "entropy": "0.044278", "loss": "2.693614"}
     2.2 {"epo": "3", "R1": "84.681", "R5": "98.736", "R10": "99.292", "mAP": "91.24", "mINP": "91.24", "lr": "0.000924", "entropy": "0.042831", "loss": "2.626209"}
     2.3 {"epo": "4", "R1": "84.681", "R5": "98.736", "R10": "99.444", "mAP": "91.305", "mINP": "91.305", "lr": "0.000889", "entropy": "0.023986", "loss": "2.319043"}
     2.4 {"epo": "4", "R1": "84.732", "R5": "98.686", "R10": "99.444", "mAP": "91.321", "mINP": "91.321", "lr": "0.000889", "entropy": "0.024042", "loss": "1.563877"}
     2.5 {"epo": "4", "R1": "84.783", "R5": "98.837", "R10": "99.444", "mAP": "91.356", "mINP": "91.356", "lr": "0.000889", "entropy": "0.024167", "loss": "1.161326"}
 
+# exp rerun
+- 重新检查cmp_xvlm的cross_modal模型结构设计，并设置了仅更新text_encoder的后6层bertlayer
+- 重新检查Tent系列方法的setting设置，设置了tta时model.train()和batchnorm,layernorm参数更新方案
+- 目前方案为：
+    1. dropout： 所有dropout通过model.train()打开（包括visison_encoder、text_encoder前6层、其他modules 和 需要梯度更新的实现了itm.cross_modal功能的text_encoder后六层）；
+    2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）。
+
+## tta_debug
+    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp4.yaml --task tta_debug --output_dir output/tta_debug/exp4 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+
+## exp0
+**entropy**
+    nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
+        {"epo": "2", "R1": "84.681", "R5": "98.787", "R10": "99.393", "mAP": "91.301", "mINP": "91.301", "lr": "0.00097", "entropy": "0.128151", "loss": "0.128151"}
+### exp0.1~4
+    nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
+        {"epo": "0", "R1": "84.681", "R5": "99.039", "R10": "99.596", "mAP": "91.46", "mINP": "91.46", "lr": "3.1e-05", "entropy": "0.34599", "loss": "0.34599"}
+    nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
+        {"epo": "16", "R1": "85.035", "R5": "98.736", "R10": "99.343", "mAP": "91.467", "mINP": "91.467", "lr": "4.8e-05", "entropy": "0.062567", "loss": "0.062567"}
+    nohup python3 run.py --tta --task "tta_exp0.3"> logs/tta_exp0.3.log 2>&1 &
+        {"epo": "8", "R1": "85.086", "R5": "98.736", "R10": "99.494", "mAP": "91.578", "mINP": "91.578", "lr": "7.4e-05", "entropy": "0.081542", "loss": "0.081542"}
+    nohup python3 run.py --tta --task "tta_exp0.4"> logs/tta_exp0.4.log 2>&1 &
+        {"epo": "4", "R1": "85.086", "R5": "98.686", "R10": "99.393", "mAP": "91.529", "mINP": "91.529", "lr": "0.000437", "entropy": "0.067716", "loss": "0.067716"}
+
+## exp1
+**entropy + ss**
+    nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
+        {"epo": "2", "R1": "85.592", "R5": "98.989", "R10": "99.444", "mAP": "91.939", "mINP": "91.939", "lr": "0.000958", "entropy": "0.089662", "loss": "0.089662"}
+### exp1.1-5
+    1.1
+        {"epo": "4", "R1": "85.086", "R5": "98.686", "R10": "99.343", "mAP": "91.566", "mINP": "91.566", "lr": "0.000445", "entropy": "0.076353", "loss": "0.076353"}
+    1.2
+        {"epo": "7", "R1": "84.732", "R5": "98.635", "R10": "99.191", "mAP": "91.341", "mINP": "91.341", "lr": "3.9e-05", "entropy": "0.152249", "loss": "0.152249"}
+    1.3
+        {"epo": "2", "R1": "85.035", "R5": "98.736", "R10": "99.393", "mAP": "91.554", "mINP": "91.554", "lr": "0.000937", "entropy": "0.123062", "loss": "0.123062"}
+    1.4
+        {"epo": "6", "R1": "85.137", "R5": "98.635", "R10": "99.292", "mAP": "91.557", "mINP": "91.557", "lr": "0.00043", "entropy": "0.076485", "loss": "0.076485"}
+    1.5
+        {"epo": "1", "R1": "84.783", "R5": "98.989", "R10": "99.596", "mAP": "91.492", "mINP": "91.492", "lr": "5.9e-05", "entropy": "0.277572", "loss": "0.277572"}
+
+## exp2
+**entropy + ss + unc**
+    nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
+        {"epo": "2", "R1": "85.49", "R5": "98.989", "R10": "99.444", "mAP": "91.883", "mINP": "91.883", "lr": "0.000958", "entropy": "0.089834", "loss": "2.722146"}
+### exp2.1-5
+    2.1
+        {"epo": "2", "R1": "85.541", "R5": "98.989", "R10": "99.444", "mAP": "91.878", "mINP": "91.878", "lr": "0.000958", "entropy": "0.089567", "loss": "2.710543"}
+    2.2
+        {"epo": "2", "R1": "85.642", "R5": "99.039", "R10": "99.444", "mAP": "91.961", "mINP": "91.961", "lr": "0.000958", "entropy": "0.089432", "loss": "2.644134"}
+    2.3
+        {"epo": "2", "R1": "85.592", "R5": "99.039", "R10": "99.444", "mAP": "91.931", "mINP": "91.931", "lr": "0.000958", "entropy": "0.089636", "loss": "2.347391"}
+    2.4
+        {"epo": "2", "R1": "85.49", "R5": "98.989", "R10": "99.444", "mAP": "91.857", "mINP": "91.857", "lr": "0.000958", "entropy": "0.09095", "loss": "1.608024"}
+    2.5
+        {"epo": "2", "R1": "85.592", "R5": "99.039", "R10": "99.444", "mAP": "91.946", "mINP": "91.946", "lr": "0.000958", "entropy": "0.089624", "loss": "1.21968"}
+
+# exp rerun 1
+- 修复了uncertainty维度与entropy不一致的问题，该问题会导致loss=entropy/uncertainty成为一个(bs,bs)的tensor
+
+- 重新检查cmp_xvlm的cross_modal模型结构设计，并设置了仅更新text_encoder的后6层bertlayer
+- 重新检查Tent系列方法的setting设置，设置了tta时model.train()和batchnorm,layernorm参数更新方案
+- 目前方案为：
+    1. dropout： 所有dropout通过model.train()打开（包括visison_encoder、text_encoder前6层、其他modules 和 需要梯度更新的实现了itm.cross_modal功能的text_encoder后六层）
+    2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
+
+## tta_debug
+    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp4.yaml --task tta_debug --output_dir output/tta_debug/exp4 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+
+## exp0
+**entropy**
+    nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
+
+### exp0.1~4
+    nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
+
+    nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
+
+    nohup python3 run.py --tta --task "tta_exp0.3"> logs/tta_exp0.3.log 2>&1 &
+
+    nohup python3 run.py --tta --task "tta_exp0.4"> logs/tta_exp0.4.log 2>&1 &
+
+## exp1
+**entropy + ss**
+    nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
+
+### exp1.1-5
+    1.1
+
+    1.2
+
+    1.3
+
+    1.4
+
+    1.5
+
+## exp2
+**entropy + ss + unc**
+    nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
+
+### exp2.1-5
+    2.1
+
+    2.2
+
+    2.3
+
+    2.4
+
+    2.5
+
 ## exp3
-**entropy + ss + unc_temper_learn**
+**entropy + unc**
+    nohup python3 run.py --tta --task "tta_exp3"> logs/tta_exp3.log 2>&1 &
+
+### exp3.1-5
+    3.1
+
+    3.2
+
+    3.3
+
+    3.4
+
+    3.5
 
 ## exp4
-**entropy + ss + unc_temper_learn + pl**
+**entropy + unc_temper_learn**
+
+### exp4.1-5
+    4.1
+
+    4.2
+
+    4.3
+
+    4.4
+
+    4.5
 
 ## exp5
+**entropy + ss + unc_temper_learn**
+
+## exp6
+**entropy + pl**
+
+## exp7
+**entropy + ss + unc_temper_learn + pl**
+
+## exp8
+**entropy + iaug**
+
+## exp9
 **entropy + ss + unc_temper_learn + pl + iaug**
 
 
