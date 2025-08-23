@@ -885,16 +885,18 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp5
 **entropy + ss + unc_temper_learn**
 
+
 ## exp6
 **entropy + pl**
 
 ## exp7
-**entropy + ss + unc_temper_learn + pl**
+**entropy + ss + unc + pl**
 
 ## exp8
 **entropy + iaug**
 
 ## exp9
-**entropy + ss + unc_temper_learn + pl + iaug**
+**entropy + ss + unc + pl + iaug**
 
 
+cross-modal retrieval, domain source gap

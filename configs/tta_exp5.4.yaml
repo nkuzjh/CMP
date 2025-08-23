@@ -62,7 +62,7 @@ schedular: {sched: step, lr: 1e-3, epochs: 30, num_warmup_steps: 100}
 score_temper: 1.0
 
 uncertainty: 'inversed_recall_proba'
-uncertainty_temper: 2.0
+uncertainty_temper: 1.0
 uncertainty_temper_is_learnable: True
 uncertainty_t2i_temper: 1.0
 uncertainty_i2t_temper: 1.0
