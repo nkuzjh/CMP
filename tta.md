@@ -797,7 +797,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
 ## tta_debug
-    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp4.yaml --task tta_debug --output_dir output/tta_debug/exp4 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp6.yaml --task tta_debug --output_dir output/tta_debug/exp6 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
 
 ## exp0
 **entropy**

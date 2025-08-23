@@ -134,6 +134,14 @@ class CMP(nn.Module):
         self.init_params.extend(['text_proj.' + n for n, _ in self.text_proj.named_parameters()])
         self.init_params.extend(['itm_head.' + n for n, _ in self.itm_head.named_parameters()])
 
+        # new parameter adding
+        ## Coeffi Exp Temperature
+        self.uncertainty_temper = torch.nn.Parameter(torch.ones(1) * config.get('uncertainty_temper', 1.0))
+        ## Learnable Empty Embedding for Prompt Learning
+        self.is_prompt_learning = config.get('is_prompt_learning', False)
+        self.prompt_learning_embedding = torch.nn.Parameter(torch.empty(1, config.get('prompt_learning_token_num', 1), self.text_encoder.config.hidden_size))
+        nn.init.normal_(self.prompt_learning_embedding, mean=0.0, std=0.02)
+
 
     def load_pretrained(self, ckpt_rpath):
         checkpoint = torch.load(ckpt_rpath, map_location='cpu')
@@ -158,13 +166,19 @@ class CMP(nn.Module):
 
     def get_cross_embeds(self, image_embeds, image_atts, text_embeds, text_atts,):
         encoder = self.text_encoder.bert
-        cross_embeds = encoder(encoder_embeds=text_embeds,#([24, 56])
+        if self.is_prompt_learning:
+            prompt_learning_embedding = self.prompt_learning_embedding.expand(text_embeds.size(0), -1, -1)
+            prompt_learning_atts = torch.ones((prompt_learning_embedding.size(0), prompt_learning_embedding.size(1))).to(text_embeds.device)
+            text_embeds = torch.cat([prompt_learning_embedding, text_embeds], dim=1)
+            text_atts = torch.cat([prompt_learning_atts, text_atts], dim=1)
+        cross_embeds = encoder(encoder_embeds=text_embeds,#([24, 56, 768])
                        attention_mask=text_atts,#([24, 56])
                        encoder_hidden_states=image_embeds,#([24, 50, 1024])
                        encoder_attention_mask=image_atts,#([24, 50])
                        return_dict=True,
                        mode='fusion',
                        ).last_hidden_state#last_hidden_state=torch.Size([24, 56, 768])
+        cross_embeds = cross_embeds[:, prompt_learning_atts.size(1):, :]
         return cross_embeds #([8, 56, 768])
 
 

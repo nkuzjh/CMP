@@ -38,7 +38,7 @@ from tta.utils import preprocess_tta_coefficients
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 
 

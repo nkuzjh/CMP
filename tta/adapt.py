@@ -42,6 +42,7 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
                 text_embeds,#([24, 56, 768])
                 text_atts#([24, 56])
             )[:, 0, :] # (bs*k_tta, sequence, last_hidden_states)[:, 0, :] -> (bs*tta, last_hidden_states)
+            ### TODO 如果使用prompt learning增加一个随机初始化的token，这里能否取index=0的last_hidden_states作为itm结果？是否应该用index=1(即原本的cls token位置)替代？需要结合CoOp代码看一下是如何实现的，使用哪个token作为最终结果。
             logits = model.itm_head(output) # (bs*tta, 2)
             logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
             score = logits[..., 1] # (bs, tta)

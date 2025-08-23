@@ -68,4 +68,5 @@ score_temper: 1.0
 # uncertainty_i2t_temper: 1.0
 
 is_prompt_learning: True
+prompt_learning_token_num: 1
 
