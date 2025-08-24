@@ -899,4 +899,3 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss + unc + pl + iaug**
 
 
-cross-modal retrieval, domain source gap

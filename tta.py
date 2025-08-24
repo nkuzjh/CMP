@@ -157,7 +157,6 @@ def main(args, config):
         print("### TTA:")
 
         # print("### Compute ITC Uncertainty")
-        # TODO
         recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list  = preprocess_tta_coefficients(config, sims_matrix_t2i)
 
         print("### Creating tta dataset")
@@ -212,11 +211,12 @@ def main(args, config):
         max_epoch = config['schedular']['epochs']
         for epoch in range(0, max_epoch):
 
-            # train_stats = test_time_adapt_itm(model, tta_loader, optimizer, scaler, tokenizer, epoch, device, lr_scheduler, config, mask_generator)
+            sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
+                model, test_loader, tokenizer, device, config)
             train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#sims_matrix_t2i, image_embeds, text_embeds, text_atts)
 
-            # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
-            #     model, test_loader, tokenizer, device, config)
+            sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
+                model, test_loader, tokenizer, device, config)
             score_test_t2i = evaluation_itm(
                 model,
                 device, config, args,
