@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/jiahao/task/CMP/tta.py", line 279, in <module>
+    config = yaml.load(open(args.config, 'r'))
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/tta_exp4.6.1.yaml'
+NNODES,  1
+NODE_RANK,  0
+MASTER_ADDR,  127.0.0.1
+MASTER_PORT,  1612
+NPROC_PER_NODE,  2
+task:  tta_exp4.6.1
+config:  configs/tta_exp4.6.1.yaml
+output_dir:  output/tta_exp4.6.1/2025082402153
+CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp4.6.1.yaml --task tta_exp4.6.1 --output_dir output/tta_exp4.6.1/2025082402153 --checkpoint checkpoint/cmp.pth --bs 0 --epo 0 --lr 0.0 --seed 42 --tta
