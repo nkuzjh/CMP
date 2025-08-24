@@ -178,7 +178,8 @@ class CMP(nn.Module):
                        return_dict=True,
                        mode='fusion',
                        ).last_hidden_state#last_hidden_state=torch.Size([24, 56, 768])
-        cross_embeds = cross_embeds[:, prompt_learning_atts.size(1):, :]
+        if self.is_prompt_learning:
+            cross_embeds = cross_embeds[:, prompt_learning_atts.size(1):, :]
         return cross_embeds #([8, 56, 768])
 
 
