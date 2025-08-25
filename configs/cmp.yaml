@@ -60,7 +60,7 @@ w: 224
 
 ## Text Encoder
 text_config: 'configs/config_bert.json'
-text_encoder: 'checkpoint/bert-base-uncased'
+text_encoder: 'checkpoint/jizheng/bert-base-uncased'
 
 
 ## Training

@@ -667,6 +667,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 +-------+--------+--------+--------+--------+--------+
 |  ITC  | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
 |  ITM  | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+| Paper | 84.93  | 99.09  | 99.75  | 91.66  |   --   |
 
 
 # command
@@ -676,6 +677,8 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 2. evaluate
     python3 run.py --task "cmp" --evaluate --dist "f4" --output_dir "output/cmp_eval" --checkpoint "checkpoint/cmp.pth"
     python3 run.py --task "cmp" --evaluate --dist "f2" --output_dir "output/cmp_eval" --checkpoint "checkpoint/cmp.pth"
+    python3 run.py --task "cmp" --evaluate --dist "gpu0" --output_dir "output/cmp_eval" --checkpoint "checkpoint/cmp.pth"
+
 3. tta: run.py
     python3 run.py --task "tta" --tta
 4. tta: tta.py

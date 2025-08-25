@@ -59,7 +59,7 @@ def main(args, config):
     model = Search(config=config)
     if config['load_pretrained']:
         model.load_pretrained(args.checkpoint)
-    model = model.to_empty(device)
+    model = model.to(device)
     print("Total Params: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
 
     model_without_ddp = model
