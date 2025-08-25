@@ -74,7 +74,7 @@ def create_test_loader(datasets, batch_size, num_workers, is_trains, collate_fns
 
 
 
-class search_tta_dataset:
+class search_tta_dataset(Dataset):
     def __init__(self, config, tta_transform, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list):
         # ann_file = config['tta_file']
         # self.transform = transform
@@ -174,6 +174,93 @@ def create_tta_loader(datasets, batch_size, num_workers, is_trains, collate_fns)
         if is_train:
             shuffle = True
             drop_last = True
+        else:
+            shuffle = False
+            drop_last = False
+
+        loader = DataLoader(
+            dataset,
+            batch_size=bs,
+            num_workers=n_worker,
+            pin_memory=True,
+            shuffle=shuffle,
+            collate_fn=collate_fn,
+            drop_last=drop_last,
+        )
+        loaders.append(loader)
+
+    if len(loaders) <= 1:
+        print(f"### be careful: func create_loader returns a list length of {len(loaders)}")
+
+    return loaders
+
+
+
+class search_tta_img_aug_dataset(Dataset):
+    def __init__(self, config, transform):
+        ann_file = config['tta_file']
+        self.transform = transform
+        self.image_root = config.get('image_root_tta', config['image_root'])
+        self.max_words = config['max_words']
+
+        self.ann = read_json_to_list(ann_file)
+
+        self.be_pose_img = config.get('be_pose_img', False)
+        print('     tta img aug dataset -->    be_pose_img:', self.be_pose_img)
+
+        self.text = []
+        self.image = []
+        self.g_pids = []
+        self.q_pids = []
+        for img_id, ann in enumerate(self.ann):
+            self.g_pids.append(ann['image_id'])
+            self.image.append(ann['image'])
+            for i, caption in enumerate(ann['caption']):
+                self.q_pids.append(ann['image_id'])
+                self.text.append(pre_caption(caption, self.max_words))
+        pass
+
+    def __len__(self):
+        return len(self.image)
+
+    def __getitem__(self, index):
+        image_path = os.path.join(self.image_root, self.ann[index]['image'])
+        image = Image.open(image_path).convert('RGB')
+        image = self.transform(image)
+
+        if self.be_pose_img:
+            pose_path = os.path.join(self.image_root, 'pose/' + self.ann[index]['image'])
+            pose = Image.open(pose_path).convert('RGB')
+            pose = self.transform(pose)
+        else:
+            pose = {}
+
+        return image, pose, index
+
+
+def create_tta_img_aug_dataset(config):
+
+    normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
+
+    tta_img_aug_transform = transforms.Compose([
+        transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize,
+        RandomErasing(probability=config['erasing_p'], mean=[0.0, 0.0, 0.0])
+    ])
+
+    tta_img_aug_dataset = search_tta_img_aug_dataset(config, tta_img_aug_transform)
+
+    return tta_img_aug_dataset
+
+
+def create_tta_img_aug_loader(datasets, batch_size, num_workers, is_trains, collate_fns):
+    loaders = []
+    for dataset, bs, n_worker, is_train, collate_fn in zip(datasets, batch_size, num_workers, is_trains, collate_fns):
+        if is_train:
+            shuffle = True
+            drop_last = False
         else:
             shuffle = False
             drop_last = False

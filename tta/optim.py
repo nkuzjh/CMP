@@ -10,7 +10,7 @@ from torch import nn
 def configure_model_xvlm_itm(model):
     """Configure model for use with tent."""
     # train mode, because tent optimizes the model to minimize entropy
-    # model.train()
+    model.train()
     # disable grad, to (re-)enable only what tent updates
     model.requires_grad_(False)
     # configure norm for tent updates: enable grad + force batch statisics

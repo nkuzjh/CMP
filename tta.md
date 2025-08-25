@@ -797,7 +797,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
 ## tta_debug
-    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp6.yaml --task tta_debug --output_dir output/tta_debug/exp6 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp8.yaml --task tta_debug --output_dir output/tta_debug/exp8 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
 
 ## exp0
 **entropy**
@@ -936,11 +936,39 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 
 ## exp7
 **entropy + ss + unc + pl**
+    {"epo": "1", "R1": "85.137", "R5": "98.837", "R10": "99.444", "mAP": "91.608", "mINP": "91.608", "lr": "0.000961", "entropy": "0.128144", "loss": "2.658938"}
+7.1
+    {"epo": "1", "R1": "84.833", "R5": "98.787", "R10": "99.494", "mAP": "91.457", "mINP": "91.457", "lr": "9.6e-05", "entropy": "0.255827", "loss": "2.707937"}
+7.2
+    {"epo": "0", "R1": "85.137", "R5": "98.837", "R10": "99.494", "mAP": "91.598", "mINP": "91.598", "lr": "0.000198", "entropy": "0.274943", "loss": "2.715255"}
+7.3
+    {"epo": "10", "R1": "85.49", "R5": "98.736", "R10": "99.393", "mAP": "91.75", "mINP": "91.75", "lr": "0.000137", "entropy": "0.024345", "loss": "2.619359"}
+7.4
+    {"epo": "4", "R1": "85.288", "R5": "98.787", "R10": "99.444", "mAP": "91.666", "mINP": "91.666", "lr": "8.9e-05", "entropy": "0.173761", "loss": "2.676484"}
+7.5
+    {"epo": "11", "R1": "85.339", "R5": "98.584", "R10": "99.292", "mAP": "91.634", "mINP": "91.634", "lr": "6.5e-05", "entropy": "0.045799", "loss": "2.627524"}
+7.6
+    {"epo": "1", "R1": "85.288", "R5": "98.736", "R10": "99.393", "mAP": "91.715", "mINP": "91.715", "lr": "0.000961", "entropy": "0.145646", "loss": "2.66558"}
+7.7
+    {"epo": "8", "R1": "85.238", "R5": "98.736", "R10": "99.343", "mAP": "91.69", "mINP": "91.69", "lr": "3.7e-05", "entropy": "0.150832", "loss": "2.667852"}
+7.8
+    {"epo": "3", "R1": "85.44", "R5": "98.787", "R10": "99.393", "mAP": "91.742", "mINP": "91.742", "lr": "0.000462", "entropy": "0.098569", "loss": "2.647607"}
 
 ## exp8
 **entropy + iaug**
+    {"epo": "4", "R1": "82.154", "R5": "98.534", "R10": "99.393", "mAP": "89.921", "mINP": "89.921", "lr": "0.000437", "entropy": "0.133625", "loss": "0.133625"}
+    8.1
+        {"epo": "0", "R1": "84.125", "R5": "98.989", "R10": "99.494", "mAP": "91.204", "mINP": "91.204", "lr": "6e-05", "entropy": "1.05116", "loss": "1.05116"}
+    8.2
+        {"epo": "28", "R1": "79.474", "R5": "98.686", "R10": "99.343", "mAP": "88.652", "mINP": "88.652", "lr": "6e-06", "entropy": "0.152585", "loss": "0.152585"}
+    8.3
+        {"epo": "0", "R1": "83.822", "R5": "98.938", "R10": "99.494", "mAP": "91.014", "mINP": "91.014", "lr": "0.00031", "entropy": "0.840344", "loss": "0.840344"}
+    8.4
+        {"epo": "1", "R1": "84.58", "R5": "98.888", "R10": "99.444", "mAP": "91.386", "mINP": "91.386", "lr": "8.8e-05", "entropy": "0.860963", "loss": "0.860963"}
+    8.5
+        {"epo": "0", "R1": "84.53", "R5": "98.888", "R10": "99.444", "mAP": "91.375", "mINP": "91.375", "lr": "0.000155", "entropy": "0.941851", "loss": "0.941851"}
 
 ## exp9
 **entropy + ss + unc + pl + iaug**
-
+- 由于exp8效果不好，不试验exp9的setting了
 

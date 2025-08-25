@@ -186,7 +186,7 @@ class search_test_dataset(Dataset):
         self.ann = read_json_to_list(ann_file)
 
         self.be_pose_img = config.get('be_pose_img', False)
-        print('test dataset -->    be_pose_img:', self.be_pose_img)
+        print('     test dataset -->    be_pose_img:', self.be_pose_img)
 
         self.text = []
         self.image = []
