@@ -214,12 +214,10 @@ def main(args, config):
         max_epoch = config['schedular']['epochs']
         for epoch in range(0, max_epoch):
 
-            sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
-                model, test_loader, tokenizer, device, config)
-            train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#sims_matrix_t2i, image_embeds, text_embeds, text_atts)
+            # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
+            train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
 
-            sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
-                model, test_loader, tokenizer, device, config)
+            # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
             score_test_t2i = evaluation_itm(
                 model,
                 device, config, args,
