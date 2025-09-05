@@ -51,21 +51,21 @@ pose_conv: True
 ## Test Time Adapt
 tta_model: '' #需要进行tta的model.modules()
 
-sample_selection: 'top1'
+sample_selection: 'all'
 
 batch_size_tta: 16
 k_tta: 8
 
-optimizer: {opt: adamW, lr: 1e-3, weight_decay: 0.01, lr_mult: 2}
-schedular: {sched: step, lr: 1e-3, epochs: 30, num_warmup_steps: 100}
+optimizer: {opt: adamW, lr: 5e-4, weight_decay: 0.01, lr_mult: 2}
+schedular: {sched: step, lr: 5e-4, epochs: 30, num_warmup_steps: 100}
 
 score_temper: 1.0
 
-uncertainty: 'inversed_recall_proba'
-uncertainty_temper: 1.0
-uncertainty_temper_is_learnable: True
-uncertainty_t2i_temper: 5.0
-uncertainty_i2t_temper: 5.0
+# uncertainty: 'inversed_recall_proba'
+# uncertainty_temper: 1.0
+# uncertainty_temper_is_learnable: True
+# uncertainty_t2i_temper: 1.0
+# uncertainty_i2t_temper: 1.0
 
 # is_prompt_learning: True
 
