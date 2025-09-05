@@ -800,7 +800,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
 ## tta_debug
-    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp8.yaml --task tta_debug --output_dir output/tta_debug/exp8 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp11.yaml --task tta_debug --output_dir output/tta_debug/exp11 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
 
 ## exp0
 **entropy**
@@ -972,6 +972,47 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
         {"epo": "0", "R1": "84.53", "R5": "98.888", "R10": "99.444", "mAP": "91.375", "mINP": "91.375", "lr": "0.000155", "entropy": "0.941851", "loss": "0.941851"}
 
 ## exp9
-**entropy + ss + unc + pl + iaug**
+**entropy + ss + unc + iaug**
 - 由于exp8效果不好，不试验exp9的setting了
+- 等exp11结果，再决定是否加上img_aug
 
+## exp10
+**entropy_steps + ss + unc**
+    nohup python3 run.py --tta --task "tta_exp10"> logs/tta_exp10.log 2>&1 &
+    10.0
+    10.1
+    10.2
+    10.3
+    10.4
+    10.5
+    10.6
+
+## exp11
+**entropy + iaug_itm**
+    11.0
+    11.1
+    11.2
+
+    11.3
+
+    11.4
+
+    11.5
+
+## exp12
+**entropy + ss + unc + iaug_itm**
+
+## exp13
+**entropy + plv1**
+
+## exp14
+**entropy + ss + unc + plv1 + iaug_itm**
+
+## exp15
+**entropy + unc_temper_learn_coeffi**
+
+## exp16
+**entropy + ss + unc_temper_learn_coeffi**
+
+## exp17
+**entropy + ss + unc_temper_learn_coeffi + plv1 + iaug_itm**

@@ -42,7 +42,7 @@ def compute_uncertainty_itc(config, sims_matrix_t2i, sims_matrix_i2t):
         topk_sim_t2i, topk_idx_t2i = sims_t2i.topk(k=k_test, dim=0)
         proba_top1_sim_t2i = F.softmax(topk_sim_t2i * uncertainty_t2i_temper, dim=0)[0] # i2t和t2i的logtis rank/distribution呈现长尾or平均的现象
 
-        proba_inversed_sim_i2t_top1_idx_t2i = torch.zeros(1)
+        proba_inversed_sim_i2t_top1_idx_t2i = torch.zeros([])
         topk_sim_i2t_top1_idx_t2i, topk_idx_i2t_top1_idx_t2i = sims_matrix_i2t[topk_idx_t2i[0]].topk(k=k_test, dim=0)
         if i in topk_idx_i2t_top1_idx_t2i:
             idx_i_in_topk_idx_i2t_top1_idx_t2i = torch.where(topk_idx_i2t_top1_idx_t2i == i)[0][0]
@@ -77,7 +77,7 @@ def preprocess_tta_coefficients(config, sims_matrix_t2i):
     if config.get('uncertainty', None) == 'inversed_recall_proba':
         uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list = compute_uncertainty_itc(config, sims_matrix_t2i, sims_matrix_t2i.t())
     else:
-        uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list = [ torch.ones(1) for _ in range(sims_matrix_t2i.size(0)) ], [ torch.ones(1) for _ in range(sims_matrix_t2i.size(0)) ], [ torch.ones(1) for _ in range(sims_matrix_t2i.size(0)) ]
+        uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list = torch.ones(sims_matrix_t2i.size(0)) , torch.ones(sims_matrix_t2i.size(0)), torch.ones(sims_matrix_t2i.size(0))
 
     print(f"     preprocess_tta_coefficients  end")
     return recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list

@@ -151,19 +151,69 @@ class search_tta_dataset(Dataset):
         return encoder_output, encoder_att, text_embeds, text_atts, uncertainty, proba_top1_sim, proba_inversed_sim
 
 
+class search_tta_img_aug_idx_dataset(Dataset):
+    def __init__(self, config, sims_matrix_t2i, text_embeds, text_atts, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list):
+        self.config = config
+
+        ## using cosine similarity matrix & text feature & uncertianty without augmentation
+        self.sims_matrix_t2i = sims_matrix_t2i
+        self.text_embeds = text_embeds
+        self.text_atts = text_atts
+        self.uncertaintys_list = uncertaintys_list
+        # if config.get('uncertainty_temper_is_learnable', False) == True:
+        if 1:
+            self.proba_top1_sim_list = proba_top1_sim_list
+            self.proba_inversed_sim_list = proba_inversed_sim_list
+
+        ## sample selection strategy based on inverse recall probability
+        if config.get('sample_selection', 'all') == 'top1':
+            self.sims_matrix_t2i = sims_matrix_t2i[ss_idxs_list]
+            self.text_embeds = text_embeds[ss_idxs_list]
+            self.text_atts = text_atts[ss_idxs_list]
+            self.uncertaintys_list = [uncertaintys_list[i] for i in ss_idxs_list]
+            # if config.get('uncertainty_temper_is_learnable', False) == True:
+            if 1:
+                self.proba_top1_sim_list = [proba_top1_sim_list[i] for i in ss_idxs_list]
+                self.proba_inversed_sim_list = [proba_inversed_sim_list[i] for i in ss_idxs_list]
+
+    def __len__(self):
+        return len(self.sims_matrix_t2i)
+
+    def __getitem__(self, index):
+        topk_sim, topk_idx = self.sims_matrix_t2i[index].topk(k=self.config['k_tta'], dim=0) #[k_tta]
+        ## 仅返回topk_idx，用于索引aug_img_embeds
+        text_embeds = self.text_embeds[index].repeat(self.config['k_tta'], 1, 1) #k_tta, 56, 768])
+        text_atts = self.text_atts[index].repeat(self.config['k_tta'], 1) #k_tta, 56
+        uncertainty = self.uncertaintys_list[index]
+        proba_top1_sim = self.proba_top1_sim_list[index]
+        proba_inversed_sim = self.proba_inversed_sim_list[index]
+
+        return topk_idx, text_embeds, text_atts, uncertainty, proba_top1_sim, proba_inversed_sim
+
+
 def create_tta_dataset(config, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list,):
 
-    normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
+    # normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
+    # if config.get('is_image_augmentation', False):
+    #     tta_transform = transforms.Compose([
+    #         transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
+    #         transforms.RandomHorizontalFlip(),
+    #         transforms.ToTensor(),
+    #         normalize,
+    #         RandomErasing(probability=config['erasing_p'], mean=[0.0, 0.0, 0.0])
+    #     ])
+    # else:
+    #     tta_transform = transforms.Compose([
+    #         transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
+    #         transforms.ToTensor(),
+    #         normalize,
+    #     ])
+    tta_transform = None
 
-    tta_transform = transforms.Compose([
-        transforms.Resize((config['h'], config['w']), interpolation=InterpolationMode.BICUBIC),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        normalize,
-        RandomErasing(probability=config['erasing_p'], mean=[0.0, 0.0, 0.0])
-    ])
-
-    tta_dataset = search_tta_dataset(config, tta_transform, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list)
+    if config.get('is_image_augmentation', False):
+        tta_dataset = search_tta_img_aug_idx_dataset(config, sims_matrix_t2i, text_embeds, text_atts, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list)
+    else:
+        tta_dataset = search_tta_dataset(config, tta_transform, sims_matrix_t2i, image_embeds, text_embeds, text_atts, recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list)
 
     return tta_dataset
 

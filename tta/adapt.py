@@ -14,6 +14,7 @@ from train import mlm
 from tta.utils import preprocess_tta_coefficients
 import time
 import datetime
+from tqdm import tqdm
 
 
 
@@ -239,6 +240,123 @@ def test_time_adapt_itm_itc(model, tokenizer, optimizer, scaler, epoch, device, 
             if not skip_lr_sched:
                 scheduler.step()
             optimizer.zero_grad()
+
+        metric_logger.update(entropy=entropy.mean().item())
+        # metric_logger.update(uncertainty=uncertainty.item())
+        metric_logger.update(loss=loss.item())
+        metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+
+    # gather the stats from all processes
+    metric_logger.synchronize_between_processes()
+    print("     Averaged stats:", metric_logger.global_avg())
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+    print('     itm tta time {}'.format(total_time_str))
+    ##### test_time_adapt_itm #####
+
+    return {k: "{:.6f}".format(meter.global_avg) for k, meter in metric_logger.meters.items()}
+
+
+
+@torch.enable_grad()
+def test_time_adapt_imgaug_itm(model, tokenizer, optimizer, scaler, epoch, device, scheduler, config, tta_img_aug_loader, dataloader):#sims_matrix, image_embeds, text_embeds, text_atts):
+
+    ##### evaluate_itc #####
+    model.eval()
+    with torch.no_grad():
+        start_time = time.time()
+
+        print('     Computing augmentation image features for tta_itm')
+        image_embeds = []
+        # image_feats = [] ## cos_sims_matrix使用original feature计算，这里无需前向传播计算img_feature了
+        for image, pose, img_id in tqdm(tta_img_aug_loader, total=len(tta_img_aug_loader)):
+            image = image.to(device)
+            image_embed, _ = model.get_vision_embeds(image)
+
+            if config.get('be_pose_img', False):
+                pose = pose.to(device)
+                if model.be_pose_conv:
+                    pose = model.pose_conv(pose)
+
+                pose_embed, _ = model.get_vision_embeds(pose)
+                image_embed = model.pose_block(image_embed, pose_embed)
+
+            # image_feat = model.get_image_feat(image_embed)
+            # image_feat = F.normalize(image_feat, dim=-1)
+            image_embeds.append(image_embed)
+            # image_feats.append(image_feat)
+
+        image_embeds = torch.cat(image_embeds, dim=0)#[1978, 50, 1024])
+        # image_feats = torch.cat(image_feats, dim=0)#[1978, 2048])
+
+        total_time = time.time() - start_time
+        total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+        print('     Computing augmentation image features time {}'.format(total_time_str))
+
+    print(f'     Computing augmentation image features: image_embeds={image_embeds.shape}')#, image_feats={image_feats.shape}')
+    ##### evaluate_imgaug_itc #####
+    # TODO
+
+    ##### test_time_adapt_itm #####
+    model.train()
+
+    start_time = time.time()
+
+    metric_logger = utils.MetricLogger(delimiter="  ")
+    metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
+    metric_logger.add_meter('entropy', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    # metric_logger.add_meter('uncertainty', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    metric_logger.add_meter('loss', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    header = '      TTA Epoch: [{}]'.format(epoch)
+    print_freq = 100
+
+    print("     ### Start ITM Test Time Adaptation")
+    for iter, (topk_idx, text_embeds, text_atts, uncertainty, proba_top1_sim, proba_inversed_sim) in enumerate(metric_logger.log_every(dataloader, print_freq, header)):
+        ## 根据original cos_sims_matrix 的topk_idx索引查找aug_img_embeds
+        encoder_output = image_embeds[topk_idx]
+        encoder_att = torch.ones(encoder_output.size()[:-1], dtype=torch.long)
+
+        encoder_output = encoder_output.reshape(-1, encoder_output.size(-2), encoder_output.size(-1)).to(device)
+        encoder_att = encoder_att.reshape(-1, encoder_att.size(-1)).to(device)
+        text_embeds = text_embeds.reshape(-1, text_embeds.size(-2), text_embeds.size(-1)).to(device)
+        text_atts = text_atts.reshape(-1, text_atts.size(-1)).to(device)
+        uncertainty = uncertainty.to(device)
+        if config.get('uncertainty', None) == 'inversed_recall_proba' and config.get('uncertainty_temper_is_learnable', False):
+            proba_top1_sim =  proba_top1_sim.to(device)
+            proba_inversed_sim = proba_inversed_sim.to(device)
+
+        with torch.autocast(device_type='cuda', dtype=torch.bfloat16):
+            # print(iter)
+            # print(encoder_output.shape, encoder_att.shape, text_embed.shape, text_att.shape)
+            output = model.get_cross_embeds(
+                encoder_output,#([24, 50, 1024])
+                encoder_att,#([24, 50])
+                text_embeds,#([24, 56, 768])
+                text_atts#([24, 56])
+            )[:, 0, :] # (bs*k_tta, sequence, last_hidden_states)[:, 0, :] -> (bs*tta, last_hidden_states)
+            ### 如果使用prompt learning增加一个随机初始化的token，这里能否取index=0的last_hidden_states作为itm结果？是否应该用index=1(即原本的cls token位置)替代？需要结合CoOp代码看一下是如何实现的，使用哪个token作为最终结果。
+            ### 我在text_embeds之前加入随机初始化的embedding作为prompt learning的初始值，token数量从1-12进行exp，itm.output使用原cls token位置的feature作为结果logits输出
+            logits = model.itm_head(output) # (bs*tta, 2)
+            logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
+            score = logits[..., 1] # (bs, tta)
+            entropy = -(F.softmax(score * config['score_temper'], dim=-1) * F.log_softmax(score * config['score_temper'], dim=-1)).sum(-1)
+            if config.get('uncertainty', None) == 'inversed_recall_proba' and config.get('uncertainty_temper_is_learnable', False):
+                uncertainty_temper = model.uncertainty_temper
+                uncertainty = torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) * uncertainty_temper )
+            if config.get('uncertainty', None) is not None:
+                loss = entropy / uncertainty + uncertainty
+            else:
+                loss = entropy
+            loss = loss.mean()
+
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scale = scaler.get_scale()
+        scaler.update()
+        skip_lr_sched = (scale > scaler.get_scale())
+        if not skip_lr_sched:
+            scheduler.step()
+        optimizer.zero_grad()
 
         metric_logger.update(entropy=entropy.mean().item())
         # metric_logger.update(uncertainty=uncertainty.item())

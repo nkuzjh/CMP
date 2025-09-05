@@ -33,7 +33,7 @@ from eval import evaluation_itm, evaluation_itc, mAP
 
 from tta.dataset import create_test_dataset, create_test_loader, create_tta_dataset, create_tta_loader, create_tta_img_aug_dataset, create_tta_img_aug_loader
 from tta.optim import configure_tta_model, create_tta_optimizer, create_tta_scheduler
-from tta.adapt import test_time_adapt_itm, test_time_adapt_itm_itc
+from tta.adapt import test_time_adapt_itm, test_time_adapt_itm_itc, test_time_adapt_imgaug_itm
 from tta.utils import preprocess_tta_coefficients
 
 
@@ -296,25 +296,6 @@ def main_img_aug(args, config):
     print("     lr:", config['schedular']['lr'])
 
 
-    print("### Creating tta img aug dataset")
-    tta_img_aug_dataset = create_tta_img_aug_dataset(config)
-    print(f"     tta_img_aug_dataset: {len(tta_img_aug_dataset)}")
-    # sample = next(iter(tta_img_aug_dataset))
-    # print(sample)
-
-    print("### Creating tta img aug dataloader")
-    tta_img_aug_loader = create_tta_img_aug_loader(
-        [tta_img_aug_dataset],
-        batch_size=[config['batch_size_tta']],
-        num_workers=[4],
-        is_trains=[True],
-        collate_fns=[None]
-    )[0]
-    print(f"     tta_img_aug_loader: {len(tta_img_aug_loader)}")
-    # samples = next(iter(tta_img_aug_loader))
-    # print(samples)
-
-
     print("### Creating test dataset")
     test_dataset = create_test_dataset(config)
     print(f"     test_dataset: {len(test_dataset)}")
@@ -341,33 +322,44 @@ def main_img_aug(args, config):
     ## 由于使用run.py调用tta.py开启新的子进程，会导致 itc阶段输出的特征 和 itm tta前创建tta_loader输入的特征 被不同进程的device加载，从而产生关于多进程共用cuda的报错；
     ## 因此，进行首次tta前，先运行evaluation_itc和np.save保存itc 特征到本地，后续每次tta实验使用np.load加载即可。
     ## run only at first time to avoid error, then using np.load() to load itm input features.
-    sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
-        model,
-        test_loader,
-        tokenizer,
-        device,
-        config
-    )
+    # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
+    #     model,
+    #     test_loader,
+    #     tokenizer,
+    #     device,
+    #     config
+    # )
+    # np.save("data/debug_embeddings/sims_matrix_t2i.npy", sims_matrix_t2i.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
+    # sims_matrix_t2i = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
+    # image_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/image_embeds.npy"))#.to(device)
+    # text_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_embeds.npy"))#.to(device)
+    # text_atts = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_atts.npy"))#.to(device)
+    sims_matrix_t2i = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
+    image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
+    text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
+    text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
+    # sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    # table.add_row([
+    #     -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
+    # ])
+    # print("### Zero-Shot ITC Score: ")
+    # print(table)
+    # # labels = test_loader.dataset.q_pids #TODO
 
-    sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    table.add_row([
-        -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
-    ])
-    print("### Zero-Shot ITC Score: ")
-    print(table)
-    labels = test_loader.dataset.q_pids #TODO
-
-    score_test_t2i = evaluation_itm(
-        model,
-        device, config, args,
-        sims_matrix_t2i, image_embeds, text_embeds, text_atts
-    )
-    test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    table.add_row([
-        -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
-    ])
-    print("### Zero-Shot ITM Score: ")
-    print(table)
+    # score_test_t2i = evaluation_itm(
+    #     model,
+    #     device, config, args,
+    #     sims_matrix_t2i, image_embeds, text_embeds, text_atts
+    # )
+    # test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    # table.add_row([
+    #     -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
+    # ])
+    # print("### Zero-Shot ITM Score: ")
+    # print(table)
 
     table.add_row([-999, 69.414, 95.197, 97.776, 81.233, 81.233])
     table.add_row([-999, 84.277, 99.039, 99.596, 91.276, 91.276])
@@ -385,38 +377,58 @@ def main_img_aug(args, config):
     if args.tta:
         print("### TTA:")
 
-        # # print("### Compute ITC Uncertainty")
-        # recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list  = preprocess_tta_coefficients(config, sims_matrix_t2i)
+        # print("### Compute ITC Uncertainty")
+        recall_types, ss_idxs_list, uncertaintys_list, proba_top1_sim_list, proba_inversed_sim_list  = preprocess_tta_coefficients(config, sims_matrix_t2i)
 
-        # print("### Creating tta dataset")
-        # tta_dataset = create_tta_dataset(
-        #     config,
-        #     sims_matrix_t2i.cpu(),
-        #     image_embeds.cpu(),
-        #     text_embeds.cpu(),
-        #     text_atts.cpu(),
-        #     recall_types,
-        #     ss_idxs_list,
-        #     uncertaintys_list,
-        #     proba_top1_sim_list,
-        #     proba_inversed_sim_list,
 
-        # )
-        # print(f"     tta_dataset: {len(tta_dataset)}")
-        # # sample = next(iter(tta_dataset))
-        # # print(sample)
+        print("### Creating tta dataset")
+        tta_dataset = create_tta_dataset(
+            config,
+            sims_matrix_t2i.cpu(),
+            image_embeds.cpu(),
+            text_embeds.cpu(),
+            text_atts.cpu(),
+            recall_types,
+            ss_idxs_list,
+            uncertaintys_list,
+            proba_top1_sim_list,
+            proba_inversed_sim_list,
 
-        # print("### Creating tta dataloader")
-        # tta_loader = create_tta_loader(
-        #     [tta_dataset],
-        #     batch_size=[config['batch_size_tta']],
-        #     num_workers=[4],
-        #     is_trains=[True],
-        #     collate_fns=[None]
-        # )[0]
-        # print(f"     tta_loader: {len(tta_loader)}")
-        # # sample = `next(iter(tta_loader))`
-        # # print(sample)
+        )
+        print(f"     tta_dataset: {len(tta_dataset)}")
+        # sample = next(iter(tta_dataset))
+        # print(sample)
+
+        print("### Creating tta dataloader")
+        tta_loader = create_tta_loader(
+            [tta_dataset],
+            batch_size=[config['batch_size_tta']],
+            num_workers=[4],
+            is_trains=[True],
+            collate_fns=[None]
+        )[0]
+        print(f"     tta_loader: {len(tta_loader)}")
+        # sample = `next(iter(tta_loader))`
+        # print(sample)
+
+        print("### Creating tta img aug dataset")
+        tta_img_aug_dataset = create_tta_img_aug_dataset(config)
+        print(f"     tta_img_aug_dataset: {len(tta_img_aug_dataset)}")
+        # sample = next(iter(tta_img_aug_dataset))
+        # print(sample)
+
+        print("### Creating tta img aug dataloader")
+        tta_img_aug_loader = create_tta_img_aug_loader(
+            [tta_img_aug_dataset],
+            batch_size=[config['batch_size_tta']],
+            num_workers=[4],
+            is_trains=[False],
+            collate_fns=[None]
+        )[0]
+        print(f"     tta_img_aug_loader: {len(tta_img_aug_loader)}")
+        # samples = next(iter(tta_img_aug_loader))
+        # print(samples)
+
 
         print("### Configure adapted weights")
         # arg_tm = utils.AttrDict(config['tta_model'])
@@ -433,6 +445,7 @@ def main_img_aug(args, config):
         lr_scheduler = create_tta_scheduler(arg_sche, optimizer)
         scaler = GradScaler()  # bf16
 
+
         print("### Start ITC ITM Test Time Adaptation")
         start_time = time.time()
         best = 0
@@ -442,7 +455,8 @@ def main_img_aug(args, config):
 
             # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
             #     model, test_loader, tokenizer, device, config)
-            train_stats = test_time_adapt_itm_itc(model, tokenizer, optimizer, scaler, epoch, device, lr_scheduler, config, tta_img_aug_loader)#sims_matrix_t2i, image_embeds, text_embeds, text_atts)
+            # train_stats = test_time_adapt_itm_itc(model, tokenizer, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#sims_matrix_t2i, image_embeds, text_embeds, text_atts)
+            train_stats = test_time_adapt_imgaug_itm(model, tokenizer, optimizer, scaler, epoch, device, lr_scheduler, config, tta_img_aug_loader, tta_loader)
 
             sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
                 model, test_loader, tokenizer, device, config)
