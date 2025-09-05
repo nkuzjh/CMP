@@ -115,14 +115,14 @@ def main(args, config):
     # np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
     # np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
     # np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
-    # sims_matrix_t2i = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
-    # image_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/image_embeds.npy"))#.to(device)
-    # text_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_embeds.npy"))#.to(device)
-    # text_atts = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_atts.npy"))#.to(device)
-    sims_matrix_t2i = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
-    image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
-    text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
-    text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
+    sims_matrix_t2i = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
+    image_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/image_embeds.npy"))#.to(device)
+    text_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_embeds.npy"))#.to(device)
+    text_atts = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_atts.npy"))#.to(device)
+    # sims_matrix_t2i = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
+    # image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
+    # text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
+    # text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
     # sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
     # table.add_row([
     #     -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
@@ -203,7 +203,7 @@ def main(args, config):
         arg_opt = utils.AttrDict(config['optimizer'])
         optimizer = create_tta_optimizer(arg_opt, model)
         arg_sche = utils.AttrDict(config['schedular'])
-        arg_sche['step_per_epoch'] = math.ceil( len(tta_dataset) / config['batch_size_tta'] )
+        arg_sche['step_per_epoch'] = math.ceil( len(tta_dataset) / config['batch_size_tta'] ) * config.get('tta_steps', 1)
         lr_scheduler = create_tta_scheduler(arg_sche, optimizer)
         scaler = GradScaler()  # bf16
 
@@ -215,7 +215,7 @@ def main(args, config):
         for epoch in range(0, max_epoch):
 
             # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
-            train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
+            train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
 
             # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
             score_test_t2i = evaluation_itm(
@@ -429,7 +429,7 @@ def main_img_aug(args, config):
         arg_opt = utils.AttrDict(config['optimizer'])
         optimizer = create_tta_optimizer(arg_opt, model)
         arg_sche = utils.AttrDict(config['schedular'])
-        arg_sche['step_per_epoch'] = math.ceil( len(tta_img_aug_dataset) / config['batch_size_tta'] ) # TODO 按理来说这里使用tta_img_aug_dataset的length应当和itc后sims_matrix的length一致，但由于itc后sims_matrix的length是根据ss_idxs_list计算的，因此可能step_per_epoch实际会小于这里的值。
+        arg_sche['step_per_epoch'] = math.ceil( len(tta_img_aug_dataset) / config['batch_size_tta'] ) * config.get('tta_steps', 1) # TODO 按理来说这里使用tta_img_aug_dataset的length应当和itc后sims_matrix的length一致，但由于itc后sims_matrix的length是根据ss_idxs_list计算的，因此可能step_per_epoch实际会小于这里的值。
         lr_scheduler = create_tta_scheduler(arg_sche, optimizer)
         scaler = GradScaler()  # bf16
 
@@ -508,7 +508,7 @@ if __name__ == '__main__':
     config = yaml.load(open(args.config, 'r'))
     yaml.dump(config, open(os.path.join(args.output_dir, 'config.yaml'), 'w'))
 
-    if config['is_image_augmentation']:
+    if config.get('is_image_augmentation', False):
         main_img_aug(args, config)
     else:
         main(args, config)
