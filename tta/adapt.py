@@ -28,8 +28,11 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     metric_logger.add_meter('entropy', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
-    # metric_logger.add_meter('uncertainty', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
     metric_logger.add_meter('loss', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    metric_logger.add_meter('entr_unc', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    metric_logger.add_meter('uncertainty', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    metric_logger.add_meter('uncertainty_multiply_coeffi', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+
     header = '      TTA Epoch: [{}]'.format(epoch)
     print_freq = 100
 
@@ -61,8 +64,9 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
                 if config.get('uncertainty', None) == 'inversed_recall_proba' and config.get('uncertainty_temper_is_learnable', False):
                     uncertainty_temper = model.uncertainty_temper
                     uncertainty = torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) * uncertainty_temper )
+                    uncertainty_coeffi = torch.tensor(config.get('uncertainty_coeffi', 1.0)).to(device)
                 if config.get('uncertainty', None) is not None:
-                    loss = entropy / uncertainty + uncertainty
+                    loss = entropy / uncertainty + uncertainty * uncertainty_coeffi
                 else:
                     loss = entropy
                 loss = loss.mean()
@@ -80,6 +84,9 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
         # metric_logger.update(uncertainty=uncertainty.item())
         metric_logger.update(loss=loss.item())
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        metric_logger.update(uncertainty=uncertainty.mean().item())
+        metric_logger.update(uncertainty_multiply_coeffi=(uncertainty*uncertainty_coeffi).mean().item())
+        metric_logger.update(entr_unc=(entropy / uncertainty).mean().item())
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()

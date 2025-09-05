@@ -800,7 +800,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
 ## tta_debug
-    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp11.yaml --task tta_debug --output_dir output/tta_debug/exp11 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp15.yaml --task tta_debug --output_dir output/tta_debug/exp15 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
 
 ## exp0
 **entropy**
@@ -974,45 +974,93 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp9
 **entropy + ss + unc + iaug**
 - 由于exp8效果不好，不试验exp9的setting了
-- 等exp11结果，再决定是否加上img_aug
 
 ## exp10
 **entropy_steps + ss + unc**
     nohup python3 run.py --tta --task "tta_exp10"> logs/tta_exp10.log 2>&1 &
     10.0
+        {"epo": "8", "R1": "84.934", "R5": "98.686", "R10": "99.393", "mAP": "91.397", "mINP": "91.397", "lr": "0.000367", "entropy": "0.032907", "loss": "2.622468"}
     10.1
+        {"epo": "2", "R1": "85.389", "R5": "98.837", "R10": "99.343", "mAP": "91.79", "mINP": "91.79", "lr": "0.000729", "entropy": "0.043528", "loss": "2.626565"}
     10.2
+        {"epo": "0", "R1": "84.985", "R5": "98.888", "R10": "99.494", "mAP": "91.633", "mINP": "91.633", "lr": "0.000787", "entropy": "0.158636", "loss": "2.670734"}
     10.3
+        {"epo": "5", "R1": "84.328", "R5": "98.736", "R10": "99.343", "mAP": "91.037", "mINP": "91.037", "lr": "0.000166", "entropy": "0.021528", "loss": "2.618173"}
     10.4
+        {"epo": "0", "R1": "84.53", "R5": "98.18", "R10": "99.039", "mAP": "91.081", "mINP": "91.081", "lr": "0.000869", "entropy": "0.116297", "loss": "2.654539"}
     10.5
+        {"epo": "23", "R1": "84.429", "R5": "98.332", "R10": "99.343", "mAP": "90.941", "mINP": "90.941", "lr": "4.6e-05", "entropy": "0.006819", "loss": "2.612519"}
     10.6
+        shell脚本漏了
 
 ## exp11
 **entropy + iaug_itm**
     11.0
     11.1
     11.2
-
     11.3
-
     11.4
-
     11.5
 
-## exp12
+## exp9
 **entropy + ss + unc + iaug_itm**
+- 等exp11结果，再决定是否加上img_aug
 
-## exp13
+## exp12
 **entropy + plv1**
 
+## exp13
+**entropy + ss + unc + plv1**
+- 等exp12结果，再决定是否加上plv1
+
 ## exp14
-**entropy + ss + unc + plv1 + iaug_itm**
+**entropy + unc_temper_learn_coeffi**
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2))).mean()
+        tensor(0.2211, device='cuda:0', grad_fn=<MeanBackward0>)
+    uncertainty.mean()
+        tensor(2.6295, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-3 )).mean()
+        tensor(10.5920, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-2 )).mean()
+        tensor(4.0260, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-1 )).mean()
+        tensor(1.5303, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-1.5 )).mean()
+        tensor(2.4822, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-1.6 )).mean()
+        tensor(2.7343, device='cuda:0', grad_fn=<MeanBackward0>)
+
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) )).mean() / (uncertainty).mean()
+        tensor(0.0841, device='cuda:0', grad_fn=<DivBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*5 )).mean() / (uncertainty).mean()
+        tensor(0.0018, device='cuda:0', grad_fn=<DivBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*2 )).mean() / (uncertainty).mean()
+        tensor(0.0320, device='cuda:0', grad_fn=<DivBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*0 )).mean() / (uncertainty).mean()
+        tensor(0.2212, device='cuda:0', grad_fn=<DivBackward0>)
+**根据以上分析有两个思路: 1 unc_temper以-2作为初始值训练 2 unc_coeffi使用一个小于0.2212/0.0841/0.0320/0.0018的值(需要根据unc_temper初始值决定)**
 
 ## exp15
-**entropy + unc_temper_learn_coeffi**
+**entropy + ss + unc_temper_learn_coeffi**
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *1 )).mean() / (uncertainty).mean()
+    tensor(0.0264, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *2 )).mean() / (uncertainty).mean()
+    tensor(0.0101, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *5 )).mean() / (uncertainty).mean()
+    tensor(0.0006, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *0 )).mean() / (uncertainty).mean()
+    tensor(0.0688, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *-2 )).mean() / (uncertainty).mean()
+    tensor(0.4681, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *-3 )).mean() / (uncertainty).mean()
+    tensor(1.2205, device='cuda:0', grad_fn=<DivBackward0>)
+**由于增加了sample selection，uncertainty的质量更好，所以loss会更小，使得uncertainty本身数值和entropy/uncertainty的差距进一步拉大，因此有:**
+**1 unc_temper以-3作为初始值训练 2 unc_coeffi使用一个小于0.01（unc_temper=0，1），0.001（unc_temper=2），0.0001（unc_temper=5）的值**
 
 ## exp16
-**entropy + ss + unc_temper_learn_coeffi**
-
-## exp17
 **entropy + ss + unc_temper_learn_coeffi + plv1 + iaug_itm**
+- 等exp11结果，再决定是否加上img_aug
+- 等exp12结果，再决定是否加上plv1
+- 等exp15结果，再决定是否加上unc_temper_learn_coeffi
+
+
