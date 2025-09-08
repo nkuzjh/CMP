@@ -56,8 +56,8 @@ sample_selection: 'top1'
 batch_size_tta: 16
 k_tta: 8
 
-optimizer: {opt: adamW, lr: 1e-3, weight_decay: 0.01, lr_mult: 2}
-schedular: {sched: step, lr: 1e-3, epochs: 30, num_warmup_steps: 100}
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.01, lr_mult: 2}
+schedular: {sched: step, lr: 1e-4, epochs: 30, num_warmup_steps: 100}
 
 score_temper: 1.0
 

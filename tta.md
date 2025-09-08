@@ -991,16 +991,12 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     10.5
         {"epo": "23", "R1": "84.429", "R5": "98.332", "R10": "99.343", "mAP": "90.941", "mINP": "90.941", "lr": "4.6e-05", "entropy": "0.006819", "loss": "2.612519"}
     10.6
-        shell脚本漏了
+        shell脚本遗漏了，但不影响实验结论，该setting无提升
 
 ## exp11
 **entropy + iaug_itm**
-    11.0
-    11.1
-    11.2
-    11.3
-    11.4
-    11.5
+    best = exp11
+        {"epo": "8", "R1": "85.743", "R5": "98.635", "R10": "99.444", "mAP": "91.866", "mINP": "91.866", "lr": "0.000148", "entropy": "0.068551", "loss": "0.068551"}
 
 ## exp9
 **entropy + ss + unc + iaug_itm**
@@ -1008,6 +1004,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 
 ## exp12
 **entropy + plv1**
+- coding~
 
 ## exp13
 **entropy + ss + unc + plv1**
@@ -1039,6 +1036,8 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*0 )).mean() / (uncertainty).mean()
         tensor(0.2212, device='cuda:0', grad_fn=<DivBackward0>)
 **根据以上分析有两个思路: 1 unc_temper以-2作为初始值训练 2 unc_coeffi使用一个小于0.2212/0.0841/0.0320/0.0018的值(需要根据unc_temper初始值决定)**
+    best = exp14.2
+        {"epo": "26", "R1": "85.238", "R5": "98.635", "R10": "99.343", "mAP": "91.602", "mINP": "91.602", "lr": "2.5e-05", "entropy": "0.038986", "loss": "0.031098", "entr_unc": "0.000636", "uncertainty": "60.923837", "uncertainty_multiply_coeffi": "0.030462"}
 
 ## exp15
 **entropy + ss + unc_temper_learn_coeffi**
@@ -1056,11 +1055,13 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     tensor(1.2205, device='cuda:0', grad_fn=<DivBackward0>)
 **由于增加了sample selection，uncertainty的质量更好，所以loss会更小，使得uncertainty本身数值和entropy/uncertainty的差距进一步拉大，因此有:**
 **1 unc_temper以-3作为初始值训练 2 unc_coeffi使用一个小于0.01（unc_temper=0，1），0.001（unc_temper=2），0.0001（unc_temper=5）的值**
+    best = exp15.4
+        {"epo": "4", "R1": "85.288", "R5": "98.433", "R10": "99.292", "mAP": "91.532", "mINP": "91.532", "lr": "0.000889", "entropy": "0.047062", "loss": "0.044365", "entr_unc": "0.017577", "uncertainty": "2.678756", "uncertainty_multiply_coeffi": "0.026788"}
 
 ## exp16
-**entropy + ss + unc_temper_learn_coeffi + plv1 + iaug_itm**
-- 等exp11结果，再决定是否加上img_aug
+**entropy + ss + unc + plv1 + iaug_itm** unc_temper_learn_coeffi
+- 等exp11结果，再决定是否加上img_aug **exp11有提升，等exp9结果再决定是否增加img_aug**
 - 等exp12结果，再决定是否加上plv1
-- 等exp15结果，再决定是否加上unc_temper_learn_coeffi
+- 等exp15结果，再决定是否加上unc_temper_learn_coeffi **exp14和exp15都不如固定unc_temper，exp16不增加unc_temper_learn_coeffi的方法**
 
 
