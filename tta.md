@@ -1001,6 +1001,9 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp9
 **entropy + ss + unc + iaug_itm**
 - 等exp11结果，再决定是否加上img_aug
+- 三个setting组合后效果下降
+    best = exp9.9
+        {"epo": "4", "R1": "85.086", "R5": "98.635", "R10": "99.292", "mAP": "91.554", "mINP": "91.554", "lr": "0.000957", "entropy": "0.092873", "loss": "2.711785"}
 
 ## exp12
 **entropy + plv1**

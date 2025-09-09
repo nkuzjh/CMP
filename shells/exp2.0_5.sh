@@ -8,22 +8,26 @@ mkdir -p $log_dir
 
 # 定义日志文件名
 log_files=(
-    "tta_exp2.log"
-    "tta_exp2.1.log"
+
     "tta_exp2.2.log"
-    "tta_exp2.3.log"
-    "tta_exp2.4.log"
-    "tta_exp2.5.log"
+    "tta_exp2.1.log"
+    "tta_exp2.log"
+
+    # "tta_exp2.3.log"
+    # "tta_exp2.4.log"
+    # "tta_exp2.5.log"
 )
 
 # 定义参数文件名
 task_names=(
-    "tta_exp2"
-    "tta_exp2.1"
+
     "tta_exp2.2"
-    "tta_exp2.3"
-    "tta_exp2.4"
-    "tta_exp2.5"
+    "tta_exp2.1"
+    "tta_exp2"
+
+    # "tta_exp2.3"
+    # "tta_exp2.4"
+    # "tta_exp2.5"
 )
 
 # 按顺序执行每个训练任务

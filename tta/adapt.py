@@ -64,8 +64,8 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
                 if config.get('uncertainty', None) == 'inversed_recall_proba' and config.get('uncertainty_temper_is_learnable', False):
                     uncertainty_temper = model.uncertainty_temper
                     uncertainty = torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) * uncertainty_temper )
-                    uncertainty_coeffi = torch.tensor(config.get('uncertainty_coeffi', 1.0)).to(device)
                 if config.get('uncertainty', None) is not None:
+                    uncertainty_coeffi = torch.tensor(config.get('uncertainty_coeffi', 1.0)).to(device)
                     loss = entropy / uncertainty + uncertainty * uncertainty_coeffi
                 else:
                     loss = entropy
