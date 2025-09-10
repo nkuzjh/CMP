@@ -702,7 +702,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy**
     nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
         {"epo": "1", "R1": "84.681", "R5": "98.584", "R10": "99.292", "mAP": "91.252", "mINP": "91.252", "lr": "0.000876", "entropy": "0.189884", "loss": "0.189884"}
-### exp0.1~4
+- exp0.1~4
     nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
         {"epo": "0", "R1": "84.681", "R5": "98.989", "R10": "99.596", "mAP": "91.451", "mINP": "91.451", "lr": "3.1e-05", "entropy": "0.35984", "loss": "0.35984"}
     nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
@@ -716,7 +716,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss**
     nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
         {"epo": "3", "R1": "84.833", "R5": "98.787", "R10": "99.343", "mAP": "91.35", "mINP": "91.35", "lr": "0.000924", "entropy": "0.043405", "loss": "0.043405"}
-### exp1.1-5
+- exp1.1-5
     1.1 {"epo": "4", "R1": "84.783", "R5": "98.787", "R10": "99.343", "mAP": "91.405", "mINP": "91.405", "lr": "0.000445", "entropy": "0.059843", "loss": "0.059843"}
     1.2 {"epo": "0", "R1": "84.783", "R5": "98.989", "R10": "99.596", "mAP": "91.505", "mINP": "91.505", "lr": "4e-05", "entropy": "0.331566", "loss": "0.331566"}
     1.3 {"epo": "0", "R1": "84.681", "R5": "98.888", "R10": "99.494", "mAP": "91.378", "mINP": "91.378", "lr": "0.0002", "entropy": "0.289342", "loss": "0.289342"}
@@ -727,7 +727,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss + unc**
     nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
         {"epo": "3", "R1": "84.783", "R5": "98.736", "R10": "99.343", "mAP": "91.308", "mINP": "91.308", "lr": "0.000924", "entropy": "0.043163", "loss": "2.704784"}
-### exp2.1-5
+- exp2.1-5
     2.1 {"epo": "3", "R1": "84.884", "R5": "98.736", "R10": "99.343", "mAP": "91.382", "mINP": "91.382", "lr": "0.000924", "entropy": "0.044278", "loss": "2.693614"}
     2.2 {"epo": "3", "R1": "84.681", "R5": "98.736", "R10": "99.292", "mAP": "91.24", "mINP": "91.24", "lr": "0.000924", "entropy": "0.042831", "loss": "2.626209"}
     2.3 {"epo": "4", "R1": "84.681", "R5": "98.736", "R10": "99.444", "mAP": "91.305", "mINP": "91.305", "lr": "0.000889", "entropy": "0.023986", "loss": "2.319043"}
@@ -748,7 +748,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy**
     nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
         {"epo": "2", "R1": "84.681", "R5": "98.787", "R10": "99.393", "mAP": "91.301", "mINP": "91.301", "lr": "0.00097", "entropy": "0.128151", "loss": "0.128151"}
-### exp0.1~4
+- exp0.1~4
     nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
         {"epo": "0", "R1": "84.681", "R5": "99.039", "R10": "99.596", "mAP": "91.46", "mINP": "91.46", "lr": "3.1e-05", "entropy": "0.34599", "loss": "0.34599"}
     nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
@@ -762,7 +762,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss**
     nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
         {"epo": "2", "R1": "85.592", "R5": "98.989", "R10": "99.444", "mAP": "91.939", "mINP": "91.939", "lr": "0.000958", "entropy": "0.089662", "loss": "0.089662"}
-### exp1.1-5
+- exp1.1-5
     1.1
         {"epo": "4", "R1": "85.086", "R5": "98.686", "R10": "99.343", "mAP": "91.566", "mINP": "91.566", "lr": "0.000445", "entropy": "0.076353", "loss": "0.076353"}
     1.2
@@ -778,7 +778,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss + unc**
     nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
         {"epo": "2", "R1": "85.49", "R5": "98.989", "R10": "99.444", "mAP": "91.883", "mINP": "91.883", "lr": "0.000958", "entropy": "0.089834", "loss": "2.722146"}
-### exp2.1-5
+- exp2.1-5
     2.1
         {"epo": "2", "R1": "85.541", "R5": "98.989", "R10": "99.444", "mAP": "91.878", "mINP": "91.878", "lr": "0.000958", "entropy": "0.089567", "loss": "2.710543"}
     2.2
@@ -806,7 +806,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy**
     nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
         {"epo": "2", "R1": "84.681", "R5": "98.787", "R10": "99.393", "mAP": "91.301", "mINP": "91.301", "lr": "0.00097", "entropy": "0.128151", "loss": "0.128151"}
-### exp0.1~4
+- exp0.1~4
     nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
         {"epo": "0", "R1": "84.681", "R5": "99.039", "R10": "99.596", "mAP": "91.46", "mINP": "91.46", "lr": "3.1e-05", "entropy": "0.34599", "loss": "0.34599"}
     nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
@@ -820,7 +820,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss**
     nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
         {"epo": "2", "R1": "85.592", "R5": "98.989", "R10": "99.444", "mAP": "91.939", "mINP": "91.939", "lr": "0.000958", "entropy": "0.089662", "loss": "0.089662"}
-### exp1.1-5
+- exp1.1-5
     1.1
         {"epo": "4", "R1": "85.086", "R5": "98.686", "R10": "99.343", "mAP": "91.566", "mINP": "91.566", "lr": "0.000445", "entropy": "0.076353", "loss": "0.076353"}
     1.2
@@ -836,7 +836,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + ss + unc**
     nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
         {"epo": "2", "R1": "85.592", "R5": "98.989", "R10": "99.444", "mAP": "91.912", "mINP": "91.912", "lr": "0.000958", "entropy": "0.089008", "loss": "2.721839"}
-### exp2.1-5
+- exp2.1-5
     2.1
         {"epo": "2", "R1": "85.642", "R5": "99.039", "R10": "99.444", "mAP": "91.972", "mINP": "91.972", "lr": "0.000958", "entropy": "0.089416", "loss": "2.710488"}
     2.2
@@ -852,7 +852,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 **entropy + unc**
     nohup python3 run.py --tta --task "tta_exp3"> logs/tta_exp3.log 2>&1 &
         {"epo": "26", "R1": "85.541", "R5": "98.534", "R10": "99.444", "mAP": "91.756", "mINP": "91.756", "lr": "2.5e-05", "entropy": "0.035251", "loss": "2.702479"}
-### exp3.1-5
+- exp3.1-5
     3.1
         {"epo": "3", "R1": "85.137", "R5": "98.686", "R10": "99.393", "mAP": "91.604", "mINP": "91.604", "lr": "0.000567", "entropy": "0.075018", "loss": "2.706798"}
     3.2
@@ -873,7 +873,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp4
 **entropy + unc_temper_learn**
     {"epo": "2", "R1": "84.226", "R5": "98.483", "R10": "99.343", "mAP": "91.066", "mINP": "91.066", "lr": "0.000943", "entropy": "0.094519", "loss": "2.152995"}
-### exp4.1-5
+- exp4.1-5
     4.1
         {"epo": "3", "R1": "85.086", "R5": "98.686", "R10": "99.444", "mAP": "91.55", "mINP": "91.55", "lr": "0.000567", "entropy": "0.071233", "loss": "5.156881"}
     4.2
@@ -888,7 +888,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp5
 **entropy + ss + unc_temper_learn**
     {"epo": "6", "R1": "85.44", "R5": "98.888", "R10": "99.393", "mAP": "91.74", "mINP": "91.74", "lr": "0.00041", "entropy": "0.035814", "loss": "5.017853"}
-### exp5.1-5
+- exp5.1-5
     5.1
         {"epo": "0", "R1": "84.732", "R5": "98.989", "R10": "99.596", "mAP": "91.472", "mINP": "91.472", "lr": "4e-05", "entropy": "0.315383", "loss": "7.265886"}
     5.2
@@ -901,7 +901,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp6
 **entropy + pl**
     {"epo": "1", "R1": "85.389", "R5": "98.635", "R10": "99.494", "mAP": "91.709", "mINP": "91.709", "lr": "0.000977", "entropy": "0.143004", "loss": "0.143004"}
-### exp6.1-5
+- exp6.1-5
     6.0.1
         {"epo": "4", "R1": "85.137", "R5": "98.787", "R10": "99.444", "mAP": "91.594", "mINP": "91.594", "lr": "4.4e-05", "entropy": "0.217917", "loss": "0.217917"}
     6.0.2
