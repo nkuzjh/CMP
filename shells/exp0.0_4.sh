@@ -1,21 +1,21 @@
-nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
+nohup python3 run.py --tta --task "tta_exp0"> logs_rerun2/tta_exp0.log 2>&1 &
 
 wait
 
 
-nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
+nohup python3 run.py --tta --task "tta_exp0.1"> logs_rerun2/tta_exp0.1.log 2>&1 &
 
 wait
 
-nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
+nohup python3 run.py --tta --task "tta_exp0.2"> logs_rerun2/tta_exp0.2.log 2>&1 &
 
 wait
 
-nohup python3 run.py --tta --task "tta_exp0.3"> logs/tta_exp0.3.log 2>&1 &
+nohup python3 run.py --tta --task "tta_exp0.3"> logs_rerun2/tta_exp0.3.log 2>&1 &
 
 wait
 
-nohup python3 run.py --tta --task "tta_exp0.4"> logs/tta_exp0.4.log 2>&1 &
+nohup python3 run.py --tta --task "tta_exp0.4"> logs_rerun2/tta_exp0.4.log 2>&1 &
 
 wait
 

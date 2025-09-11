@@ -54,12 +54,12 @@ def run(args):
 
     elif 'tta' in args.task:
         args.config = 'configs/' + args.task + '.yaml'
-        args.output_dir = 'output/' + args.task + f'/{datetime.now().strftime("%Y%m%d%H%M%S")[:-1]}'
+        args.output_dir = 'output_rerun2/' + args.task + f'/{datetime.now().strftime("%Y%m%d%H%M%S")[:-1]}'
         print("task: ", args.task)
         print("config: ", args.config)
         print("output_dir: ", args.output_dir)
 
-        os_command_str = f"CUDA_VISIBLE_DEVICES=2 python3 tta.py --config {args.config} --task {args.task} --output_dir {args.output_dir} --checkpoint {args.checkpoint} --bs {args.bs} --epo {args.epo} --lr {args.lr} --seed {args.seed} {'--tta' if args.tta else ''}"
+        os_command_str = f"python3 tta.py --config {args.config} --task {args.task} --output_dir {args.output_dir} --checkpoint {args.checkpoint} --bs {args.bs} --epo {args.epo} --lr {args.lr} --seed {args.seed} {'--tta' if args.tta else ''}"
 
         print(os_command_str)
         # CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs/tta_debug.yaml --task tta_debug --output_dir output/tta_debug/2025081715503  --checkpoint checkpoint/cmp.pth --bs 1 --epo 10 --lr 0.0001 --seed 42  --tta

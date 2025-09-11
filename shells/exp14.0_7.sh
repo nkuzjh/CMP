@@ -2,7 +2,7 @@
 
 # 设置基础参数
 # num_gpus=1
-log_dir="./logs"
+log_dir="./logs_rerun2"
 mkdir -p $log_dir
 
 
@@ -43,7 +43,7 @@ do
     start_time=$(date +%s)
     echo "Start Time: $(date +"%Y-%m-%d %T")"
 
-    nohup python3 run.py --tta --task $task_name > $log_file 2>&1 &
+     nohup python3 run.py --tta --task $task_name > $log_file 2>&1 &
 
     # 等待当前任务完成
     wait

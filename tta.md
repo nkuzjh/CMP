@@ -800,7 +800,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
 ## tta_debug
-    CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs/tta_exp15.yaml --task tta_debug --output_dir output/tta_debug/exp15 --checkpoint checkpoint/cmp.pth --bs 3 --epo 10 --lr 0.001 --seed 42 --tta
+    CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs/tta_exp2.2.yaml --task tta_debug --output_dir output/tta_debug/exp2.2 --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
 
 ## exp0
 **entropy**
@@ -1010,6 +1010,286 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 - coding~
 
 ## exp13
+**entropy + ss + unc + plv1**
+- 等exp12结果，再决定是否加上plv1
+
+## exp14
+**entropy + unc_temper_learn_coeffi**
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2))).mean()
+        tensor(0.2211, device='cuda:0', grad_fn=<MeanBackward0>)
+    uncertainty.mean()
+        tensor(2.6295, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-3 )).mean()
+        tensor(10.5920, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-2 )).mean()
+        tensor(4.0260, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-1 )).mean()
+        tensor(1.5303, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-1.5 )).mean()
+        tensor(2.4822, device='cuda:0', grad_fn=<MeanBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*-1.6 )).mean()
+        tensor(2.7343, device='cuda:0', grad_fn=<MeanBackward0>)
+
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) )).mean() / (uncertainty).mean()
+        tensor(0.0841, device='cuda:0', grad_fn=<DivBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*5 )).mean() / (uncertainty).mean()
+        tensor(0.0018, device='cuda:0', grad_fn=<DivBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*2 )).mean() / (uncertainty).mean()
+        tensor(0.0320, device='cuda:0', grad_fn=<DivBackward0>)
+    (entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2)*0 )).mean() / (uncertainty).mean()
+        tensor(0.2212, device='cuda:0', grad_fn=<DivBackward0>)
+**根据以上分析有两个思路: 1 unc_temper以-2作为初始值训练 2 unc_coeffi使用一个小于0.2212/0.0841/0.0320/0.0018的值(需要根据unc_temper初始值决定)**
+    best = exp14.2
+        {"epo": "26", "R1": "85.238", "R5": "98.635", "R10": "99.343", "mAP": "91.602", "mINP": "91.602", "lr": "2.5e-05", "entropy": "0.038986", "loss": "0.031098", "entr_unc": "0.000636", "uncertainty": "60.923837", "uncertainty_multiply_coeffi": "0.030462"}
+
+## exp15
+**entropy + ss + unc_temper_learn_coeffi**
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *1 )).mean() / (uncertainty).mean()
+    tensor(0.0264, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *2 )).mean() / (uncertainty).mean()
+    tensor(0.0101, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *5 )).mean() / (uncertainty).mean()
+    tensor(0.0006, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *0 )).mean() / (uncertainty).mean()
+    tensor(0.0688, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *-2 )).mean() / (uncertainty).mean()
+    tensor(0.4681, device='cuda:0', grad_fn=<DivBackward0>)
+(entropy / torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) *-3 )).mean() / (uncertainty).mean()
+    tensor(1.2205, device='cuda:0', grad_fn=<DivBackward0>)
+**由于增加了sample selection，uncertainty的质量更好，所以loss会更小，使得uncertainty本身数值和entropy/uncertainty的差距进一步拉大，因此有:**
+**1 unc_temper以-3作为初始值训练 2 unc_coeffi使用一个小于0.01（unc_temper=0，1），0.001（unc_temper=2），0.0001（unc_temper=5）的值**
+    best = exp15.4
+        {"epo": "4", "R1": "85.288", "R5": "98.433", "R10": "99.292", "mAP": "91.532", "mINP": "91.532", "lr": "0.000889", "entropy": "0.047062", "loss": "0.044365", "entr_unc": "0.017577", "uncertainty": "2.678756", "uncertainty_multiply_coeffi": "0.026788"}
+
+## exp16
+**entropy + ss + unc + plv1 + iaug_itm** unc_temper_learn_coeffi
+- 等exp11结果，再决定是否加上img_aug **exp11有提升，等exp9结果再决定是否增加img_aug**
+- 等exp12结果，再决定是否加上plv1
+- 等exp15结果，再决定是否加上unc_temper_learn_coeffi **exp14和exp15都不如固定unc_temper，exp16不增加unc_temper_learn_coeffi的方法**
+
+
+# exp rerun 2
+- 修复了随机数种子未生效的问题
+
+- 修复了uncertainty维度与entropy不一致的问题，该问题会导致loss=entropy/uncertainty成为一个(bs,bs)的tensor
+
+- 重新检查cmp_xvlm的cross_modal模型结构设计，并设置了仅更新text_encoder的后6层bertlayer
+- 重新检查Tent系列方法的setting设置，设置了tta时model.train()和batchnorm,layernorm参数更新方案
+- 目前方案为：
+    1. dropout： 所有dropout通过model.train()打开（包括visison_encoder、text_encoder前6层、其他modules 和 需要梯度更新的实现了itm.cross_modal功能的text_encoder后六层）
+    2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
+
+## tta_debug
+    CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs/tta_exp2.2.yaml --task tta_debug --output_dir output/tta_debug/exp2.2 --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
+
+## exp0
+**entropy**
+    nohup python3 run.py --tta --task "tta_exp0"> logs/tta_exp0.log 2>&1 &
+
+- exp0.1~4
+    nohup python3 run.py --tta --task "tta_exp0.1"> logs/tta_exp0.1.log 2>&1 &
+
+    nohup python3 run.py --tta --task "tta_exp0.2"> logs/tta_exp0.2.log 2>&1 &
+
+    nohup python3 run.py --tta --task "tta_exp0.3"> logs/tta_exp0.3.log 2>&1 &
+
+    nohup python3 run.py --tta --task "tta_exp0.4"> logs/tta_exp0.4.log 2>&1 &
+
+
+## exp1
+**entropy + ss**
+    nohup python3 run.py --tta --task "tta_exp1"> logs/tta_exp1.log 2>&1 &
+
+- exp1.1-5
+    1.1
+
+    1.2
+
+    1.3
+
+    1.4
+
+    1.5
+
+
+## exp2
+**entropy + ss + unc**
+    nohup python3 run.py --tta --task "tta_exp2"> logs/tta_exp2.log 2>&1 &
+        {"epo": "2", "R1": "85.592", "R5": "98.989", "R10": "99.444", "mAP": "91.912", "mINP": "91.912", "lr": "0.000958", "entropy": "0.089008", "loss": "2.721839"}
+- exp2.1-5
+    2.1
+        {"epo": "2", "R1": "85.642", "R5": "99.039", "R10": "99.444", "mAP": "91.972", "mINP": "91.972", "lr": "0.000958", "entropy": "0.089416", "loss": "2.710488"}
+    2.2
+        {"epo": "2", "R1": "85.693", "R5": "98.989", "R10": "99.444", "mAP": "91.958", "mINP": "91.958", "lr": "0.000958", "entropy": "0.088998", "loss": "2.643966"}
+    2.3
+        {"epo": "2", "R1": "85.44", "R5": "98.989", "R10": "99.444", "mAP": "91.837", "mINP": "91.837", "lr": "0.000958", "entropy": "0.08838", "loss": "2.346493"}
+    2.4
+        {"epo": "4", "R1": "85.086", "R5": "98.787", "R10": "99.444", "mAP": "91.537", "mINP": "91.537", "lr": "0.000889", "entropy": "0.046609", "loss": "1.575436"}
+    2.5
+        {"epo": "2", "R1": "85.541", "R5": "98.989", "R10": "99.444", "mAP": "91.878", "mINP": "91.878", "lr": "0.000958", "entropy": "0.089748", "loss": "1.213151"}
+
+## exp3
+**entropy + unc**
+    nohup python3 run.py --tta --task "tta_exp3"> logs/tta_exp3.log 2>&1 &
+        {"epo": "26", "R1": "85.541", "R5": "98.534", "R10": "99.444", "mAP": "91.756", "mINP": "91.756", "lr": "2.5e-05", "entropy": "0.035251", "loss": "2.702479"}
+- exp3.1-5
+    3.1
+        {"epo": "3", "R1": "85.137", "R5": "98.686", "R10": "99.393", "mAP": "91.604", "mINP": "91.604", "lr": "0.000567", "entropy": "0.075018", "loss": "2.706798"}
+    3.2
+        {"epo": "3", "R1": "85.086", "R5": "98.686", "R10": "99.393", "mAP": "91.58", "mINP": "91.58", "lr": "0.000567", "entropy": "0.0757", "loss": "2.648713"}
+    3.3
+        {"epo": "1", "R1": "84.631", "R5": "98.837", "R10": "99.343", "mAP": "91.365", "mINP": "91.365", "lr": "0.000977", "entropy": "0.14208", "loss": "2.427362"}
+    3.4
+        {"epo": "21", "R1": "84.681", "R5": "98.736", "R10": "99.393", "mAP": "91.393", "mINP": "91.393", "lr": "6e-06", "entropy": "0.177065", "loss": "2.755205"}
+    3.5
+        {"epo": "7", "R1": "85.035", "R5": "98.787", "R10": "99.494", "mAP": "91.555", "mINP": "91.555", "lr": "7.7e-05", "entropy": "0.084124", "loss": "2.72065"}
+    3.6
+        {"epo": "2", "R1": "84.732", "R5": "98.736", "R10": "99.393", "mAP": "91.317", "mINP": "91.317", "lr": "0.00097", "entropy": "0.128045", "loss": "2.736988"}
+    3.7
+        {"epo": "0", "R1": "84.681", "R5": "99.039", "R10": "99.596", "mAP": "91.459", "mINP": "91.459", "lr": "3.1e-05", "entropy": "0.34605", "loss": "2.818058"}
+    3.8
+        {"epo": "8", "R1": "84.985", "R5": "98.736", "R10": "99.292", "mAP": "91.447", "mINP": "91.447", "lr": "0.00019", "entropy": "0.083007", "loss": "2.720241"}
+
+## exp4 舍弃
+**entropy + unc_temper_learn**
+    {"epo": "2", "R1": "84.226", "R5": "98.483", "R10": "99.343", "mAP": "91.066", "mINP": "91.066", "lr": "0.000943", "entropy": "0.094519", "loss": "2.152995"}
+- exp4.1-5
+    4.1
+        {"epo": "3", "R1": "85.086", "R5": "98.686", "R10": "99.444", "mAP": "91.55", "mINP": "91.55", "lr": "0.000567", "entropy": "0.071233", "loss": "5.156881"}
+    4.2
+        {"epo": "15", "R1": "84.732", "R5": "98.736", "R10": "99.393", "mAP": "91.357", "mINP": "91.357", "lr": "0.0001", "entropy": "0.040845", "loss": "74.359854"}
+    4.3
+        {"epo": "25", "R1": "84.58", "R5": "98.635", "R10": "99.393", "mAP": "91.271", "mINP": "91.271", "lr": "3.2e-05", "entropy": "0.036328", "loss": "0.573821"}
+    4.4
+        {"epo": "22", "R1": "84.681", "R5": "98.736", "R10": "99.393", "mAP": "91.393", "mINP": "91.393", "lr": "5e-06", "entropy": "0.174912", "loss": "2.578751"}
+    4.5
+        {"epo": "8", "R1": "84.985", "R5": "98.736", "R10": "99.494", "mAP": "91.527", "mINP": "91.527", "lr": "7.4e-05", "entropy": "0.080887", "loss": "2.116667"}
+
+## exp5 舍弃
+**entropy + ss + unc_temper_learn**
+    {"epo": "6", "R1": "85.44", "R5": "98.888", "R10": "99.393", "mAP": "91.74", "mINP": "91.74", "lr": "0.00041", "entropy": "0.035814", "loss": "5.017853"}
+- exp5.1-5
+    5.1
+        {"epo": "0", "R1": "84.732", "R5": "98.989", "R10": "99.596", "mAP": "91.472", "mINP": "91.472", "lr": "4e-05", "entropy": "0.315383", "loss": "7.265886"}
+    5.2
+        {"epo": "7", "R1": "85.339", "R5": "98.686", "R10": "99.343", "mAP": "91.646", "mINP": "91.646", "lr": "0.000197", "entropy": "0.05217", "loss": "5.916965"}
+    5.3
+        {"epo": "9", "R1": "84.833", "R5": "98.332", "R10": "99.191", "mAP": "91.207", "mINP": "91.207", "lr": "0.000754", "entropy": "0.032004", "loss": "5.464747"}
+    5.4
+        {"epo": "6", "R1": "84.732", "R5": "98.938", "R10": "99.444", "mAP": "91.371", "mINP": "91.371", "lr": "0.00041", "entropy": "0.035236", "loss": "1.887671"}
+
+## exp6
+**entropy + pl**
+    {"epo": "1", "R1": "85.389", "R5": "98.635", "R10": "99.494", "mAP": "91.709", "mINP": "91.709", "lr": "0.000977", "entropy": "0.143004", "loss": "0.143004"}
+- exp6.1-5
+    6.0.1
+        {"epo": "4", "R1": "85.137", "R5": "98.787", "R10": "99.444", "mAP": "91.594", "mINP": "91.594", "lr": "4.4e-05", "entropy": "0.217917", "loss": "0.217917"}
+    6.0.2
+        {"epo": "15", "R1": "85.49", "R5": "98.686", "R10": "99.444", "mAP": "91.797", "mINP": "91.797", "lr": "5e-05", "entropy": "0.070464", "loss": "0.070464"}
+    6.1
+        {"epo": "1", "R1": "85.137", "R5": "98.736", "R10": "99.494", "mAP": "91.59", "mINP": "91.59", "lr": "0.000977", "entropy": "0.149469", "loss": "0.149469"}
+    6.1.1
+        {"epo": "7", "R1": "85.035", "R5": "98.837", "R10": "99.444", "mAP": "91.539", "mINP": "91.539", "lr": "1.5e-05", "entropy": "0.205474", "loss": "0.205474"}
+    6.1.2
+        {"epo": "22", "R1": "85.137", "R5": "98.736", "R10": "99.494", "mAP": "91.637", "mINP": "91.637", "lr": "2.6e-05", "entropy": "0.062026", "loss": "0.062026"}
+    6.2
+        {"epo": "0", "R1": "85.187", "R5": "98.787", "R10": "99.393", "mAP": "91.668", "mINP": "91.668", "lr": "0.000597", "entropy": "0.294532", "loss": "0.294532"}
+    6.2.1
+        {"epo": "1", "R1": "85.086", "R5": "98.888", "R10": "99.494", "mAP": "91.597", "mINP": "91.597", "lr": "9.8e-05", "entropy": "0.301802", "loss": "0.301802"}
+    6.2.2
+        {"epo": "2", "R1": "85.339", "R5": "98.787", "R10": "99.393", "mAP": "91.675", "mINP": "91.675", "lr": "0.000471", "entropy": "0.141841", "loss": "0.141841"}
+    6.3
+        {"epo": "1", "R1": "84.783", "R5": "98.686", "R10": "99.343", "mAP": "91.37", "mINP": "91.37", "lr": "0.000977", "entropy": "0.139118", "loss": "0.139118"}
+    6.3.1
+        {"epo": "2", "R1": "84.884", "R5": "98.837", "R10": "99.444", "mAP": "91.499", "mINP": "91.499", "lr": "9.4e-05", "entropy": "0.267697", "loss": "0.267697"}
+    6.3.2
+        {"epo": "4", "R1": "84.681", "R5": "98.736", "R10": "99.444", "mAP": "91.38", "mINP": "91.38", "lr": "0.000219", "entropy": "0.097198", "loss": "0.097198"}
+    6.4
+        {"epo": "0", "R1": "84.732", "R5": "98.837", "R10": "99.343", "mAP": "91.344", "mINP": "91.344", "lr": "0.000597", "entropy": "0.305543", "loss": "0.305543"}
+    6.4.1
+        {"epo": "2", "R1": "85.086", "R5": "98.837", "R10": "99.444", "mAP": "91.618", "mINP": "91.618", "lr": "9.4e-05", "entropy": "0.267884", "loss": "0.267884"}
+    6.4.2
+        {"epo": "4", "R1": "85.44", "R5": "98.787", "R10": "99.444", "mAP": "91.767", "mINP": "91.767", "lr": "0.000219", "entropy": "0.102473", "loss": "0.102473"}
+    6.5
+        {"epo": "0", "R1": "85.187", "R5": "98.483", "R10": "99.292", "mAP": "91.607", "mINP": "91.607", "lr": "0.000597", "entropy": "0.310546", "loss": "0.310546"}
+    6.5.1
+        {"epo": "3", "R1": "84.833", "R5": "98.787", "R10": "99.444", "mAP": "91.512", "mINP": "91.512", "lr": "5.7e-05", "entropy": "0.243152", "loss": "0.243152"}
+    6.5.2
+        {"epo": "1", "R1": "84.732", "R5": "98.584", "R10": "99.343", "mAP": "91.388", "mINP": "91.388", "lr": "0.000488", "entropy": "0.198149", "loss": "0.198149"}
+
+## exp7
+**entropy + ss + unc + pl**
+    {"epo": "1", "R1": "85.137", "R5": "98.837", "R10": "99.444", "mAP": "91.608", "mINP": "91.608", "lr": "0.000961", "entropy": "0.128144", "loss": "2.658938"}
+7.1
+    {"epo": "1", "R1": "84.833", "R5": "98.787", "R10": "99.494", "mAP": "91.457", "mINP": "91.457", "lr": "9.6e-05", "entropy": "0.255827", "loss": "2.707937"}
+7.2
+    {"epo": "0", "R1": "85.137", "R5": "98.837", "R10": "99.494", "mAP": "91.598", "mINP": "91.598", "lr": "0.000198", "entropy": "0.274943", "loss": "2.715255"}
+7.3
+    {"epo": "10", "R1": "85.49", "R5": "98.736", "R10": "99.393", "mAP": "91.75", "mINP": "91.75", "lr": "0.000137", "entropy": "0.024345", "loss": "2.619359"}
+7.4
+    {"epo": "4", "R1": "85.288", "R5": "98.787", "R10": "99.444", "mAP": "91.666", "mINP": "91.666", "lr": "8.9e-05", "entropy": "0.173761", "loss": "2.676484"}
+7.5
+    {"epo": "11", "R1": "85.339", "R5": "98.584", "R10": "99.292", "mAP": "91.634", "mINP": "91.634", "lr": "6.5e-05", "entropy": "0.045799", "loss": "2.627524"}
+7.6
+    {"epo": "1", "R1": "85.288", "R5": "98.736", "R10": "99.393", "mAP": "91.715", "mINP": "91.715", "lr": "0.000961", "entropy": "0.145646", "loss": "2.66558"}
+7.7
+    {"epo": "8", "R1": "85.238", "R5": "98.736", "R10": "99.343", "mAP": "91.69", "mINP": "91.69", "lr": "3.7e-05", "entropy": "0.150832", "loss": "2.667852"}
+7.8
+    {"epo": "3", "R1": "85.44", "R5": "98.787", "R10": "99.393", "mAP": "91.742", "mINP": "91.742", "lr": "0.000462", "entropy": "0.098569", "loss": "2.647607"}
+
+## exp8 舍弃
+**entropy + iaug**
+    {"epo": "4", "R1": "82.154", "R5": "98.534", "R10": "99.393", "mAP": "89.921", "mINP": "89.921", "lr": "0.000437", "entropy": "0.133625", "loss": "0.133625"}
+    8.1
+        {"epo": "0", "R1": "84.125", "R5": "98.989", "R10": "99.494", "mAP": "91.204", "mINP": "91.204", "lr": "6e-05", "entropy": "1.05116", "loss": "1.05116"}
+    8.2
+        {"epo": "28", "R1": "79.474", "R5": "98.686", "R10": "99.343", "mAP": "88.652", "mINP": "88.652", "lr": "6e-06", "entropy": "0.152585", "loss": "0.152585"}
+    8.3
+        {"epo": "0", "R1": "83.822", "R5": "98.938", "R10": "99.494", "mAP": "91.014", "mINP": "91.014", "lr": "0.00031", "entropy": "0.840344", "loss": "0.840344"}
+    8.4
+        {"epo": "1", "R1": "84.58", "R5": "98.888", "R10": "99.444", "mAP": "91.386", "mINP": "91.386", "lr": "8.8e-05", "entropy": "0.860963", "loss": "0.860963"}
+    8.5
+        {"epo": "0", "R1": "84.53", "R5": "98.888", "R10": "99.444", "mAP": "91.375", "mINP": "91.375", "lr": "0.000155", "entropy": "0.941851", "loss": "0.941851"}
+
+## exp9 改写，继承exp11
+**entropy + ss + unc + iaug**
+- 由于exp8效果不好，不试验exp9的setting了
+
+## exp10
+**entropy_steps + ss + unc**
+    nohup python3 run.py --tta --task "tta_exp10"> logs/tta_exp10.log 2>&1 &
+    10.0
+        {"epo": "8", "R1": "84.934", "R5": "98.686", "R10": "99.393", "mAP": "91.397", "mINP": "91.397", "lr": "0.000367", "entropy": "0.032907", "loss": "2.622468"}
+    10.1
+        {"epo": "2", "R1": "85.389", "R5": "98.837", "R10": "99.343", "mAP": "91.79", "mINP": "91.79", "lr": "0.000729", "entropy": "0.043528", "loss": "2.626565"}
+    10.2
+        {"epo": "0", "R1": "84.985", "R5": "98.888", "R10": "99.494", "mAP": "91.633", "mINP": "91.633", "lr": "0.000787", "entropy": "0.158636", "loss": "2.670734"}
+    10.3
+        {"epo": "5", "R1": "84.328", "R5": "98.736", "R10": "99.343", "mAP": "91.037", "mINP": "91.037", "lr": "0.000166", "entropy": "0.021528", "loss": "2.618173"}
+    10.4
+        {"epo": "0", "R1": "84.53", "R5": "98.18", "R10": "99.039", "mAP": "91.081", "mINP": "91.081", "lr": "0.000869", "entropy": "0.116297", "loss": "2.654539"}
+    10.5
+        {"epo": "23", "R1": "84.429", "R5": "98.332", "R10": "99.343", "mAP": "90.941", "mINP": "90.941", "lr": "4.6e-05", "entropy": "0.006819", "loss": "2.612519"}
+    10.6
+        shell脚本遗漏了，但不影响实验结论，该setting无提升
+
+## exp11
+**entropy + iaug_itm**
+    best = exp11
+        {"epo": "8", "R1": "85.743", "R5": "98.635", "R10": "99.444", "mAP": "91.866", "mINP": "91.866", "lr": "0.000148", "entropy": "0.068551", "loss": "0.068551"}
+
+## exp9
+**entropy + ss + unc + iaug_itm**
+- 等exp11结果，再决定是否加上img_aug
+- 三个setting组合后效果下降
+    best = exp9.9
+        {"epo": "4", "R1": "85.086", "R5": "98.635", "R10": "99.292", "mAP": "91.554", "mINP": "91.554", "lr": "0.000957", "entropy": "0.092873", "loss": "2.711785"}
+
+## exp12 待定
+**entropy + plv1**
+- coding~
+
+## exp13 待定
 **entropy + ss + unc + plv1**
 - 等exp12结果，再决定是否加上plv1
 
