@@ -25,3 +25,7 @@
 {"epo": "24", "R1": "84.985", "R5": "98.686", "R10": "99.242", "mAP": "91.525", "mINP": "91.525", "lr": "4e-06", "entropy": "0.130314", "loss": "2.659923", "entr_unc": "0.049946", "uncertainty": "2.609977", "uncertainty_multiply_coeffi": "2.609977"}
 {"epo": "25", "R1": "84.985", "R5": "98.686", "R10": "99.242", "mAP": "91.525", "mINP": "91.525", "lr": "3e-06", "entropy": "0.129791", "loss": "2.659542", "entr_unc": "0.049755", "uncertainty": "2.609787", "uncertainty_multiply_coeffi": "2.609787"}
 {"epo": "26", "R1": "84.985", "R5": "98.686", "R10": "99.242", "mAP": "91.525", "mINP": "91.525", "lr": "3e-06", "entropy": "0.129202", "loss": "2.659448", "entr_unc": "0.049501", "uncertainty": "2.609948", "uncertainty_multiply_coeffi": "2.609948"}
+{"epo": "27", "R1": "84.985", "R5": "98.686", "R10": "99.292", "mAP": "91.526", "mINP": "91.526", "lr": "2e-06", "entropy": "0.131311", "loss": "2.660202", "entr_unc": "0.050325", "uncertainty": "2.609876", "uncertainty_multiply_coeffi": "2.609876"}
+{"epo": "28", "R1": "84.985", "R5": "98.686", "R10": "99.242", "mAP": "91.525", "mINP": "91.525", "lr": "1e-06", "entropy": "0.128112", "loss": "2.658958", "entr_unc": "0.049119", "uncertainty": "2.609838", "uncertainty_multiply_coeffi": "2.609838"}
+{"epo": "29", "R1": "84.985", "R5": "98.686", "R10": "99.242", "mAP": "91.525", "mINP": "91.525", "lr": "1e-06", "entropy": "0.127889", "loss": "2.658875", "entr_unc": "0.049045", "uncertainty": "2.60983", "uncertainty_multiply_coeffi": "2.60983"}
+best epoch: 3
