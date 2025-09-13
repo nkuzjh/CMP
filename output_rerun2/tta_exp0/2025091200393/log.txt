@@ -1,0 +1,4 @@
+{"epo": "0", "R1": "84.631", "R5": "98.635", "R10": "99.292", "mAP": "91.298", "mINP": "91.298", "lr": "0.00031", "entropy": "0.303977", "loss": "0.303977", "entr_unc": "0.303977", "uncertainty": "1.0", "uncertainty_multiply_coeffi": "1.0"}
+{"epo": "1", "R1": "84.53", "R5": "98.584", "R10": "99.343", "mAP": "91.235", "mINP": "91.235", "lr": "0.000876", "entropy": "0.188505", "loss": "0.188505", "entr_unc": "0.188505", "uncertainty": "1.0", "uncertainty_multiply_coeffi": "1.0"}
+{"epo": "2", "R1": "84.53", "R5": "98.382", "R10": "99.292", "mAP": "91.094", "mINP": "91.094", "lr": "0.00097", "entropy": "0.127685", "loss": "0.127685", "entr_unc": "0.127685", "uncertainty": "1.0", "uncertainty_multiply_coeffi": "1.0"}
+{"epo": "3", "R1": "84.53", "R5": "98.433", "R10": "99.292", "mAP": "91.158", "mINP": "91.158", "lr": "0.000935", "entropy": "0.095645", "loss": "0.095645", "entr_unc": "0.095645", "uncertainty": "1.0", "uncertainty_multiply_coeffi": "1.0"}
