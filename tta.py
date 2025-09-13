@@ -222,38 +222,39 @@ def main(args, config):
             # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
             train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
 
-            # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
-            score_test_t2i = evaluation_itm(
-                model,
-                device, config, args,
-                sims_matrix_t2i, image_embeds, text_embeds, text_atts
-            )
+            if (epoch+1 in [1,2,3,5,10,15,20,30,40,50,60]) or (epoch+1 == max_epoch):
+                # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
+                score_test_t2i = evaluation_itm(
+                    model,
+                    device, config, args,
+                    sims_matrix_t2i, image_embeds, text_embeds, text_atts
+                )
 
-            test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-            table.add_row([
-                epoch, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
-            ])
-            print("### TTA ITM Score: ")
-            print(table)
+                test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+                table.add_row([
+                    epoch, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
+                ])
+                print("### TTA ITM Score: ")
+                print(table)
 
-            logs = {'epo': epoch}
-            for k, v in test_result.items():
-                logs[k] = np.around(v, 3)
-            for k, v in train_stats.items():
-                logs[k] = float(v)
-            print('     logs: ', logs)
+                logs = {'epo': epoch}
+                for k, v in test_result.items():
+                    logs[k] = np.around(v, 3)
+                for k, v in train_stats.items():
+                    logs[k] = float(v)
+                print('     logs: ', logs)
 
-            for k, v in logs.items():
-                logs[k] = str(v)
-            with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
-                f.write(json.dumps(logs) + "\n")
+                for k, v in logs.items():
+                    logs[k] = str(v)
+                with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
+                    f.write(json.dumps(logs) + "\n")
 
-            result = test_result['R1']
-            if result > best:
-                # save_obj = {'model': model.state_dict(), 'config': config, }
-                # torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth'))
-                best = result
-                best_epoch = epoch
+                result = test_result['R1']
+                if result > best:
+                    # save_obj = {'model': model.state_dict(), 'config': config, }
+                    # torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth'))
+                    best = result
+                    best_epoch = epoch
 
             # del sims_matrix_t2i, image_embeds, text_embeds, text_atts
             torch.cuda.empty_cache()
@@ -467,39 +468,40 @@ def main_img_aug(args, config):
             # train_stats = test_time_adapt_itm_itc(model, tokenizer, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#sims_matrix_t2i, image_embeds, text_embeds, text_atts)
             train_stats = test_time_adapt_imgaug_itm(model, tokenizer, optimizer, scaler, epoch, device, lr_scheduler, config, tta_img_aug_loader, tta_loader)
 
-            sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
-                model, test_loader, tokenizer, device, config)
-            score_test_t2i = evaluation_itm(
-                model,
-                device, config, args,
-                sims_matrix_t2i, image_embeds, text_embeds, text_atts
-            )
+            if (epoch+1 in [1,2,3,5,10,15,20,30,40,50,60]) or (epoch+1 == max_epoch):
+                sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(
+                    model, test_loader, tokenizer, device, config)
+                score_test_t2i = evaluation_itm(
+                    model,
+                    device, config, args,
+                    sims_matrix_t2i, image_embeds, text_embeds, text_atts
+                )
 
-            test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-            table.add_row([
-                epoch, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
-            ])
-            print("### TTA ITM Score: ")
-            print(table)
+                test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+                table.add_row([
+                    epoch, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
+                ])
+                print("### TTA ITM Score: ")
+                print(table)
 
-            logs = {'epo': epoch}
-            for k, v in test_result.items():
-                logs[k] = np.around(v, 3)
-            for k, v in train_stats.items():
-                logs[k] = float(v)
-            print('     logs: ', logs)
+                logs = {'epo': epoch}
+                for k, v in test_result.items():
+                    logs[k] = np.around(v, 3)
+                for k, v in train_stats.items():
+                    logs[k] = float(v)
+                print('     logs: ', logs)
 
-            for k, v in logs.items():
-                logs[k] = str(v)
-            with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
-                f.write(json.dumps(logs) + "\n")
+                for k, v in logs.items():
+                    logs[k] = str(v)
+                with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
+                    f.write(json.dumps(logs) + "\n")
 
-            result = test_result['R1']
-            if result > best:
-                # save_obj = {'model': model.state_dict(), 'config': config, }
-                # torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth'))
-                best = result
-                best_epoch = epoch
+                result = test_result['R1']
+                if result > best:
+                    # save_obj = {'model': model.state_dict(), 'config': config, }
+                    # torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth'))
+                    best = result
+                    best_epoch = epoch
 
             # del sims_matrix_t2i, image_embeds, text_embeds, text_atts
             torch.cuda.empty_cache()

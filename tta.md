@@ -790,7 +790,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     2.5
         {"epo": "2", "R1": "85.592", "R5": "99.039", "R10": "99.444", "mAP": "91.946", "mINP": "91.946", "lr": "0.000958", "entropy": "0.089624", "loss": "1.21968"}
 
-# exp rerun 1
+# exp rerun 2
 - 修复了uncertainty维度与entropy不一致的问题，该问题会导致loss=entropy/uncertainty成为一个(bs,bs)的tensor
 
 - 重新检查cmp_xvlm的cross_modal模型结构设计，并设置了仅更新text_encoder的后6层bertlayer
@@ -1346,5 +1346,21 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 - 等exp11结果，再决定是否加上img_aug **exp11有提升，等exp9结果再决定是否增加img_aug**
 - 等exp12结果，再决定是否加上plv1
 - 等exp15结果，再决定是否加上unc_temper_learn_coeffi **exp14和exp15都不如固定unc_temper，exp16不增加unc_temper_learn_coeffi的方法**
+
+
+# exp rerun 3
+- 全新的uncertainty和sample_selection策略
+- uncertainty: |a-b|/(a+b)  and  |log(a)-log(b)|
+- sample_selection: 放宽到互为topk
+
+- 修复了随机数种子未生效的问题
+
+- 修复了uncertainty维度与entropy不一致的问题，该问题会导致loss=entropy/uncertainty成为一个(bs,bs)的tensor
+
+- 重新检查cmp_xvlm的cross_modal模型结构设计，并设置了仅更新text_encoder的后6层bertlayer
+- 重新检查Tent系列方法的setting设置，设置了tta时model.train()和batchnorm,layernorm参数更新方案
+- 目前方案为：
+    1. dropout： 所有dropout通过model.train()打开（包括visison_encoder、text_encoder前6层、其他modules 和 需要梯度更新的实现了itm.cross_modal功能的text_encoder后六层）
+    2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
 

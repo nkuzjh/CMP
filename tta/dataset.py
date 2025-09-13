@@ -110,7 +110,8 @@ class search_tta_dataset(Dataset):
             self.proba_top1_sim_list = proba_top1_sim_list
             self.proba_inversed_sim_list = proba_inversed_sim_list
 
-        if config.get('sample_selection', 'all') == 'top1':
+        # if config.get('sample_selection', 'all') == 'top1':
+        if len(ss_idxs_list) != len(self.sims_topk_matrix_t2i):
             self.sims_matrix_t2i = sims_matrix_t2i[ss_idxs_list]
             #### self.image_embeds= image_embeds[ss_idxs_list]
             self.text_embeds = text_embeds[ss_idxs_list]
@@ -166,7 +167,8 @@ class search_tta_img_aug_idx_dataset(Dataset):
             self.proba_inversed_sim_list = proba_inversed_sim_list
 
         ## sample selection strategy based on inverse recall probability
-        if config.get('sample_selection', 'all') == 'top1':
+        # if config.get('sample_selection', 'all') == 'top1':
+        if len(ss_idxs_list) != len(self.sims_topk_matrix_t2i):
             self.sims_matrix_t2i = sims_matrix_t2i[ss_idxs_list]
             self.text_embeds = text_embeds[ss_idxs_list]
             self.text_atts = text_atts[ss_idxs_list]
