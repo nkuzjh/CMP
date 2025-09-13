@@ -1,7 +1,16 @@
+numpy==1.26.4
+opencv-python==4.6.0.66
+matplotlib
+tqdm
+easydict
+prettytable
+tensorboard
+pyyaml
+regex
+ftfy
 ruamel_yaml
 prettytable
 transformers
 scipy
 timm
-opencv-python
 nltk
