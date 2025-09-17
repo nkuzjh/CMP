@@ -98,7 +98,8 @@ def preprocess_tta_coefficients(config, sims_matrix_t2i):
     print(f"     uncertainty ...")
     ## tta coeffis
     if config.get('uncertainty', None) is not None:
-        uncertaintys1_list, uncertaintys2_list, uncertaintys3_list, proba_top1_sim_list, proba_inversed_sim_list = compute_uncertainty_itc(config, sims_matrix_t2i, sims_matrix_t2i.t())
+        sims_matrix_t2i_unc = sims_matrix_t2i / config.get('temperature', 1.0)
+        uncertaintys1_list, uncertaintys2_list, uncertaintys3_list, proba_top1_sim_list, proba_inversed_sim_list = compute_uncertainty_itc(config, sims_matrix_t2i_unc, sims_matrix_t2i_unc.t())
 
     if config.get('uncertainty', None) == 'inversed_recall_proba':
         uncertaintys_list = uncertaintys1_list

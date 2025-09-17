@@ -24,24 +24,28 @@ def evaluation_itc(model, data_loader, tokenizer, device, config):
     text_embeds = []
     text_atts = []
     text_feats = []
+    text_feats_norm = []
     for i in range(0, num_text, text_bs):
         text = texts[i: min(num_text, i + text_bs)]
         text_input = tokenizer(text, padding='max_length', truncation=True, max_length=config['max_tokens'], return_tensors="pt").to(device)
         text_embed = model.get_text_embeds(text_input.input_ids, text_input.attention_mask)
         text_feat = model.get_text_feat(text_embed)
-        text_feat = F.normalize(text_feat, dim=-1)
+        # text_feat = F.normalize(text_feat, dim=-1)
 
         text_embeds.append(text_embed)
         text_atts.append(text_input.attention_mask)
         text_feats.append(text_feat)
+        text_feats_norm.append(F.normalize(text_feat, dim=-1))
 
     text_embeds = torch.cat(text_embeds, dim=0)#[1978, 56, 768])
     text_atts = torch.cat(text_atts, dim=0)#([1978, 56])
     text_feats = torch.cat(text_feats, dim=0)#[1978, 2048])
+    text_feats_norm = torch.cat(text_feats_norm, dim=0)#[1978, 2048])
 
     print('     Computing image features for evaluation')
     image_embeds = []
     image_feats = []
+    image_feats_norm = []
     for image, pose, img_id in data_loader:
         image = image.to(device)
         image_embed, _ = model.get_vision_embeds(image)
@@ -55,21 +59,23 @@ def evaluation_itc(model, data_loader, tokenizer, device, config):
             image_embed = model.pose_block(image_embed, pose_embed)
 
         image_feat = model.get_image_feat(image_embed)
-        image_feat = F.normalize(image_feat, dim=-1)
+        # image_feat = F.normalize(image_feat, dim=-1)
         image_embeds.append(image_embed)
         image_feats.append(image_feat)
+        image_feats_norm.append(F.normalize(image_feat, dim=-1))
 
     image_embeds = torch.cat(image_embeds, dim=0)#[1978, 50, 1024])
     image_feats = torch.cat(image_feats, dim=0)#[1978, 2048])
+    image_feats_norm = torch.cat(image_feats_norm, dim=0)#[1978, 2048])
 
-    sims_matrix = image_feats @ text_feats.t()
+    sims_matrix = image_feats_norm @ text_feats_norm.t()
     sims_matrix_t2i = sims_matrix.t()
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('     Computing features time {}'.format(total_time_str))
 
-    return sims_matrix_t2i, image_embeds, text_embeds, text_atts
+    return sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats
 
 
 @torch.no_grad()

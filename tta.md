@@ -668,6 +668,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 |  ITC  | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
 |  ITM  | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
 | Paper | 84.93  | 99.09  | 99.75  | 91.66  |   --   |
++-------+--------+--------+--------+--------+--------+
 
 
 # command
@@ -1363,4 +1364,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     1. dropout： 所有dropout通过model.train()打开（包括visison_encoder、text_encoder前6层、其他modules 和 需要梯度更新的实现了itm.cross_modal功能的text_encoder后六层）
     2. requires_grad： text_encoder的后六层 和 itm_head的norm layer（无论batchnorm和layernorm）打开偏置params（γ、β）的梯度更新，但关闭track_running_stats并且train和eval都使用单个batch的stats（running_mean和running_var置为None）
 
+## tta_debug
+    CUDA_VISIBLE_DEVICES=0 python3 tta.py --config configs_rerun3/exp_debug.yaml --task exp_debug --output_dir output_rerun3/exp_debug --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
 
+    CUDA_VISIBLE_DEVICES=0 python3 tta.py --config configs_rerun3/exp5.yaml --task exp_debug --output_dir output_rerun3/exp_debug/exp5 --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42

@@ -341,48 +341,49 @@ def test_time_adapt_imgaug_itm(model, tokenizer, optimizer, scaler, epoch, devic
             proba_top1_sim =  proba_top1_sim.to(device)
             proba_inversed_sim = proba_inversed_sim.to(device)
 
-        with torch.autocast(device_type='cuda', dtype=torch.bfloat16):
-            # print(iter)
-            # print(encoder_output.shape, encoder_att.shape, text_embed.shape, text_att.shape)
-            output = model.get_cross_embeds(
-                encoder_output,#([24, 50, 1024])
-                encoder_att,#([24, 50])
-                text_embeds,#([24, 56, 768])
-                text_atts#([24, 56])
-            )[:, 0, :] # (bs*k_tta, sequence, last_hidden_states)[:, 0, :] -> (bs*tta, last_hidden_states)
-            ### 如果使用prompt learning增加一个随机初始化的token，这里能否取index=0的last_hidden_states作为itm结果？是否应该用index=1(即原本的cls token位置)替代？需要结合CoOp代码看一下是如何实现的，使用哪个token作为最终结果。
-            ### 我在text_embeds之前加入随机初始化的embedding作为prompt learning的初始值，token数量从1-12进行exp，itm.output使用原cls token位置的feature作为结果logits输出
-            logits = model.itm_head(output) # (bs*tta, 2)
-            logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
-            score = logits[..., 1] # (bs, tta)
-            entropy = -(F.softmax(score * config['score_temper'], dim=-1) * F.log_softmax(score * config['score_temper'], dim=-1)).sum(-1)
+        for tta_step in range(config.get('tta_steps', 1)):
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16):
+                # print(iter)
+                # print(encoder_output.shape, encoder_att.shape, text_embed.shape, text_att.shape)
+                output = model.get_cross_embeds(
+                    encoder_output,#([24, 50, 1024])
+                    encoder_att,#([24, 50])
+                    text_embeds,#([24, 56, 768])
+                    text_atts#([24, 56])
+                )[:, 0, :] # (bs*k_tta, sequence, last_hidden_states)[:, 0, :] -> (bs*tta, last_hidden_states)
+                ### 如果使用prompt learning增加一个随机初始化的token，这里能否取index=0的last_hidden_states作为itm结果？是否应该用index=1(即原本的cls token位置)替代？需要结合CoOp代码看一下是如何实现的，使用哪个token作为最终结果。
+                ### 我在text_embeds之前加入随机初始化的embedding作为prompt learning的初始值，token数量从1-12进行exp，itm.output使用原cls token位置的feature作为结果logits输出
+                logits = model.itm_head(output) # (bs*tta, 2)
+                logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
+                score = logits[..., 1] # (bs, tta)
+                entropy = -(F.softmax(score * config['score_temper'], dim=-1) * F.log_softmax(score * config['score_temper'], dim=-1)).sum(-1)
 
-            if config.get('uncertainty_temper_is_learnable', False):
-                uncertainty_temper = model.uncertainty_temper
-                if config.get('uncertainty', None) == 'inversed_recall_proba':
-                    uncertainty = torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) * uncertainty_temper )
-                elif config.get('uncertainty', None) == 'diff_div_mean':
-                    uncertainty = torch.exp( torch.abs(proba_top1_sim - proba_inversed_sim) / ( (proba_top1_sim + proba_inversed_sim) / 2 ) * uncertainty_temper )
-                elif config.get('uncertainty', None) == 'abs_diff_log':
-                    assert "learnable uncertainty_temper is only used in inversed_recall_proba & diff_div_mean !"
+                if config.get('uncertainty_temper_is_learnable', False):
+                    uncertainty_temper = model.uncertainty_temper
+                    if config.get('uncertainty', None) == 'inversed_recall_proba':
+                        uncertainty = torch.exp( (1 - (proba_top1_sim + proba_inversed_sim) / 2) * uncertainty_temper )
+                    elif config.get('uncertainty', None) == 'diff_div_mean':
+                        uncertainty = torch.exp( torch.abs(proba_top1_sim - proba_inversed_sim) / ( (proba_top1_sim + proba_inversed_sim) / 2 ) * uncertainty_temper )
+                    elif config.get('uncertainty', None) == 'abs_diff_log':
+                        assert "learnable uncertainty_temper is only used in inversed_recall_proba & diff_div_mean !"
+                    else:
+                        assert "learnable uncertainty_temper is only used in inversed_recall_proba & diff_div_mean !"
+
+                uncertainty_coeffi = torch.tensor(config.get('uncertainty_coeffi', 1.0)).to(device)
+                if config.get('uncertainty', None) is not None:
+                    loss = entropy / uncertainty + uncertainty * uncertainty_coeffi
                 else:
-                    assert "learnable uncertainty_temper is only used in inversed_recall_proba & diff_div_mean !"
+                    loss = entropy
+                loss = loss.mean()
 
-            uncertainty_coeffi = torch.tensor(config.get('uncertainty_coeffi', 1.0)).to(device)
-            if config.get('uncertainty', None) is not None:
-                loss = entropy / uncertainty + uncertainty * uncertainty_coeffi
-            else:
-                loss = entropy
-            loss = loss.mean()
-
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scale = scaler.get_scale()
-        scaler.update()
-        skip_lr_sched = (scale > scaler.get_scale())
-        if not skip_lr_sched:
-            scheduler.step()
-        optimizer.zero_grad()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scale = scaler.get_scale()
+            scaler.update()
+            skip_lr_sched = (scale > scaler.get_scale())
+            if not skip_lr_sched:
+                scheduler.step()
+            optimizer.zero_grad()
 
         metric_logger.update(entropy=entropy.mean().item())
         metric_logger.update(uncertainty=uncertainty.mean().item())
