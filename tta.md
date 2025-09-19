@@ -1368,3 +1368,46 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     CUDA_VISIBLE_DEVICES=0 python3 tta.py --config configs_rerun3/exp_debug.yaml --task exp_debug --output_dir output_rerun3/exp_debug --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
 
     CUDA_VISIBLE_DEVICES=0 python3 tta.py --config configs_rerun3/exp5.yaml --task exp_debug --output_dir output_rerun3/exp_debug/exp5 --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
+
+    CUDA_VISIBLE_DEVICES=0 python3 tta.py --config configs_rerun3/exp2.0.1.yaml --task exp_debug --output_dir output_rerun3/exp_debug/exp2.0.1 --checkpoint checkpoint/cmp.pth --tta
+
+## exp0
+- ss=all
+    "49", "R1": "85.187", "R5": "98.584", "R10": "99.242", "mAP": "91.62", "mINP": "91.62"
+
+## exp1
+- ss=topk
+    "29", "R1": "85.541", "R5": "98.483", "R10": "99.343", "mAP": "91.719", "mINP": "91.719"
+    "39", "R1": "85.541", "R5": "98.686", "R10": "99.292", "mAP": "91.747", "mINP": "91.747"
+
+## exp2 top1实际未生效 重跑~
+- ss=top1后又进入ss=all的代码逻辑
+- ss=top1
+    "49", "R1": "85.187", "R5": "98.584", "R10": "99.242", "mAP": "91.62", "mINP": "91.62"
+
+## exp3 重跑~
+- ss=topk
+- diff_div_mean
+    "49", "R1": "85.137", "R5": "98.736", "R10": "99.343", "mAP": "91.6", "mINP": "91.6"
+
+## exp4
+- ss=topk
+- abs_diff_log
+    "49", "R1": "84.985", "R5": "98.938", "R10": "99.494", "mAP": "91.566", "mINP": "91.566"
+
+## exp5 重跑~
+- ss=topk
+- inversed_recall_proba
+    "39", "R1": "85.187", "R5": "98.584", "R10": "99.444", "mAP": "91.485", "mINP": "91.485"
+
+## exp6
+- ss=all
+- diff_div_mean
+    "4", "R1": "85.137", "R5": "98.736", "R10": "99.343", "mAP": "91.545", "mINP": "91.545"
+
+## exp7 top1实际未生效 重跑~
+- ss=top1
+- diff_div_mean
+    "4", "R1": "85.137", "R5": "98.736", "R10": "99.343", "mAP": "91.545", "mINP": "91.545"
+
+
