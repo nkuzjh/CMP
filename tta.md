@@ -1383,7 +1383,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## exp2 top1实际未生效，重跑~
 - top1实际未生效，ss=top1后又进入ss=all的代码逻辑，重跑~
 - ss=top1
-    重跑后结果：
+    top1改完重跑后结果：
     "29", "R1": "85.288", "R5": "98.736", "R10": "99.393", "mAP": "91.668", "mINP": "91.668"
 
 ## exp3 重跑~  去掉uncertainty_coeffi放大loss，再次重跑~
@@ -1417,7 +1417,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 - ss=top1
 - diff_div_mean
     "4", "R1": "85.137", "R5": "98.736", "R10": "99.343", "mAP": "91.545", "mINP": "91.545"
-    重跑ing：
+    top1改完重跑后结果：
     "39", "R1": "85.187", "R5": "98.787", "R10": "99.343", "mAP": "91.601", "mINP": "91.601"
     第三遍结果：
 
