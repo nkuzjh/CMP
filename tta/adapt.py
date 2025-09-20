@@ -75,7 +75,7 @@ def test_time_adapt_itm(model, optimizer, scaler, epoch, device, scheduler, conf
 
                 uncertainty_coeffi = torch.tensor(config.get('uncertainty_coeffi', 1.0)).to(device)
                 if config.get('uncertainty', None) is not None:
-                    loss = entropy / uncertainty + uncertainty * uncertainty_coeffi
+                    loss = entropy / uncertainty + uncertainty #* uncertainty_coeffi
                 else:
                     loss = entropy
                 loss = loss.mean()

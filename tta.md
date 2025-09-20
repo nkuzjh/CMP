@@ -1386,7 +1386,7 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     重跑后结果：
     "29", "R1": "85.288", "R5": "98.736", "R10": "99.393", "mAP": "91.668", "mINP": "91.668"
 
-## exp3 重跑~  去掉uncertainty_coeffi放大loss，重跑~
+## exp3 重跑~  去掉uncertainty_coeffi放大loss，再次重跑~
 - ss=topk
 - diff_div_mean
     "49", "R1": "85.137", "R5": "98.736", "R10": "99.343", "mAP": "91.6", "mINP": "91.6"
@@ -1406,13 +1406,13 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
     第二遍结果：
     "4", "R1": "85.541", "R5": "98.787", "R10": "99.393", "mAP": "91.827", "mINP": "91.827"
 
-## exp6 去掉uncertainty_coeffi放大loss，重跑~
+## exp6 去掉uncertainty_coeffi放大loss，再次重跑~
 - ss=all
 - diff_div_mean
     "4", "R1": "85.137", "R5": "98.736", "R10": "99.343", "mAP": "91.545", "mINP": "91.545"
     第三遍结果：
 
-## exp7 top1实际未生效 重跑~ 去掉uncertainty_coeffi放大loss，重跑~
+## exp7 top1实际未生效 重跑~ 去掉uncertainty_coeffi放大loss，再次重跑~
 - top1实际未生效，ss=top1后又进入ss=all的代码逻辑，重跑~
 - ss=top1
 - diff_div_mean
