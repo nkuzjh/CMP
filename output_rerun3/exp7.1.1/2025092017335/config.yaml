@@ -19,10 +19,10 @@ mask_whole_word: true
 max_masks: 10
 max_tokens: 56
 max_words: 56
-optimizer: {lr: 0.001, lr_mult: 2, opt: adamW, weight_decay: 0.01}
+optimizer: {lr: 0.0005, lr_mult: 2, opt: adamW, weight_decay: 0.01}
 pose_conv: true
 sample_selection: top1
-schedular: {epochs: 60, lr: 0.001, num_warmup_steps: 500, sched: step}
+schedular: {epochs: 60, lr: 0.0005, num_warmup_steps: 500, sched: step}
 score_temper: 1.0
 skipgram_prb: 0.2
 skipgram_size: 3
