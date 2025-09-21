@@ -33,3 +33,15 @@ unexpected_keys:  ['vision_proj.0.weight', 'vision_proj.0.bias', 'vision_proj.0.
 ### Inference ITC similiarity matrix
      Computing text features for evaluation
      Computing image features for evaluation
+/home/jiahao/task/CMP/eval.py:129: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  similarity = torch.tensor(scores_t2i)
+Killed
+NNODES,  1
+NODE_RANK,  0
+MASTER_ADDR,  127.0.0.1
+MASTER_PORT,  1612
+NPROC_PER_NODE,  2
+task:  exp6
+config:  configs_rerun4/exp6.yaml
+output_dir:  output_rerun4/exp6/2025092202521
+python3 tta.py --config configs_rerun4/exp6.yaml --task exp6 --output_dir output_rerun4/exp6/2025092202521 --checkpoint checkpoint/cmp.pth --bs 0 --epo 0 --lr 0.0 --seed 42 --tta

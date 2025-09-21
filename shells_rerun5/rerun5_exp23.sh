@@ -1,8 +1,8 @@
 
 
 
-bash shells_rerun4/exp2.sh
+bash shells_rerun5/exp2.sh
 wait
 
-bash shells_rerun4/exp3.sh
+bash shells_rerun5/exp3.sh
 wait
