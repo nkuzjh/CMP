@@ -1,12 +1,10 @@
-/home/user/yc57963/miniconda3/envs/cmp/lib/python3.10/site-packages/torch/utils/data/dataloader.py:627: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(
-/home/user/yc57963/miniconda3/envs/cmp/lib/python3.10/site-packages/torch/functional.py:554: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4322.)
+/home/jiahao/miniconda3/envs/cmp/lib/python3.10/site-packages/torch/functional.py:554: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4322.)
   return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
 Not using distributed mode
 ### Hyper-parameters:
      seed: 42
      device: cuda
-     output_dir: output_rerun3/exp6.1.4/2025091709030
+     output_dir: output_rerun3/exp6.1.4/2025092103090
      batch_size_tta: 32
      epochs: 60
      lr: 1e-05
@@ -67,449 +65,119 @@ unexpected_keys:  []
      num_tta_steps:  3720
      num_warmup_steps:  500
      sched: step
-/home/user/yc57963/task/CMP/tta.py:246: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+/home/jiahao/task/CMP/tta.py:246: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
   scaler = GradScaler()  # bf16
 ### Start ITM Test Time Adaptation
-      TTA Epoch: [0] [ 0/61]  eta: 0:00:57  entropy: 0.3482  uncertainty: 1.7870  uncertainty_coeffi: 0.0100  loss: 0.2335  lr: 0.000000  time: 0.9450  data: 0.3838  max mem: 2661
-      TTA Epoch: [0] [60/61]  eta: 0:00:00  entropy: 0.3676  uncertainty: 2.8430  uncertainty_coeffi: 0.0100  loss: 0.2026  lr: 0.000001  time: 0.0423  data: 0.0031  max mem: 2718
-      TTA Epoch: [0] Total time: 0:00:03 (0.0641 s / it)
-     Averaged stats: entropy: 0.3541  uncertainty: 2.2214  uncertainty_coeffi: 0.0100  loss: 0.2284  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:03:51    time: 0.1171  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:22    time: 0.0440  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:17    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:12    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:07    time: 0.0431  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:03    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:59    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:54    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:50    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:46    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:33    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:24 (0.0426 s / it)
-     Computing matching score time 0:01:24
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 0, 'R1': 84.328, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.301, 'mINP': 91.301, 'entropy': 0.354109, 'uncertainty': 2.221419, 'uncertainty_coeffi': 0.01, 'loss': 0.228436, 'lr': 1e-06}
-      TTA Epoch: [1] [ 0/61]  eta: 0:00:29  entropy: 0.4200  uncertainty: 2.5006  uncertainty_coeffi: 0.0100  loss: 0.2403  lr: 0.000001  time: 0.4773  data: 0.3855  max mem: 2718
-      TTA Epoch: [1] [60/61]  eta: 0:00:00  entropy: 0.4929  uncertainty: 2.2374  uncertainty_coeffi: 0.0100  loss: 0.3062  lr: 0.000002  time: 0.0423  data: 0.0042  max mem: 2718
-      TTA Epoch: [1] Total time: 0:00:03 (0.0578 s / it)
-     Averaged stats: entropy: 0.3526  uncertainty: 2.2315  uncertainty_coeffi: 0.0100  loss: 0.2287  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:38    time: 0.0498  data: 0.0031  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:19    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:15    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:10    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:06    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:02    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:58    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:53    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:49    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:45    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:32    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:15    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:23 (0.0422 s / it)
-     Computing matching score time 0:01:23
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 1, 'R1': 84.277, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.276, 'mINP': 91.276, 'entropy': 0.352588, 'uncertainty': 2.23151, 'uncertainty_coeffi': 0.01, 'loss': 0.228671, 'lr': 2e-06}
-      TTA Epoch: [2] [ 0/61]  eta: 0:00:30  entropy: 0.4117  uncertainty: 1.7849  uncertainty_coeffi: 0.0100  loss: 0.2783  lr: 0.000002  time: 0.5070  data: 0.3967  max mem: 2718
-      TTA Epoch: [2] [60/61]  eta: 0:00:00  entropy: 0.3626  uncertainty: 2.3454  uncertainty_coeffi: 0.0100  loss: 0.2266  lr: 0.000004  time: 0.0420  data: 0.0023  max mem: 2718
-      TTA Epoch: [2] Total time: 0:00:03 (0.0602 s / it)
-     Averaged stats: entropy: 0.3508  uncertainty: 2.2237  uncertainty_coeffi: 0.0100  loss: 0.2272  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:34    time: 0.0478  data: 0.0031  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:24    time: 0.0539  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:20    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:15    time: 0.0438  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:10    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:05    time: 0.0431  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:01:00    time: 0.0431  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:56    time: 0.0435  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:51    time: 0.0435  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:47    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:42    time: 0.0444  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:38    time: 0.0432  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:34    time: 0.0441  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:29    time: 0.0436  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:25    time: 0.0439  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0440  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:12    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0436  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0435  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0432  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:26 (0.0436 s / it)
-     Computing matching score time 0:01:26
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 2, 'R1': 84.328, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.292, 'mINP': 91.292, 'entropy': 0.350812, 'uncertainty': 2.223666, 'uncertainty_coeffi': 0.01, 'loss': 0.227231, 'lr': 3e-06}
-      TTA Epoch: [3] [ 0/61]  eta: 0:00:29  entropy: 0.3830  uncertainty: 1.5164  uncertainty_coeffi: 0.0100  loss: 0.2806  lr: 0.000004  time: 0.4775  data: 0.3695  max mem: 2718
-      TTA Epoch: [3] [60/61]  eta: 0:00:00  entropy: 0.2851  uncertainty: 2.2262  uncertainty_coeffi: 0.0100  loss: 0.1710  lr: 0.000005  time: 0.0443  data: 0.0025  max mem: 2718
-      TTA Epoch: [3] Total time: 0:00:03 (0.0599 s / it)
-     Averaged stats: entropy: 0.3490  uncertainty: 2.2313  uncertainty_coeffi: 0.0100  loss: 0.2264  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [4] [ 0/61]  eta: 0:00:28  entropy: 0.3649  uncertainty: 2.9127  uncertainty_coeffi: 0.0100  loss: 0.1848  lr: 0.000005  time: 0.4628  data: 0.2945  max mem: 2718
-      TTA Epoch: [4] [60/61]  eta: 0:00:00  entropy: 0.3560  uncertainty: 2.2543  uncertainty_coeffi: 0.0100  loss: 0.2260  lr: 0.000006  time: 0.0441  data: 0.0037  max mem: 2718
-      TTA Epoch: [4] Total time: 0:00:03 (0.0595 s / it)
-     Averaged stats: entropy: 0.3457  uncertainty: 2.2303  uncertainty_coeffi: 0.0100  loss: 0.2232  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:32    time: 0.0466  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:19    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:15    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:10    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:06    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:02    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:58    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:53    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:49    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:45    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:36    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:32    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:15    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:23 (0.0421 s / it)
-     Computing matching score time 0:01:23
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 4, 'R1': 84.631, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.444, 'mINP': 91.444, 'entropy': 0.345661, 'uncertainty': 2.230277, 'uncertainty_coeffi': 0.01, 'loss': 0.223197, 'lr': 5e-06}
-      TTA Epoch: [5] [ 0/61]  eta: 0:00:24  entropy: 0.3535  uncertainty: 2.0319  uncertainty_coeffi: 0.0100  loss: 0.2551  lr: 0.000006  time: 0.4097  data: 0.2742  max mem: 2718
-      TTA Epoch: [5] [60/61]  eta: 0:00:00  entropy: 0.3130  uncertainty: 2.4291  uncertainty_coeffi: 0.0100  loss: 0.2196  lr: 0.000007  time: 0.0439  data: 0.0008  max mem: 2718
-      TTA Epoch: [5] Total time: 0:00:03 (0.0591 s / it)
-     Averaged stats: entropy: 0.3411  uncertainty: 2.2097  uncertainty_coeffi: 0.0100  loss: 0.2214  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [6] [ 0/61]  eta: 0:00:31  entropy: 0.3875  uncertainty: 2.1391  uncertainty_coeffi: 0.0100  loss: 0.2398  lr: 0.000007  time: 0.5095  data: 0.4228  max mem: 2718
-      TTA Epoch: [6] [60/61]  eta: 0:00:00  entropy: 0.2854  uncertainty: 2.4871  uncertainty_coeffi: 0.0100  loss: 0.1620  lr: 0.000009  time: 0.0437  data: 0.0024  max mem: 2718
-      TTA Epoch: [6] Total time: 0:00:03 (0.0587 s / it)
-     Averaged stats: entropy: 0.3371  uncertainty: 2.2245  uncertainty_coeffi: 0.0100  loss: 0.2173  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [7] [ 0/61]  eta: 0:00:32  entropy: 0.3322  uncertainty: 2.1050  uncertainty_coeffi: 0.0100  loss: 0.2112  lr: 0.000009  time: 0.5352  data: 0.4494  max mem: 2718
-      TTA Epoch: [7] [60/61]  eta: 0:00:00  entropy: 0.2282  uncertainty: 1.8843  uncertainty_coeffi: 0.0100  loss: 0.1515  lr: 0.000010  time: 0.0425  data: 0.0034  max mem: 2718
-      TTA Epoch: [7] Total time: 0:00:03 (0.0588 s / it)
-     Averaged stats: entropy: 0.3315  uncertainty: 2.2204  uncertainty_coeffi: 0.0100  loss: 0.2129  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [8] [ 0/61]  eta: 0:00:29  entropy: 0.3657  uncertainty: 2.1945  uncertainty_coeffi: 0.0100  loss: 0.2601  lr: 0.000010  time: 0.4818  data: 0.4061  max mem: 2718
-      TTA Epoch: [8] [60/61]  eta: 0:00:00  entropy: 0.2712  uncertainty: 2.3460  uncertainty_coeffi: 0.0100  loss: 0.1920  lr: 0.000010  time: 0.0434  data: 0.0014  max mem: 2718
-      TTA Epoch: [8] Total time: 0:00:03 (0.0586 s / it)
-     Averaged stats: entropy: 0.3254  uncertainty: 2.2221  uncertainty_coeffi: 0.0100  loss: 0.2096  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [9] [ 0/61]  eta: 0:00:29  entropy: 0.3483  uncertainty: 2.1228  uncertainty_coeffi: 0.0100  loss: 0.2305  lr: 0.000010  time: 0.4895  data: 0.3902  max mem: 2718
-      TTA Epoch: [9] [60/61]  eta: 0:00:00  entropy: 0.2623  uncertainty: 2.0169  uncertainty_coeffi: 0.0100  loss: 0.2284  lr: 0.000010  time: 0.0418  data: 0.0031  max mem: 2718
-      TTA Epoch: [9] Total time: 0:00:03 (0.0585 s / it)
-     Averaged stats: entropy: 0.3177  uncertainty: 2.2289  uncertainty_coeffi: 0.0100  loss: 0.2053  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:37    time: 0.0491  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:20    time: 0.0432  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:15    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:11    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:07    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:03    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:58    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:54    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:50    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:46    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:33    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0429  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:24 (0.0427 s / it)
-     Computing matching score time 0:01:24
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 9, 'R1': 84.783, 'R5': 98.938, 'R10': 99.545, 'mAP': 91.49, 'mINP': 91.49, 'entropy': 0.317656, 'uncertainty': 2.228873, 'uncertainty_coeffi': 0.01, 'loss': 0.205251, 'lr': 1e-05}
-      TTA Epoch: [10] [ 0/61]  eta: 0:00:32  entropy: 0.3596  uncertainty: 2.1390  uncertainty_coeffi: 0.0100  loss: 0.2624  lr: 0.000010  time: 0.5364  data: 0.4626  max mem: 2718
-      TTA Epoch: [10] [60/61]  eta: 0:00:00  entropy: 0.1474  uncertainty: 2.0666  uncertainty_coeffi: 0.0100  loss: 0.0999  lr: 0.000009  time: 0.0449  data: 0.0029  max mem: 2718
-      TTA Epoch: [10] Total time: 0:00:03 (0.0585 s / it)
-     Averaged stats: entropy: 0.3132  uncertainty: 2.2322  uncertainty_coeffi: 0.0100  loss: 0.2015  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [11] [ 0/61]  eta: 0:00:24  entropy: 0.3830  uncertainty: 1.9595  uncertainty_coeffi: 0.0100  loss: 0.2699  lr: 0.000009  time: 0.3954  data: 0.2866  max mem: 2718
-      TTA Epoch: [11] [60/61]  eta: 0:00:00  entropy: 0.2797  uncertainty: 2.4927  uncertainty_coeffi: 0.0100  loss: 0.1721  lr: 0.000009  time: 0.0417  data: 0.0009  max mem: 2718
-      TTA Epoch: [11] Total time: 0:00:03 (0.0585 s / it)
-     Averaged stats: entropy: 0.3089  uncertainty: 2.2273  uncertainty_coeffi: 0.0100  loss: 0.1976  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [12] [ 0/61]  eta: 0:00:30  entropy: 0.3460  uncertainty: 2.1593  uncertainty_coeffi: 0.0100  loss: 0.2310  lr: 0.000009  time: 0.4965  data: 0.4164  max mem: 2718
-      TTA Epoch: [12] [60/61]  eta: 0:00:00  entropy: 0.3720  uncertainty: 2.1360  uncertainty_coeffi: 0.0100  loss: 0.2257  lr: 0.000009  time: 0.0422  data: 0.0006  max mem: 2718
-      TTA Epoch: [12] Total time: 0:00:03 (0.0582 s / it)
-     Averaged stats: entropy: 0.3026  uncertainty: 2.2251  uncertainty_coeffi: 0.0100  loss: 0.1940  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [13] [ 0/61]  eta: 0:00:22  entropy: 0.2394  uncertainty: 2.4976  uncertainty_coeffi: 0.0100  loss: 0.1185  lr: 0.000009  time: 0.3651  data: 0.2696  max mem: 2718
-      TTA Epoch: [13] [60/61]  eta: 0:00:00  entropy: 0.3797  uncertainty: 2.0687  uncertainty_coeffi: 0.0100  loss: 0.2419  lr: 0.000009  time: 0.0426  data: 0.0029  max mem: 2718
-      TTA Epoch: [13] Total time: 0:00:03 (0.0585 s / it)
-     Averaged stats: entropy: 0.3000  uncertainty: 2.2215  uncertainty_coeffi: 0.0100  loss: 0.1910  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [14] [ 0/61]  eta: 0:00:29  entropy: 0.2689  uncertainty: 2.2185  uncertainty_coeffi: 0.0100  loss: 0.1553  lr: 0.000009  time: 0.4842  data: 0.2813  max mem: 2718
-      TTA Epoch: [14] [60/61]  eta: 0:00:00  entropy: 0.2385  uncertainty: 1.7709  uncertainty_coeffi: 0.0100  loss: 0.1951  lr: 0.000009  time: 0.0415  data: 0.0028  max mem: 2718
-      TTA Epoch: [14] Total time: 0:00:03 (0.0587 s / it)
-     Averaged stats: entropy: 0.2950  uncertainty: 2.2235  uncertainty_coeffi: 0.0100  loss: 0.1876  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:33    time: 0.0474  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:19    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:14    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:10    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:06    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:02    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:57    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:53    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:49    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:45    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:36    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:32    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0462  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0438  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:24 (0.0425 s / it)
-     Computing matching score time 0:01:24
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
-|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 14, 'R1': 84.631, 'R5': 98.888, 'R10': 99.494, 'mAP': 91.387, 'mINP': 91.387, 'entropy': 0.294981, 'uncertainty': 2.223525, 'uncertainty_coeffi': 0.01, 'loss': 0.18764, 'lr': 9e-06}
-      TTA Epoch: [15] [ 0/61]  eta: 0:00:29  entropy: 0.2438  uncertainty: 2.3902  uncertainty_coeffi: 0.0100  loss: 0.1347  lr: 0.000009  time: 0.4898  data: 0.4238  max mem: 2718
-      TTA Epoch: [15] [60/61]  eta: 0:00:00  entropy: 0.2682  uncertainty: 2.0834  uncertainty_coeffi: 0.0100  loss: 0.1764  lr: 0.000009  time: 0.0421  data: 0.0007  max mem: 2718
-      TTA Epoch: [15] Total time: 0:00:03 (0.0618 s / it)
-     Averaged stats: entropy: 0.2907  uncertainty: 2.2148  uncertainty_coeffi: 0.0100  loss: 0.1849  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [16] [ 0/61]  eta: 0:00:35  entropy: 0.2375  uncertainty: 2.4132  uncertainty_coeffi: 0.0100  loss: 0.1161  lr: 0.000009  time: 0.5754  data: 0.4874  max mem: 2718
-      TTA Epoch: [16] [60/61]  eta: 0:00:00  entropy: 0.2605  uncertainty: 2.2837  uncertainty_coeffi: 0.0100  loss: 0.1817  lr: 0.000008  time: 0.0437  data: 0.0024  max mem: 2718
-      TTA Epoch: [16] Total time: 0:00:03 (0.0620 s / it)
-     Averaged stats: entropy: 0.2861  uncertainty: 2.2269  uncertainty_coeffi: 0.0100  loss: 0.1824  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [17] [ 0/61]  eta: 0:00:32  entropy: 0.3243  uncertainty: 2.1341  uncertainty_coeffi: 0.0100  loss: 0.1879  lr: 0.000008  time: 0.5396  data: 0.4526  max mem: 2718
-      TTA Epoch: [17] [60/61]  eta: 0:00:00  entropy: 0.3697  uncertainty: 1.6610  uncertainty_coeffi: 0.0100  loss: 0.2681  lr: 0.000008  time: 0.0436  data: 0.0035  max mem: 2718
-      TTA Epoch: [17] Total time: 0:00:03 (0.0626 s / it)
-     Averaged stats: entropy: 0.2846  uncertainty: 2.2173  uncertainty_coeffi: 0.0100  loss: 0.1802  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [18] [ 0/61]  eta: 0:00:33  entropy: 0.3181  uncertainty: 2.6151  uncertainty_coeffi: 0.0100  loss: 0.1842  lr: 0.000008  time: 0.5418  data: 0.4195  max mem: 2718
-      TTA Epoch: [18] [60/61]  eta: 0:00:00  entropy: 0.2687  uncertainty: 1.9300  uncertainty_coeffi: 0.0100  loss: 0.1876  lr: 0.000008  time: 0.0435  data: 0.0015  max mem: 2718
-      TTA Epoch: [18] Total time: 0:00:03 (0.0602 s / it)
-     Averaged stats: entropy: 0.2800  uncertainty: 2.2304  uncertainty_coeffi: 0.0100  loss: 0.1768  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [19] [ 0/61]  eta: 0:00:32  entropy: 0.2055  uncertainty: 2.1348  uncertainty_coeffi: 0.0100  loss: 0.1354  lr: 0.000008  time: 0.5266  data: 0.4492  max mem: 2718
-      TTA Epoch: [19] [60/61]  eta: 0:00:00  entropy: 0.1239  uncertainty: 2.0557  uncertainty_coeffi: 0.0100  loss: 0.0777  lr: 0.000008  time: 0.0434  data: 0.0048  max mem: 2718
-      TTA Epoch: [19] Total time: 0:00:03 (0.0600 s / it)
-     Averaged stats: entropy: 0.2803  uncertainty: 2.2304  uncertainty_coeffi: 0.0100  loss: 0.1772  lr: 0.0000
-     itm tta time 0:00:03
-     Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:35    time: 0.0484  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:21    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:17    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:12    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:08    time: 0.0477  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:04    time: 0.0443  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:59    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:55    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:50    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:46    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:42    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:33    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:29    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:24 (0.0428 s / it)
-     Computing matching score time 0:01:24
-### TTA ITM Score: 
-+-------------------+--------+--------+--------+--------+--------+
-|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-+-------------------+--------+--------+--------+--------+--------+
-|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
-|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
-| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
-|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
-|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
-|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
-|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
-|         19        | 84.580 | 98.837 | 99.494 | 91.339 | 91.339 |
-+-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 19, 'R1': 84.58, 'R5': 98.837, 'R10': 99.494, 'mAP': 91.339, 'mINP': 91.339, 'entropy': 0.280347, 'uncertainty': 2.230403, 'uncertainty_coeffi': 0.01, 'loss': 0.177196, 'lr': 8e-06}
-      TTA Epoch: [20] [ 0/61]  eta: 0:00:28  entropy: 0.2854  uncertainty: 1.9055  uncertainty_coeffi: 0.0100  loss: 0.1665  lr: 0.000008  time: 0.4611  data: 0.3145  max mem: 2718
-      TTA Epoch: [20] [60/61]  eta: 0:00:00  entropy: 0.2654  uncertainty: 1.9697  uncertainty_coeffi: 0.0100  loss: 0.1615  lr: 0.000008  time: 0.0442  data: 0.0005  max mem: 2718
-      TTA Epoch: [20] Total time: 0:00:03 (0.0654 s / it)
-     Averaged stats: entropy: 0.2761  uncertainty: 2.2145  uncertainty_coeffi: 0.0100  loss: 0.1742  lr: 0.0000
+      TTA Epoch: [0] [ 0/61]  eta: 0:01:08  entropy: 0.3485  uncertainty: 1.7870  uncertainty_coeffi: 0.0100  loss: 2.0041  lr: 0.000000  time: 1.1200  data: 0.5041  max mem: 2639
+      TTA Epoch: [0] [60/61]  eta: 0:00:00  entropy: 0.3931  uncertainty: 2.8430  uncertainty_coeffi: 0.0100  loss: 3.0215  lr: 0.000001  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [0] Total time: 0:00:04 (0.0790 s / it)
+     Averaged stats: entropy: 0.3504  uncertainty: 2.2214  uncertainty_coeffi: 0.0100  loss: 2.4265  lr: 0.0000
      itm tta time 0:00:04
-      TTA Epoch: [21] [ 0/61]  eta: 0:00:34  entropy: 0.2234  uncertainty: 2.1407  uncertainty_coeffi: 0.0100  loss: 0.1244  lr: 0.000008  time: 0.5661  data: 0.4746  max mem: 2718
-      TTA Epoch: [21] [60/61]  eta: 0:00:00  entropy: 0.2866  uncertainty: 2.7638  uncertainty_coeffi: 0.0100  loss: 0.2099  lr: 0.000007  time: 0.0421  data: 0.0039  max mem: 2718
-      TTA Epoch: [21] Total time: 0:00:03 (0.0592 s / it)
-     Averaged stats: entropy: 0.2713  uncertainty: 2.2253  uncertainty_coeffi: 0.0100  loss: 0.1722  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [22] [ 0/61]  eta: 0:00:30  entropy: 0.2572  uncertainty: 1.9282  uncertainty_coeffi: 0.0100  loss: 0.1760  lr: 0.000007  time: 0.4939  data: 0.4012  max mem: 2718
-      TTA Epoch: [22] [60/61]  eta: 0:00:00  entropy: 0.2050  uncertainty: 1.9843  uncertainty_coeffi: 0.0100  loss: 0.1500  lr: 0.000007  time: 0.0414  data: 0.0019  max mem: 2718
-      TTA Epoch: [22] Total time: 0:00:03 (0.0620 s / it)
-     Averaged stats: entropy: 0.2731  uncertainty: 2.2197  uncertainty_coeffi: 0.0100  loss: 0.1715  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [23] [ 0/61]  eta: 0:00:32  entropy: 0.1987  uncertainty: 2.3421  uncertainty_coeffi: 0.0100  loss: 0.1458  lr: 0.000007  time: 0.5296  data: 0.4594  max mem: 2718
-      TTA Epoch: [23] [60/61]  eta: 0:00:00  entropy: 0.2367  uncertainty: 2.1875  uncertainty_coeffi: 0.0100  loss: 0.1638  lr: 0.000007  time: 0.0431  data: 0.0025  max mem: 2718
-      TTA Epoch: [23] Total time: 0:00:03 (0.0589 s / it)
-     Averaged stats: entropy: 0.2651  uncertainty: 2.2147  uncertainty_coeffi: 0.0100  loss: 0.1668  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [24] [ 0/61]  eta: 0:00:28  entropy: 0.3024  uncertainty: 2.6128  uncertainty_coeffi: 0.0100  loss: 0.1498  lr: 0.000007  time: 0.4618  data: 0.4027  max mem: 2718
-      TTA Epoch: [24] [60/61]  eta: 0:00:00  entropy: 0.3360  uncertainty: 2.5606  uncertainty_coeffi: 0.0100  loss: 0.1630  lr: 0.000007  time: 0.0429  data: 0.0028  max mem: 2718
-      TTA Epoch: [24] Total time: 0:00:03 (0.0581 s / it)
-     Averaged stats: entropy: 0.2627  uncertainty: 2.2273  uncertainty_coeffi: 0.0100  loss: 0.1647  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [25] [ 0/61]  eta: 0:00:32  entropy: 0.2910  uncertainty: 2.0063  uncertainty_coeffi: 0.0100  loss: 0.1916  lr: 0.000007  time: 0.5311  data: 0.4347  max mem: 2718
-      TTA Epoch: [25] [60/61]  eta: 0:00:00  entropy: 0.3479  uncertainty: 1.8903  uncertainty_coeffi: 0.0100  loss: 0.2428  lr: 0.000007  time: 0.0411  data: 0.0020  max mem: 2718
-      TTA Epoch: [25] Total time: 0:00:03 (0.0578 s / it)
-     Averaged stats: entropy: 0.2607  uncertainty: 2.2205  uncertainty_coeffi: 0.0100  loss: 0.1636  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [26] [ 0/61]  eta: 0:00:22  entropy: 0.2747  uncertainty: 2.0514  uncertainty_coeffi: 0.0100  loss: 0.1969  lr: 0.000007  time: 0.3732  data: 0.2819  max mem: 2718
-      TTA Epoch: [26] [60/61]  eta: 0:00:00  entropy: 0.1513  uncertainty: 2.3290  uncertainty_coeffi: 0.0100  loss: 0.1059  lr: 0.000006  time: 0.0418  data: 0.0012  max mem: 2718
-      TTA Epoch: [26] Total time: 0:00:03 (0.0580 s / it)
-     Averaged stats: entropy: 0.2604  uncertainty: 2.2187  uncertainty_coeffi: 0.0100  loss: 0.1644  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [27] [ 0/61]  eta: 0:00:32  entropy: 0.2540  uncertainty: 2.4429  uncertainty_coeffi: 0.0100  loss: 0.1430  lr: 0.000006  time: 0.5401  data: 0.4506  max mem: 2718
-      TTA Epoch: [27] [60/61]  eta: 0:00:00  entropy: 0.1538  uncertainty: 2.3020  uncertainty_coeffi: 0.0100  loss: 0.1033  lr: 0.000006  time: 0.0415  data: 0.0037  max mem: 2718
-      TTA Epoch: [27] Total time: 0:00:03 (0.0580 s / it)
-     Averaged stats: entropy: 0.2566  uncertainty: 2.2182  uncertainty_coeffi: 0.0100  loss: 0.1611  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [28] [ 0/61]  eta: 0:00:34  entropy: 0.2562  uncertainty: 1.8976  uncertainty_coeffi: 0.0100  loss: 0.1846  lr: 0.000006  time: 0.5605  data: 0.4855  max mem: 2718
-      TTA Epoch: [28] [60/61]  eta: 0:00:00  entropy: 0.2918  uncertainty: 2.6270  uncertainty_coeffi: 0.0100  loss: 0.1473  lr: 0.000006  time: 0.0419  data: 0.0009  max mem: 2718
-      TTA Epoch: [28] Total time: 0:00:03 (0.0585 s / it)
-     Averaged stats: entropy: 0.2568  uncertainty: 2.2253  uncertainty_coeffi: 0.0100  loss: 0.1604  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [29] [ 0/61]  eta: 0:00:27  entropy: 0.1409  uncertainty: 2.2945  uncertainty_coeffi: 0.0100  loss: 0.0985  lr: 0.000006  time: 0.4532  data: 0.3357  max mem: 2718
-      TTA Epoch: [29] [60/61]  eta: 0:00:00  entropy: 0.3128  uncertainty: 2.2484  uncertainty_coeffi: 0.0100  loss: 0.1932  lr: 0.000006  time: 0.0525  data: 0.0021  max mem: 2718
-      TTA Epoch: [29] Total time: 0:00:03 (0.0631 s / it)
-     Averaged stats: entropy: 0.2554  uncertainty: 2.2183  uncertainty_coeffi: 0.0100  loss: 0.1596  lr: 0.0000
-     itm tta time 0:00:03
      Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:34    time: 0.0476  data: 0.0033  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:22    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:16    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:11    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:07    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:02    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:58    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:54    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:49    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:45    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:32    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:15    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:23 (0.0422 s / it)
-     Computing matching score time 0:01:23
+      Evaluation: [   0/1978]  eta: 0:04:18    time: 0.1306  data: 0.0034  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:14    time: 0.0682  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:04    time: 0.0684  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:56    time: 0.0683  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:49    time: 0.0682  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:42    time: 0.0684  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:35    time: 0.0684  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:28    time: 0.0685  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:21    time: 0.0683  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:14    time: 0.0696  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:07    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:01:00    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:53    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:46    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:26    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:19    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:16 (0.0690 s / it)
+     Computing matching score time 0:02:16
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 0, 'R1': 84.328, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.301, 'mINP': 91.301, 'entropy': 0.350445, 'uncertainty': 2.221419, 'uncertainty_coeffi': 0.01, 'loss': 2.426511, 'lr': 1e-06}
+      TTA Epoch: [1] [ 0/61]  eta: 0:00:27  entropy: 0.4122  uncertainty: 2.5006  uncertainty_coeffi: 0.0100  loss: 2.6928  lr: 0.000001  time: 0.4477  data: 0.3534  max mem: 2671
+      TTA Epoch: [1] [60/61]  eta: 0:00:00  entropy: 0.4457  uncertainty: 2.2374  uncertainty_coeffi: 0.0100  loss: 2.4855  lr: 0.000002  time: 0.0619  data: 0.0001  max mem: 2671
+      TTA Epoch: [1] Total time: 0:00:04 (0.0693 s / it)
+     Averaged stats: entropy: 0.3524  uncertainty: 2.2315  uncertainty_coeffi: 0.0100  loss: 2.4382  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:25    time: 0.0735  data: 0.0034  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:11    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:02    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:55    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:48    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:41    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:34    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:28    time: 0.0694  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:21    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:14    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:07    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:01:00    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:53    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:46    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:26    time: 0.0694  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:19    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:16 (0.0688 s / it)
+     Computing matching score time 0:02:16
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
+|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 1, 'R1': 84.277, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.276, 'mINP': 91.276, 'entropy': 0.352385, 'uncertainty': 2.23151, 'uncertainty_coeffi': 0.01, 'loss': 2.438223, 'lr': 2e-06}
+      TTA Epoch: [2] [ 0/61]  eta: 0:00:28  entropy: 0.4180  uncertainty: 1.7849  uncertainty_coeffi: 0.0100  loss: 2.0586  lr: 0.000002  time: 0.4641  data: 0.3717  max mem: 2671
+      TTA Epoch: [2] [60/61]  eta: 0:00:00  entropy: 0.3711  uncertainty: 2.3454  uncertainty_coeffi: 0.0100  loss: 2.5502  lr: 0.000004  time: 0.0603  data: 0.0001  max mem: 2671
+      TTA Epoch: [2] Total time: 0:00:04 (0.0677 s / it)
+     Averaged stats: entropy: 0.3522  uncertainty: 2.2237  uncertainty_coeffi: 0.0100  loss: 2.4303  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:20    time: 0.0712  data: 0.0035  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:07    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:47    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:40    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:12    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0694  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:45    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0692  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:14 (0.0682 s / it)
+     Computing matching score time 0:02:15
 ### TTA ITM Score: 
 +-------------------+--------+--------+--------+--------+--------+
 |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
@@ -521,87 +189,42 @@ unexpected_keys:  []
 |         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
 |         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
 |         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
-|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
-|         19        | 84.580 | 98.837 | 99.494 | 91.339 | 91.339 |
-|         29        | 84.631 | 98.787 | 99.494 | 91.338 | 91.338 |
 +-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 29, 'R1': 84.631, 'R5': 98.787, 'R10': 99.494, 'mAP': 91.338, 'mINP': 91.338, 'entropy': 0.255377, 'uncertainty': 2.21825, 'uncertainty_coeffi': 0.01, 'loss': 0.159639, 'lr': 6e-06}
-      TTA Epoch: [30] [ 0/61]  eta: 0:00:25  entropy: 0.2702  uncertainty: 2.6460  uncertainty_coeffi: 0.0100  loss: 0.1207  lr: 0.000006  time: 0.4146  data: 0.2869  max mem: 2718
-      TTA Epoch: [30] [60/61]  eta: 0:00:00  entropy: 0.3388  uncertainty: 2.8628  uncertainty_coeffi: 0.0100  loss: 0.2010  lr: 0.000006  time: 0.0426  data: 0.0009  max mem: 2718
-      TTA Epoch: [30] Total time: 0:00:03 (0.0608 s / it)
-     Averaged stats: entropy: 0.2555  uncertainty: 2.2233  uncertainty_coeffi: 0.0100  loss: 0.1588  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [31] [ 0/61]  eta: 0:00:34  entropy: 0.2986  uncertainty: 2.3392  uncertainty_coeffi: 0.0100  loss: 0.1762  lr: 0.000006  time: 0.5592  data: 0.4411  max mem: 2718
-      TTA Epoch: [31] [60/61]  eta: 0:00:00  entropy: 0.1944  uncertainty: 2.0486  uncertainty_coeffi: 0.0100  loss: 0.1209  lr: 0.000005  time: 0.0439  data: 0.0033  max mem: 2718
-      TTA Epoch: [31] Total time: 0:00:03 (0.0628 s / it)
-     Averaged stats: entropy: 0.2534  uncertainty: 2.2157  uncertainty_coeffi: 0.0100  loss: 0.1591  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [32] [ 0/61]  eta: 0:00:23  entropy: 0.3281  uncertainty: 2.7152  uncertainty_coeffi: 0.0100  loss: 0.1706  lr: 0.000005  time: 0.3802  data: 0.2796  max mem: 2718
-      TTA Epoch: [32] [60/61]  eta: 0:00:00  entropy: 0.2305  uncertainty: 2.1611  uncertainty_coeffi: 0.0100  loss: 0.1459  lr: 0.000003  time: 0.0423  data: 0.0022  max mem: 2718
-      TTA Epoch: [32] Total time: 0:00:03 (0.0577 s / it)
-     Averaged stats: entropy: 0.2509  uncertainty: 2.2179  uncertainty_coeffi: 0.0100  loss: 0.1577  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [33] [ 0/61]  eta: 0:00:32  entropy: 0.2699  uncertainty: 2.1110  uncertainty_coeffi: 0.0100  loss: 0.1929  lr: 0.000003  time: 0.5307  data: 0.4563  max mem: 2718
-      TTA Epoch: [33] [60/61]  eta: 0:00:00  entropy: 0.2875  uncertainty: 2.2857  uncertainty_coeffi: 0.0100  loss: 0.1792  lr: 0.000003  time: 0.0424  data: 0.0015  max mem: 2718
-      TTA Epoch: [33] Total time: 0:00:03 (0.0615 s / it)
-     Averaged stats: entropy: 0.2506  uncertainty: 2.2131  uncertainty_coeffi: 0.0100  loss: 0.1571  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [34] [ 0/61]  eta: 0:00:28  entropy: 0.2912  uncertainty: 1.8855  uncertainty_coeffi: 0.0100  loss: 0.1841  lr: 0.000003  time: 0.4630  data: 0.3242  max mem: 2718
-      TTA Epoch: [34] [60/61]  eta: 0:00:00  entropy: 0.2420  uncertainty: 2.1135  uncertainty_coeffi: 0.0100  loss: 0.1402  lr: 0.000002  time: 0.0418  data: 0.0017  max mem: 2718
-      TTA Epoch: [34] Total time: 0:00:03 (0.0576 s / it)
-     Averaged stats: entropy: 0.2527  uncertainty: 2.2118  uncertainty_coeffi: 0.0100  loss: 0.1571  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [35] [ 0/61]  eta: 0:00:28  entropy: 0.2435  uncertainty: 2.6865  uncertainty_coeffi: 0.0100  loss: 0.1607  lr: 0.000002  time: 0.4689  data: 0.3720  max mem: 2718
-      TTA Epoch: [35] [60/61]  eta: 0:00:00  entropy: 0.1908  uncertainty: 2.7296  uncertainty_coeffi: 0.0100  loss: 0.1120  lr: 0.000002  time: 0.0417  data: 0.0024  max mem: 2718
-      TTA Epoch: [35] Total time: 0:00:03 (0.0576 s / it)
-     Averaged stats: entropy: 0.2511  uncertainty: 2.2258  uncertainty_coeffi: 0.0100  loss: 0.1577  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [36] [ 0/61]  eta: 0:00:29  entropy: 0.2335  uncertainty: 2.0650  uncertainty_coeffi: 0.0100  loss: 0.1647  lr: 0.000002  time: 0.4890  data: 0.3757  max mem: 2718
-      TTA Epoch: [36] [60/61]  eta: 0:00:00  entropy: 0.2047  uncertainty: 2.3693  uncertainty_coeffi: 0.0100  loss: 0.1564  lr: 0.000002  time: 0.0413  data: 0.0024  max mem: 2718
-      TTA Epoch: [36] Total time: 0:00:03 (0.0614 s / it)
-     Averaged stats: entropy: 0.2513  uncertainty: 2.2140  uncertainty_coeffi: 0.0100  loss: 0.1576  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [37] [ 0/61]  eta: 0:00:35  entropy: 0.1686  uncertainty: 2.1477  uncertainty_coeffi: 0.0100  loss: 0.1240  lr: 0.000002  time: 0.5751  data: 0.4875  max mem: 2718
-      TTA Epoch: [37] [60/61]  eta: 0:00:00  entropy: 0.2006  uncertainty: 2.5229  uncertainty_coeffi: 0.0100  loss: 0.1306  lr: 0.000002  time: 0.0413  data: 0.0018  max mem: 2718
-      TTA Epoch: [37] Total time: 0:00:03 (0.0630 s / it)
-     Averaged stats: entropy: 0.2474  uncertainty: 2.2244  uncertainty_coeffi: 0.0100  loss: 0.1540  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [38] [ 0/61]  eta: 0:00:36  entropy: 0.2852  uncertainty: 1.7901  uncertainty_coeffi: 0.0100  loss: 0.1940  lr: 0.000002  time: 0.5981  data: 0.5324  max mem: 2718
-      TTA Epoch: [38] [60/61]  eta: 0:00:00  entropy: 0.2969  uncertainty: 2.4969  uncertainty_coeffi: 0.0100  loss: 0.1834  lr: 0.000002  time: 0.0426  data: 0.0041  max mem: 2718
-      TTA Epoch: [38] Total time: 0:00:03 (0.0592 s / it)
-     Averaged stats: entropy: 0.2506  uncertainty: 2.2242  uncertainty_coeffi: 0.0100  loss: 0.1569  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [39] [ 0/61]  eta: 0:00:29  entropy: 0.2449  uncertainty: 2.1707  uncertainty_coeffi: 0.0100  loss: 0.1264  lr: 0.000002  time: 0.4781  data: 0.3766  max mem: 2718
-      TTA Epoch: [39] [60/61]  eta: 0:00:00  entropy: 0.1982  uncertainty: 1.7884  uncertainty_coeffi: 0.0100  loss: 0.1369  lr: 0.000002  time: 0.0426  data: 0.0039  max mem: 2718
-      TTA Epoch: [39] Total time: 0:00:03 (0.0607 s / it)
-     Averaged stats: entropy: 0.2531  uncertainty: 2.2196  uncertainty_coeffi: 0.0100  loss: 0.1566  lr: 0.0000
-     itm tta time 0:00:03
+     logs:  {'epo': 2, 'R1': 84.328, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.292, 'mINP': 91.292, 'entropy': 0.352196, 'uncertainty': 2.223665, 'uncertainty_coeffi': 0.01, 'loss': 2.4303, 'lr': 3e-06}
+      TTA Epoch: [3] [ 0/61]  eta: 0:00:28  entropy: 0.3793  uncertainty: 1.5164  uncertainty_coeffi: 0.0100  loss: 1.7844  lr: 0.000004  time: 0.4655  data: 0.3711  max mem: 2671
+      TTA Epoch: [3] [60/61]  eta: 0:00:00  entropy: 0.2928  uncertainty: 2.2262  uncertainty_coeffi: 0.0100  loss: 2.3767  lr: 0.000005  time: 0.0608  data: 0.0001  max mem: 2671
+      TTA Epoch: [3] Total time: 0:00:04 (0.0684 s / it)
+     Averaged stats: entropy: 0.3471  uncertainty: 2.2313  uncertainty_coeffi: 0.0100  loss: 2.4327  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [4] [ 0/61]  eta: 0:00:31  entropy: 0.3708  uncertainty: 2.9127  uncertainty_coeffi: 0.0100  loss: 3.0692  lr: 0.000005  time: 0.5098  data: 0.3923  max mem: 2671
+      TTA Epoch: [4] [60/61]  eta: 0:00:00  entropy: 0.3515  uncertainty: 2.2543  uncertainty_coeffi: 0.0100  loss: 2.4624  lr: 0.000006  time: 0.0610  data: 0.0001  max mem: 2671
+      TTA Epoch: [4] Total time: 0:00:04 (0.0693 s / it)
+     Averaged stats: entropy: 0.3449  uncertainty: 2.2303  uncertainty_coeffi: 0.0100  loss: 2.4315  lr: 0.0000
+     itm tta time 0:00:04
      Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:33    time: 0.0474  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:19    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:15    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:10    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:06    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:02    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:58    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:54    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:50    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:45    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:33    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:24 (0.0425 s / it)
-     Computing matching score time 0:01:24
+      Evaluation: [   0/1978]  eta: 0:02:20    time: 0.0712  data: 0.0041  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:07    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:46    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:39    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:12    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0685  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:45    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:13 (0.0676 s / it)
+     Computing matching score time 0:02:14
 ### TTA ITM Score: 
 +-------------------+--------+--------+--------+--------+--------+
 |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
@@ -613,88 +236,58 @@ unexpected_keys:  []
 |         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
 |         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
 |         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
-|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
-|         19        | 84.580 | 98.837 | 99.494 | 91.339 | 91.339 |
-|         29        | 84.631 | 98.787 | 99.494 | 91.338 | 91.338 |
-|         39        | 84.631 | 98.736 | 99.393 | 91.326 | 91.326 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
 +-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 39, 'R1': 84.631, 'R5': 98.736, 'R10': 99.393, 'mAP': 91.326, 'mINP': 91.326, 'entropy': 0.253064, 'uncertainty': 2.21958, 'uncertainty_coeffi': 0.01, 'loss': 0.156578, 'lr': 2e-06}
-      TTA Epoch: [40] [ 0/61]  eta: 0:00:29  entropy: 0.1881  uncertainty: 2.5705  uncertainty_coeffi: 0.0100  loss: 0.1461  lr: 0.000002  time: 0.4842  data: 0.4016  max mem: 2718
-      TTA Epoch: [40] [60/61]  eta: 0:00:00  entropy: 0.2384  uncertainty: 2.4281  uncertainty_coeffi: 0.0100  loss: 0.1270  lr: 0.000002  time: 0.0441  data: 0.0006  max mem: 2718
-      TTA Epoch: [40] Total time: 0:00:03 (0.0589 s / it)
-     Averaged stats: entropy: 0.2455  uncertainty: 2.2254  uncertainty_coeffi: 0.0100  loss: 0.1533  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [41] [ 0/61]  eta: 0:00:22  entropy: 0.2548  uncertainty: 1.8657  uncertainty_coeffi: 0.0100  loss: 0.1683  lr: 0.000002  time: 0.3750  data: 0.2648  max mem: 2718
-      TTA Epoch: [41] [60/61]  eta: 0:00:00  entropy: 0.2507  uncertainty: 2.1270  uncertainty_coeffi: 0.0100  loss: 0.1709  lr: 0.000002  time: 0.0428  data: 0.0030  max mem: 2718
-      TTA Epoch: [41] Total time: 0:00:03 (0.0576 s / it)
-     Averaged stats: entropy: 0.2450  uncertainty: 2.2160  uncertainty_coeffi: 0.0100  loss: 0.1526  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [42] [ 0/61]  eta: 0:00:27  entropy: 0.2634  uncertainty: 2.3223  uncertainty_coeffi: 0.0100  loss: 0.1694  lr: 0.000002  time: 0.4470  data: 0.3296  max mem: 2718
-      TTA Epoch: [42] [60/61]  eta: 0:00:00  entropy: 0.1818  uncertainty: 1.8406  uncertainty_coeffi: 0.0100  loss: 0.1188  lr: 0.000002  time: 0.0428  data: 0.0019  max mem: 2718
-      TTA Epoch: [42] Total time: 0:00:03 (0.0577 s / it)
-     Averaged stats: entropy: 0.2496  uncertainty: 2.2219  uncertainty_coeffi: 0.0100  loss: 0.1551  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [43] [ 0/61]  eta: 0:00:29  entropy: 0.2206  uncertainty: 2.3599  uncertainty_coeffi: 0.0100  loss: 0.1393  lr: 0.000002  time: 0.4854  data: 0.3796  max mem: 2718
-      TTA Epoch: [43] [60/61]  eta: 0:00:00  entropy: 0.1531  uncertainty: 1.7770  uncertainty_coeffi: 0.0100  loss: 0.1287  lr: 0.000002  time: 0.0416  data: 0.0020  max mem: 2718
-      TTA Epoch: [43] Total time: 0:00:03 (0.0577 s / it)
-     Averaged stats: entropy: 0.2448  uncertainty: 2.2165  uncertainty_coeffi: 0.0100  loss: 0.1524  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [44] [ 0/61]  eta: 0:00:23  entropy: 0.2388  uncertainty: 2.1977  uncertainty_coeffi: 0.0100  loss: 0.1491  lr: 0.000002  time: 0.3901  data: 0.2785  max mem: 2718
-      TTA Epoch: [44] [60/61]  eta: 0:00:00  entropy: 0.1829  uncertainty: 2.5352  uncertainty_coeffi: 0.0100  loss: 0.1055  lr: 0.000002  time: 0.0426  data: 0.0022  max mem: 2718
-      TTA Epoch: [44] Total time: 0:00:03 (0.0577 s / it)
-     Averaged stats: entropy: 0.2480  uncertainty: 2.2212  uncertainty_coeffi: 0.0100  loss: 0.1536  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [45] [ 0/61]  eta: 0:00:24  entropy: 0.2588  uncertainty: 2.1992  uncertainty_coeffi: 0.0100  loss: 0.1602  lr: 0.000002  time: 0.4067  data: 0.2809  max mem: 2718
-      TTA Epoch: [45] [60/61]  eta: 0:00:00  entropy: 0.3116  uncertainty: 2.2271  uncertainty_coeffi: 0.0100  loss: 0.1944  lr: 0.000001  time: 0.0412  data: 0.0027  max mem: 2718
-      TTA Epoch: [45] Total time: 0:00:03 (0.0580 s / it)
-     Averaged stats: entropy: 0.2478  uncertainty: 2.2262  uncertainty_coeffi: 0.0100  loss: 0.1544  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [46] [ 0/61]  eta: 0:00:29  entropy: 0.1746  uncertainty: 2.1420  uncertainty_coeffi: 0.0100  loss: 0.1118  lr: 0.000001  time: 0.4886  data: 0.3936  max mem: 2718
-      TTA Epoch: [46] [60/61]  eta: 0:00:00  entropy: 0.1050  uncertainty: 1.8482  uncertainty_coeffi: 0.0100  loss: 0.0873  lr: 0.000001  time: 0.0441  data: 0.0021  max mem: 2718
-      TTA Epoch: [46] Total time: 0:00:03 (0.0578 s / it)
-     Averaged stats: entropy: 0.2441  uncertainty: 2.2199  uncertainty_coeffi: 0.0100  loss: 0.1515  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [47] [ 0/61]  eta: 0:00:28  entropy: 0.3314  uncertainty: 1.9122  uncertainty_coeffi: 0.0100  loss: 0.2233  lr: 0.000001  time: 0.4598  data: 0.3420  max mem: 2718
-      TTA Epoch: [47] [60/61]  eta: 0:00:00  entropy: 0.2225  uncertainty: 2.0891  uncertainty_coeffi: 0.0100  loss: 0.1399  lr: 0.000001  time: 0.0423  data: 0.0022  max mem: 2718
-      TTA Epoch: [47] Total time: 0:00:03 (0.0580 s / it)
-     Averaged stats: entropy: 0.2452  uncertainty: 2.2263  uncertainty_coeffi: 0.0100  loss: 0.1530  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [48] [ 0/61]  eta: 0:00:29  entropy: 0.3130  uncertainty: 2.5880  uncertainty_coeffi: 0.0100  loss: 0.1708  lr: 0.000001  time: 0.4843  data: 0.4047  max mem: 2718
-      TTA Epoch: [48] [60/61]  eta: 0:00:00  entropy: 0.3657  uncertainty: 2.7627  uncertainty_coeffi: 0.0100  loss: 0.1713  lr: 0.000001  time: 0.0409  data: 0.0015  max mem: 2718
-      TTA Epoch: [48] Total time: 0:00:03 (0.0579 s / it)
-     Averaged stats: entropy: 0.2470  uncertainty: 2.2277  uncertainty_coeffi: 0.0100  loss: 0.1532  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [49] [ 0/61]  eta: 0:00:23  entropy: 0.1956  uncertainty: 1.6984  uncertainty_coeffi: 0.0100  loss: 0.1282  lr: 0.000001  time: 0.3789  data: 0.2671  max mem: 2718
-      TTA Epoch: [49] [60/61]  eta: 0:00:00  entropy: 0.2314  uncertainty: 2.4439  uncertainty_coeffi: 0.0100  loss: 0.1612  lr: 0.000001  time: 0.0434  data: 0.0028  max mem: 2718
-      TTA Epoch: [49] Total time: 0:00:03 (0.0601 s / it)
-     Averaged stats: entropy: 0.2481  uncertainty: 2.2248  uncertainty_coeffi: 0.0100  loss: 0.1538  lr: 0.0000
-     itm tta time 0:00:03
+     logs:  {'epo': 4, 'R1': 84.631, 'R5': 99.039, 'R10': 99.596, 'mAP': 91.44, 'mINP': 91.44, 'entropy': 0.344852, 'uncertainty': 2.230277, 'uncertainty_coeffi': 0.01, 'loss': 2.431519, 'lr': 5e-06}
+      TTA Epoch: [5] [ 0/61]  eta: 0:00:31  entropy: 0.3513  uncertainty: 2.0319  uncertainty_coeffi: 0.0100  loss: 2.2640  lr: 0.000006  time: 0.5116  data: 0.4159  max mem: 2671
+      TTA Epoch: [5] [60/61]  eta: 0:00:00  entropy: 0.3204  uncertainty: 2.4292  uncertainty_coeffi: 0.0100  loss: 2.6278  lr: 0.000007  time: 0.0605  data: 0.0001  max mem: 2671
+      TTA Epoch: [5] Total time: 0:00:04 (0.0686 s / it)
+     Averaged stats: entropy: 0.3415  uncertainty: 2.2097  uncertainty_coeffi: 0.0100  loss: 2.4099  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [6] [ 0/61]  eta: 0:00:30  entropy: 0.4015  uncertainty: 2.1391  uncertainty_coeffi: 0.0100  loss: 2.3737  lr: 0.000007  time: 0.4981  data: 0.3967  max mem: 2671
+      TTA Epoch: [6] [60/61]  eta: 0:00:00  entropy: 0.3117  uncertainty: 2.4871  uncertainty_coeffi: 0.0100  loss: 2.6420  lr: 0.000009  time: 0.0606  data: 0.0001  max mem: 2671
+      TTA Epoch: [6] Total time: 0:00:04 (0.0686 s / it)
+     Averaged stats: entropy: 0.3371  uncertainty: 2.2245  uncertainty_coeffi: 0.0100  loss: 2.4197  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [7] [ 0/61]  eta: 0:00:31  entropy: 0.2895  uncertainty: 2.1050  uncertainty_coeffi: 0.0100  loss: 2.2600  lr: 0.000009  time: 0.5192  data: 0.4018  max mem: 2671
+      TTA Epoch: [7] [60/61]  eta: 0:00:00  entropy: 0.2339  uncertainty: 1.8843  uncertainty_coeffi: 0.0100  loss: 2.0201  lr: 0.000010  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [7] Total time: 0:00:04 (0.0702 s / it)
+     Averaged stats: entropy: 0.3307  uncertainty: 2.2204  uncertainty_coeffi: 0.0100  loss: 2.4109  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [8] [ 0/61]  eta: 0:00:24  entropy: 0.3466  uncertainty: 2.1945  uncertainty_coeffi: 0.0100  loss: 2.4222  lr: 0.000010  time: 0.3942  data: 0.3208  max mem: 2671
+      TTA Epoch: [8] [60/61]  eta: 0:00:00  entropy: 0.2841  uncertainty: 2.3460  uncertainty_coeffi: 0.0100  loss: 2.5279  lr: 0.000010  time: 0.0617  data: 0.0001  max mem: 2671
+      TTA Epoch: [8] Total time: 0:00:04 (0.0677 s / it)
+     Averaged stats: entropy: 0.3224  uncertainty: 2.2221  uncertainty_coeffi: 0.0100  loss: 2.4072  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [9] [ 0/61]  eta: 0:00:25  entropy: 0.3312  uncertainty: 2.1228  uncertainty_coeffi: 0.0100  loss: 2.3288  lr: 0.000010  time: 0.4172  data: 0.3229  max mem: 2671
+      TTA Epoch: [9] [60/61]  eta: 0:00:00  entropy: 0.2636  uncertainty: 2.0169  uncertainty_coeffi: 0.0100  loss: 2.2249  lr: 0.000010  time: 0.0617  data: 0.0001  max mem: 2671
+      TTA Epoch: [9] Total time: 0:00:04 (0.0684 s / it)
+     Averaged stats: entropy: 0.3171  uncertainty: 2.2289  uncertainty_coeffi: 0.0100  loss: 2.4102  lr: 0.0000
+     itm tta time 0:00:04
      Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:33    time: 0.0471  data: 0.0032  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:18    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:14    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:10    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:06    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:01    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:57    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:53    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:49    time: 0.0430  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:45    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:32    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:28    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:15    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0419  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0418  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0420  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:23 (0.0422 s / it)
-     Computing matching score time 0:01:23
+      Evaluation: [   0/1978]  eta: 0:02:14    time: 0.0680  data: 0.0029  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:06    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:46    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:39    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:12    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:45    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:13 (0.0676 s / it)
+     Computing matching score time 0:02:13
 ### TTA ITM Score: 
 +-------------------+--------+--------+--------+--------+--------+
 |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
@@ -706,89 +299,59 @@ unexpected_keys:  []
 |         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
 |         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
 |         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
-|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
-|         19        | 84.580 | 98.837 | 99.494 | 91.339 | 91.339 |
-|         29        | 84.631 | 98.787 | 99.494 | 91.338 | 91.338 |
-|         39        | 84.631 | 98.736 | 99.393 | 91.326 | 91.326 |
-|         49        | 84.732 | 98.787 | 99.343 | 91.376 | 91.376 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
 +-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 49, 'R1': 84.732, 'R5': 98.787, 'R10': 99.343, 'mAP': 91.376, 'mINP': 91.376, 'entropy': 0.248116, 'uncertainty': 2.224805, 'uncertainty_coeffi': 0.01, 'loss': 0.15376, 'lr': 1e-06}
-      TTA Epoch: [50] [ 0/61]  eta: 0:00:31  entropy: 0.2799  uncertainty: 1.9502  uncertainty_coeffi: 0.0100  loss: 0.1572  lr: 0.000001  time: 0.5142  data: 0.4375  max mem: 2718
-      TTA Epoch: [50] [60/61]  eta: 0:00:00  entropy: 0.3223  uncertainty: 2.7331  uncertainty_coeffi: 0.0100  loss: 0.1975  lr: 0.000001  time: 0.0421  data: 0.0024  max mem: 2718
-      TTA Epoch: [50] Total time: 0:00:03 (0.0582 s / it)
-     Averaged stats: entropy: 0.2472  uncertainty: 2.2254  uncertainty_coeffi: 0.0100  loss: 0.1548  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [51] [ 0/61]  eta: 0:00:28  entropy: 0.2517  uncertainty: 2.7191  uncertainty_coeffi: 0.0100  loss: 0.1303  lr: 0.000001  time: 0.4662  data: 0.3178  max mem: 2718
-      TTA Epoch: [51] [60/61]  eta: 0:00:00  entropy: 0.2235  uncertainty: 2.0810  uncertainty_coeffi: 0.0100  loss: 0.1475  lr: 0.000001  time: 0.0421  data: 0.0027  max mem: 2718
-      TTA Epoch: [51] Total time: 0:00:03 (0.0579 s / it)
-     Averaged stats: entropy: 0.2441  uncertainty: 2.2269  uncertainty_coeffi: 0.0100  loss: 0.1509  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [52] [ 0/61]  eta: 0:00:23  entropy: 0.1897  uncertainty: 2.5969  uncertainty_coeffi: 0.0100  loss: 0.0983  lr: 0.000001  time: 0.3872  data: 0.2789  max mem: 2718
-      TTA Epoch: [52] [60/61]  eta: 0:00:00  entropy: 0.2782  uncertainty: 2.0373  uncertainty_coeffi: 0.0100  loss: 0.1567  lr: 0.000001  time: 0.0420  data: 0.0024  max mem: 2718
-      TTA Epoch: [52] Total time: 0:00:03 (0.0586 s / it)
-     Averaged stats: entropy: 0.2462  uncertainty: 2.2276  uncertainty_coeffi: 0.0100  loss: 0.1528  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [53] [ 0/61]  eta: 0:00:28  entropy: 0.3059  uncertainty: 2.2883  uncertainty_coeffi: 0.0100  loss: 0.1884  lr: 0.000001  time: 0.4621  data: 0.3924  max mem: 2718
-      TTA Epoch: [53] [60/61]  eta: 0:00:00  entropy: 0.1732  uncertainty: 2.2741  uncertainty_coeffi: 0.0100  loss: 0.1271  lr: 0.000001  time: 0.0413  data: 0.0023  max mem: 2718
-      TTA Epoch: [53] Total time: 0:00:03 (0.0593 s / it)
-     Averaged stats: entropy: 0.2438  uncertainty: 2.2213  uncertainty_coeffi: 0.0100  loss: 0.1514  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [54] [ 0/61]  eta: 0:00:32  entropy: 0.2620  uncertainty: 2.7248  uncertainty_coeffi: 0.0100  loss: 0.1130  lr: 0.000001  time: 0.5247  data: 0.4177  max mem: 2718
-      TTA Epoch: [54] [60/61]  eta: 0:00:00  entropy: 0.2431  uncertainty: 2.7447  uncertainty_coeffi: 0.0100  loss: 0.1211  lr: 0.000001  time: 0.0416  data: 0.0017  max mem: 2718
-      TTA Epoch: [54] Total time: 0:00:03 (0.0577 s / it)
-     Averaged stats: entropy: 0.2470  uncertainty: 2.2302  uncertainty_coeffi: 0.0100  loss: 0.1528  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [55] [ 0/61]  eta: 0:00:28  entropy: 0.3471  uncertainty: 2.0503  uncertainty_coeffi: 0.0100  loss: 0.2061  lr: 0.000001  time: 0.4672  data: 0.3796  max mem: 2718
-      TTA Epoch: [55] [60/61]  eta: 0:00:00  entropy: 0.2072  uncertainty: 2.2221  uncertainty_coeffi: 0.0100  loss: 0.1325  lr: 0.000000  time: 0.0415  data: 0.0015  max mem: 2718
-      TTA Epoch: [55] Total time: 0:00:03 (0.0580 s / it)
-     Averaged stats: entropy: 0.2403  uncertainty: 2.2267  uncertainty_coeffi: 0.0100  loss: 0.1501  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [56] [ 0/61]  eta: 0:00:31  entropy: 0.2491  uncertainty: 2.2690  uncertainty_coeffi: 0.0100  loss: 0.1533  lr: 0.000000  time: 0.5100  data: 0.4314  max mem: 2718
-      TTA Epoch: [56] [60/61]  eta: 0:00:00  entropy: 0.2564  uncertainty: 2.5396  uncertainty_coeffi: 0.0100  loss: 0.1571  lr: 0.000000  time: 0.0431  data: 0.0014  max mem: 2718
-      TTA Epoch: [56] Total time: 0:00:03 (0.0579 s / it)
-     Averaged stats: entropy: 0.2459  uncertainty: 2.2193  uncertainty_coeffi: 0.0100  loss: 0.1528  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [57] [ 0/61]  eta: 0:00:31  entropy: 0.2062  uncertainty: 2.3138  uncertainty_coeffi: 0.0100  loss: 0.1180  lr: 0.000000  time: 0.5127  data: 0.3929  max mem: 2718
-      TTA Epoch: [57] [60/61]  eta: 0:00:00  entropy: 0.3461  uncertainty: 2.2863  uncertainty_coeffi: 0.0100  loss: 0.2005  lr: 0.000000  time: 0.0433  data: 0.0029  max mem: 2718
-      TTA Epoch: [57] Total time: 0:00:03 (0.0581 s / it)
-     Averaged stats: entropy: 0.2434  uncertainty: 2.2255  uncertainty_coeffi: 0.0100  loss: 0.1517  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [58] [ 0/61]  eta: 0:00:28  entropy: 0.2521  uncertainty: 2.4934  uncertainty_coeffi: 0.0100  loss: 0.1695  lr: 0.000000  time: 0.4668  data: 0.3693  max mem: 2718
-      TTA Epoch: [58] [60/61]  eta: 0:00:00  entropy: 0.3580  uncertainty: 2.6554  uncertainty_coeffi: 0.0100  loss: 0.1927  lr: 0.000000  time: 0.0430  data: 0.0035  max mem: 2718
-      TTA Epoch: [58] Total time: 0:00:03 (0.0579 s / it)
-     Averaged stats: entropy: 0.2435  uncertainty: 2.2180  uncertainty_coeffi: 0.0100  loss: 0.1509  lr: 0.0000
-     itm tta time 0:00:03
-      TTA Epoch: [59] [ 0/61]  eta: 0:00:31  entropy: 0.2079  uncertainty: 2.1671  uncertainty_coeffi: 0.0100  loss: 0.1483  lr: 0.000000  time: 0.5154  data: 0.4392  max mem: 2718
-      TTA Epoch: [59] [60/61]  eta: 0:00:00  entropy: 0.2101  uncertainty: 3.1437  uncertainty_coeffi: 0.0100  loss: 0.1267  lr: 0.000000  time: 0.0418  data: 0.0022  max mem: 2718
-      TTA Epoch: [59] Total time: 0:00:03 (0.0581 s / it)
-     Averaged stats: entropy: 0.2453  uncertainty: 2.2273  uncertainty_coeffi: 0.0100  loss: 0.1525  lr: 0.0000
-     itm tta time 0:00:03
+     logs:  {'epo': 9, 'R1': 84.783, 'R5': 98.888, 'R10': 99.545, 'mAP': 91.488, 'mINP': 91.488, 'entropy': 0.317122, 'uncertainty': 2.228873, 'uncertainty_coeffi': 0.01, 'loss': 2.410207, 'lr': 1e-05}
+      TTA Epoch: [10] [ 0/61]  eta: 0:00:28  entropy: 0.3789  uncertainty: 2.1390  uncertainty_coeffi: 0.0100  loss: 2.3907  lr: 0.000010  time: 0.4697  data: 0.3943  max mem: 2671
+      TTA Epoch: [10] [60/61]  eta: 0:00:00  entropy: 0.1658  uncertainty: 2.0666  uncertainty_coeffi: 0.0100  loss: 2.1592  lr: 0.000009  time: 0.0604  data: 0.0001  max mem: 2671
+      TTA Epoch: [10] Total time: 0:00:04 (0.0679 s / it)
+     Averaged stats: entropy: 0.3128  uncertainty: 2.2322  uncertainty_coeffi: 0.0100  loss: 2.4098  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [11] [ 0/61]  eta: 0:00:31  entropy: 0.3522  uncertainty: 1.9595  uncertainty_coeffi: 0.0100  loss: 2.1993  lr: 0.000009  time: 0.5158  data: 0.4024  max mem: 2671
+      TTA Epoch: [11] [60/61]  eta: 0:00:00  entropy: 0.2655  uncertainty: 2.4927  uncertainty_coeffi: 0.0100  loss: 2.6308  lr: 0.000009  time: 0.0619  data: 0.0001  max mem: 2671
+      TTA Epoch: [11] Total time: 0:00:04 (0.0702 s / it)
+     Averaged stats: entropy: 0.3121  uncertainty: 2.2273  uncertainty_coeffi: 0.0100  loss: 2.4044  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [12] [ 0/61]  eta: 0:00:36  entropy: 0.3289  uncertainty: 2.1593  uncertainty_coeffi: 0.0100  loss: 2.3593  lr: 0.000009  time: 0.5926  data: 0.4733  max mem: 2671
+      TTA Epoch: [12] [60/61]  eta: 0:00:00  entropy: 0.3404  uncertainty: 2.1360  uncertainty_coeffi: 0.0100  loss: 2.3231  lr: 0.000009  time: 0.0626  data: 0.0001  max mem: 2671
+      TTA Epoch: [12] Total time: 0:00:04 (0.0722 s / it)
+     Averaged stats: entropy: 0.3025  uncertainty: 2.2251  uncertainty_coeffi: 0.0100  loss: 2.3951  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [13] [ 0/61]  eta: 0:00:34  entropy: 0.2282  uncertainty: 2.4976  uncertainty_coeffi: 0.0100  loss: 2.5880  lr: 0.000009  time: 0.5708  data: 0.4637  max mem: 2671
+      TTA Epoch: [13] [60/61]  eta: 0:00:00  entropy: 0.3754  uncertainty: 2.0687  uncertainty_coeffi: 0.0100  loss: 2.2901  lr: 0.000009  time: 0.0625  data: 0.0001  max mem: 2671
+      TTA Epoch: [13] Total time: 0:00:04 (0.0721 s / it)
+     Averaged stats: entropy: 0.2961  uncertainty: 2.2215  uncertainty_coeffi: 0.0100  loss: 2.3885  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [14] [ 0/61]  eta: 0:00:37  entropy: 0.2679  uncertainty: 2.2185  uncertainty_coeffi: 0.0100  loss: 2.3425  lr: 0.000009  time: 0.6217  data: 0.5031  max mem: 2671
+      TTA Epoch: [14] [60/61]  eta: 0:00:00  entropy: 0.2636  uncertainty: 1.7709  uncertainty_coeffi: 0.0100  loss: 1.9628  lr: 0.000009  time: 0.0623  data: 0.0001  max mem: 2671
+      TTA Epoch: [14] Total time: 0:00:04 (0.0723 s / it)
+     Averaged stats: entropy: 0.2925  uncertainty: 2.2235  uncertainty_coeffi: 0.0100  loss: 2.3870  lr: 0.0000
+     itm tta time 0:00:04
      Computing matching score
-      Evaluation: [   0/1978]  eta: 0:01:33    time: 0.0475  data: 0.0033  max mem: 2718
-      Evaluation: [ 100/1978]  eta: 0:01:19    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [ 200/1978]  eta: 0:01:15    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 300/1978]  eta: 0:01:13    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 400/1978]  eta: 0:01:08    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [ 500/1978]  eta: 0:01:04    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [ 600/1978]  eta: 0:00:59    time: 0.0428  data: 0.0000  max mem: 2718
-      Evaluation: [ 700/1978]  eta: 0:00:55    time: 0.0427  data: 0.0000  max mem: 2718
-      Evaluation: [ 800/1978]  eta: 0:00:50    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [ 900/1978]  eta: 0:00:46    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [1000/1978]  eta: 0:00:41    time: 0.0426  data: 0.0000  max mem: 2718
-      Evaluation: [1100/1978]  eta: 0:00:37    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1200/1978]  eta: 0:00:33    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1300/1978]  eta: 0:00:29    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1400/1978]  eta: 0:00:24    time: 0.0422  data: 0.0000  max mem: 2718
-      Evaluation: [1500/1978]  eta: 0:00:20    time: 0.0421  data: 0.0000  max mem: 2718
-      Evaluation: [1600/1978]  eta: 0:00:16    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1700/1978]  eta: 0:00:11    time: 0.0425  data: 0.0000  max mem: 2718
-      Evaluation: [1800/1978]  eta: 0:00:07    time: 0.0423  data: 0.0000  max mem: 2718
-      Evaluation: [1900/1978]  eta: 0:00:03    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0424  data: 0.0000  max mem: 2718
-      Evaluation: Total time: 0:01:24 (0.0427 s / it)
-     Computing matching score time 0:01:24
+      Evaluation: [   0/1978]  eta: 0:02:22    time: 0.0722  data: 0.0046  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:08    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:01    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:54    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:47    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:40    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:13    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:45    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:14 (0.0678 s / it)
+     Computing matching score time 0:02:14
 ### TTA ITM Score: 
 +-------------------+--------+--------+--------+--------+--------+
 |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
@@ -800,18 +363,453 @@ unexpected_keys:  []
 |         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
 |         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
 |         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
-|         4         | 84.631 | 99.039 | 99.596 | 91.444 | 91.444 |
-|         9         | 84.783 | 98.938 | 99.545 | 91.490 | 91.490 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
 |         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
-|         19        | 84.580 | 98.837 | 99.494 | 91.339 | 91.339 |
-|         29        | 84.631 | 98.787 | 99.494 | 91.338 | 91.338 |
-|         39        | 84.631 | 98.736 | 99.393 | 91.326 | 91.326 |
-|         49        | 84.732 | 98.787 | 99.343 | 91.376 | 91.376 |
-|         59        | 84.783 | 98.787 | 99.343 | 91.401 | 91.401 |
 +-------------------+--------+--------+--------+--------+--------+
-     logs:  {'epo': 59, 'R1': 84.783, 'R5': 98.787, 'R10': 99.343, 'mAP': 91.401, 'mINP': 91.401, 'entropy': 0.245267, 'uncertainty': 2.22733, 'uncertainty_coeffi': 0.01, 'loss': 0.152458, 'lr': 0.0}
+     logs:  {'epo': 14, 'R1': 84.631, 'R5': 98.888, 'R10': 99.494, 'mAP': 91.387, 'mINP': 91.387, 'entropy': 0.292534, 'uncertainty': 2.223525, 'uncertainty_coeffi': 0.01, 'loss': 2.386982, 'lr': 9e-06}
+      TTA Epoch: [15] [ 0/61]  eta: 0:00:27  entropy: 0.2222  uncertainty: 2.3902  uncertainty_coeffi: 0.0100  loss: 2.4929  lr: 0.000009  time: 0.4557  data: 0.3725  max mem: 2671
+      TTA Epoch: [15] [60/61]  eta: 0:00:00  entropy: 0.2768  uncertainty: 2.0834  uncertainty_coeffi: 0.0100  loss: 2.2417  lr: 0.000009  time: 0.0606  data: 0.0001  max mem: 2671
+      TTA Epoch: [15] Total time: 0:00:04 (0.0679 s / it)
+     Averaged stats: entropy: 0.2917  uncertainty: 2.2148  uncertainty_coeffi: 0.0100  loss: 2.3781  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [16] [ 0/61]  eta: 0:00:32  entropy: 0.2506  uncertainty: 2.4132  uncertainty_coeffi: 0.0100  loss: 2.5044  lr: 0.000009  time: 0.5322  data: 0.4154  max mem: 2671
+      TTA Epoch: [16] [60/61]  eta: 0:00:00  entropy: 0.2770  uncertainty: 2.2837  uncertainty_coeffi: 0.0100  loss: 2.4532  lr: 0.000008  time: 0.0620  data: 0.0001  max mem: 2671
+      TTA Epoch: [16] Total time: 0:00:04 (0.0709 s / it)
+     Averaged stats: entropy: 0.2910  uncertainty: 2.2269  uncertainty_coeffi: 0.0100  loss: 2.3889  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [17] [ 0/61]  eta: 0:00:33  entropy: 0.2802  uncertainty: 2.1341  uncertainty_coeffi: 0.0100  loss: 2.2789  lr: 0.000008  time: 0.5566  data: 0.4596  max mem: 2671
+      TTA Epoch: [17] [60/61]  eta: 0:00:00  entropy: 0.3455  uncertainty: 1.6610  uncertainty_coeffi: 0.0100  loss: 1.8926  lr: 0.000008  time: 0.0604  data: 0.0001  max mem: 2671
+      TTA Epoch: [17] Total time: 0:00:04 (0.0697 s / it)
+     Averaged stats: entropy: 0.2865  uncertainty: 2.2173  uncertainty_coeffi: 0.0100  loss: 2.3768  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [18] [ 0/61]  eta: 0:00:31  entropy: 0.3121  uncertainty: 2.6151  uncertainty_coeffi: 0.0100  loss: 2.7644  lr: 0.000008  time: 0.5182  data: 0.4060  max mem: 2671
+      TTA Epoch: [18] [60/61]  eta: 0:00:00  entropy: 0.2490  uncertainty: 1.9300  uncertainty_coeffi: 0.0100  loss: 2.0868  lr: 0.000008  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [18] Total time: 0:00:04 (0.0699 s / it)
+     Averaged stats: entropy: 0.2790  uncertainty: 2.2304  uncertainty_coeffi: 0.0100  loss: 2.3839  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [19] [ 0/61]  eta: 0:00:31  entropy: 0.1941  uncertainty: 2.1348  uncertainty_coeffi: 0.0100  loss: 2.2522  lr: 0.000008  time: 0.5191  data: 0.4008  max mem: 2671
+      TTA Epoch: [19] [60/61]  eta: 0:00:00  entropy: 0.0944  uncertainty: 2.0557  uncertainty_coeffi: 0.0100  loss: 2.0970  lr: 0.000008  time: 0.0616  data: 0.0001  max mem: 2671
+      TTA Epoch: [19] Total time: 0:00:04 (0.0701 s / it)
+     Averaged stats: entropy: 0.2812  uncertainty: 2.2304  uncertainty_coeffi: 0.0100  loss: 2.3856  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:36    time: 0.0789  data: 0.0081  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:08    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:46    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:39    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:12    time: 0.0673  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:45    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:13 (0.0675 s / it)
+     Computing matching score time 0:02:13
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
+|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
+|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
+|         19        | 84.580 | 98.837 | 99.494 | 91.331 | 91.331 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 19, 'R1': 84.58, 'R5': 98.837, 'R10': 99.494, 'mAP': 91.331, 'mINP': 91.331, 'entropy': 0.281249, 'uncertainty': 2.230403, 'uncertainty_coeffi': 0.01, 'loss': 2.385572, 'lr': 8e-06}
+      TTA Epoch: [20] [ 0/61]  eta: 0:00:28  entropy: 0.3014  uncertainty: 1.9055  uncertainty_coeffi: 0.0100  loss: 2.0596  lr: 0.000008  time: 0.4740  data: 0.3975  max mem: 2671
+      TTA Epoch: [20] [60/61]  eta: 0:00:00  entropy: 0.2577  uncertainty: 1.9697  uncertainty_coeffi: 0.0100  loss: 2.1113  lr: 0.000008  time: 0.0600  data: 0.0001  max mem: 2671
+      TTA Epoch: [20] Total time: 0:00:04 (0.0686 s / it)
+     Averaged stats: entropy: 0.2761  uncertainty: 2.2145  uncertainty_coeffi: 0.0100  loss: 2.3664  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [21] [ 0/61]  eta: 0:00:26  entropy: 0.2504  uncertainty: 2.1407  uncertainty_coeffi: 0.0100  loss: 2.2581  lr: 0.000008  time: 0.4314  data: 0.3155  max mem: 2671
+      TTA Epoch: [21] [60/61]  eta: 0:00:00  entropy: 0.2642  uncertainty: 2.7638  uncertainty_coeffi: 0.0100  loss: 2.9175  lr: 0.000007  time: 0.0609  data: 0.0001  max mem: 2671
+      TTA Epoch: [21] Total time: 0:00:04 (0.0687 s / it)
+     Averaged stats: entropy: 0.2758  uncertainty: 2.2253  uncertainty_coeffi: 0.0100  loss: 2.3764  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [22] [ 0/61]  eta: 0:00:34  entropy: 0.2521  uncertainty: 1.9282  uncertainty_coeffi: 0.0100  loss: 2.0720  lr: 0.000007  time: 0.5640  data: 0.4475  max mem: 2671
+      TTA Epoch: [22] [60/61]  eta: 0:00:00  entropy: 0.2112  uncertainty: 1.9843  uncertainty_coeffi: 0.0100  loss: 2.1142  lr: 0.000007  time: 0.0607  data: 0.0001  max mem: 2671
+      TTA Epoch: [22] Total time: 0:00:04 (0.0704 s / it)
+     Averaged stats: entropy: 0.2713  uncertainty: 2.2197  uncertainty_coeffi: 0.0100  loss: 2.3683  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [23] [ 0/61]  eta: 0:00:24  entropy: 0.2272  uncertainty: 2.3421  uncertainty_coeffi: 0.0100  loss: 2.4797  lr: 0.000007  time: 0.4083  data: 0.3144  max mem: 2671
+      TTA Epoch: [23] [60/61]  eta: 0:00:00  entropy: 0.2621  uncertainty: 2.1875  uncertainty_coeffi: 0.0100  loss: 2.3362  lr: 0.000007  time: 0.0615  data: 0.0001  max mem: 2671
+      TTA Epoch: [23] Total time: 0:00:04 (0.0679 s / it)
+     Averaged stats: entropy: 0.2653  uncertainty: 2.2147  uncertainty_coeffi: 0.0100  loss: 2.3596  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [24] [ 0/61]  eta: 0:00:28  entropy: 0.3593  uncertainty: 2.6128  uncertainty_coeffi: 0.0100  loss: 2.7632  lr: 0.000007  time: 0.4598  data: 0.3640  max mem: 2671
+      TTA Epoch: [24] [60/61]  eta: 0:00:00  entropy: 0.3284  uncertainty: 2.5606  uncertainty_coeffi: 0.0100  loss: 2.6972  lr: 0.000007  time: 0.0612  data: 0.0001  max mem: 2671
+      TTA Epoch: [24] Total time: 0:00:04 (0.0687 s / it)
+     Averaged stats: entropy: 0.2665  uncertainty: 2.2273  uncertainty_coeffi: 0.0100  loss: 2.3723  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [25] [ 0/61]  eta: 0:00:27  entropy: 0.2697  uncertainty: 2.0063  uncertainty_coeffi: 0.0100  loss: 2.1629  lr: 0.000007  time: 0.4463  data: 0.3642  max mem: 2671
+      TTA Epoch: [25] [60/61]  eta: 0:00:00  entropy: 0.3344  uncertainty: 1.8903  uncertainty_coeffi: 0.0100  loss: 2.0981  lr: 0.000007  time: 0.0623  data: 0.0001  max mem: 2671
+      TTA Epoch: [25] Total time: 0:00:04 (0.0691 s / it)
+     Averaged stats: entropy: 0.2572  uncertainty: 2.2205  uncertainty_coeffi: 0.0100  loss: 2.3597  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [26] [ 0/61]  eta: 0:00:33  entropy: 0.2839  uncertainty: 2.0514  uncertainty_coeffi: 0.0100  loss: 2.2339  lr: 0.000007  time: 0.5423  data: 0.4353  max mem: 2671
+      TTA Epoch: [26] [60/61]  eta: 0:00:00  entropy: 0.1379  uncertainty: 2.3290  uncertainty_coeffi: 0.0100  loss: 2.4033  lr: 0.000006  time: 0.0621  data: 0.0001  max mem: 2671
+      TTA Epoch: [26] Total time: 0:00:04 (0.0712 s / it)
+     Averaged stats: entropy: 0.2605  uncertainty: 2.2187  uncertainty_coeffi: 0.0100  loss: 2.3612  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [27] [ 0/61]  eta: 0:00:40  entropy: 0.2457  uncertainty: 2.4429  uncertainty_coeffi: 0.0100  loss: 2.5642  lr: 0.000006  time: 0.6622  data: 0.5442  max mem: 2671
+      TTA Epoch: [27] [60/61]  eta: 0:00:00  entropy: 0.1476  uncertainty: 2.3020  uncertainty_coeffi: 0.0100  loss: 2.3675  lr: 0.000006  time: 0.0620  data: 0.0001  max mem: 2671
+      TTA Epoch: [27] Total time: 0:00:04 (0.0728 s / it)
+     Averaged stats: entropy: 0.2571  uncertainty: 2.2182  uncertainty_coeffi: 0.0100  loss: 2.3570  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [28] [ 0/61]  eta: 0:00:33  entropy: 0.2961  uncertainty: 1.8976  uncertainty_coeffi: 0.0100  loss: 2.0895  lr: 0.000006  time: 0.5413  data: 0.4246  max mem: 2671
+      TTA Epoch: [28] [60/61]  eta: 0:00:00  entropy: 0.2890  uncertainty: 2.6270  uncertainty_coeffi: 0.0100  loss: 2.7540  lr: 0.000006  time: 0.0617  data: 0.0001  max mem: 2671
+      TTA Epoch: [28] Total time: 0:00:04 (0.0703 s / it)
+     Averaged stats: entropy: 0.2600  uncertainty: 2.2253  uncertainty_coeffi: 0.0100  loss: 2.3661  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [29] [ 0/61]  eta: 0:00:30  entropy: 0.1581  uncertainty: 2.2945  uncertainty_coeffi: 0.0100  loss: 2.3772  lr: 0.000006  time: 0.4932  data: 0.3800  max mem: 2671
+      TTA Epoch: [29] [60/61]  eta: 0:00:00  entropy: 0.2880  uncertainty: 2.2484  uncertainty_coeffi: 0.0100  loss: 2.4009  lr: 0.000006  time: 0.0623  data: 0.0001  max mem: 2671
+      TTA Epoch: [29] Total time: 0:00:04 (0.0704 s / it)
+     Averaged stats: entropy: 0.2556  uncertainty: 2.2183  uncertainty_coeffi: 0.0100  loss: 2.3562  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:26    time: 0.0741  data: 0.0063  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:07    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:47    time: 0.0708  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:41    time: 0.0681  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:34    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:27    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:20    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:13    time: 0.0694  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0692  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:01:00    time: 0.0691  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:53    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:46    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:14 (0.0681 s / it)
+     Computing matching score time 0:02:14
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
+|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
+|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
+|         19        | 84.580 | 98.837 | 99.494 | 91.331 | 91.331 |
+|         29        | 84.681 | 98.736 | 99.494 | 91.361 | 91.361 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 29, 'R1': 84.681, 'R5': 98.736, 'R10': 99.494, 'mAP': 91.361, 'mINP': 91.361, 'entropy': 0.255632, 'uncertainty': 2.21825, 'uncertainty_coeffi': 0.01, 'loss': 2.356206, 'lr': 6e-06}
+      TTA Epoch: [30] [ 0/61]  eta: 0:00:28  entropy: 0.2696  uncertainty: 2.6460  uncertainty_coeffi: 0.0100  loss: 2.7379  lr: 0.000006  time: 0.4671  data: 0.3825  max mem: 2671
+      TTA Epoch: [30] [60/61]  eta: 0:00:00  entropy: 0.3582  uncertainty: 2.8628  uncertainty_coeffi: 0.0100  loss: 3.0445  lr: 0.000006  time: 0.0604  data: 0.0001  max mem: 2671
+      TTA Epoch: [30] Total time: 0:00:04 (0.0681 s / it)
+     Averaged stats: entropy: 0.2554  uncertainty: 2.2233  uncertainty_coeffi: 0.0100  loss: 2.3596  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [31] [ 0/61]  eta: 0:00:25  entropy: 0.3115  uncertainty: 2.3392  uncertainty_coeffi: 0.0100  loss: 2.4923  lr: 0.000006  time: 0.4140  data: 0.3419  max mem: 2671
+      TTA Epoch: [31] [60/61]  eta: 0:00:00  entropy: 0.1786  uncertainty: 2.0486  uncertainty_coeffi: 0.0100  loss: 2.1429  lr: 0.000005  time: 0.0611  data: 0.0001  max mem: 2671
+      TTA Epoch: [31] Total time: 0:00:04 (0.0673 s / it)
+     Averaged stats: entropy: 0.2536  uncertainty: 2.2157  uncertainty_coeffi: 0.0100  loss: 2.3525  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [32] [ 0/61]  eta: 0:00:39  entropy: 0.3193  uncertainty: 2.7152  uncertainty_coeffi: 0.0100  loss: 2.8582  lr: 0.000005  time: 0.6497  data: 0.5355  max mem: 2671
+      TTA Epoch: [32] [60/61]  eta: 0:00:00  entropy: 0.2345  uncertainty: 2.1611  uncertainty_coeffi: 0.0100  loss: 2.2733  lr: 0.000003  time: 0.0611  data: 0.0001  max mem: 2671
+      TTA Epoch: [32] Total time: 0:00:04 (0.0716 s / it)
+     Averaged stats: entropy: 0.2516  uncertainty: 2.2179  uncertainty_coeffi: 0.0100  loss: 2.3525  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [33] [ 0/61]  eta: 0:00:35  entropy: 0.2813  uncertainty: 2.1110  uncertainty_coeffi: 0.0100  loss: 2.2927  lr: 0.000003  time: 0.5739  data: 0.4861  max mem: 2671
+      TTA Epoch: [33] [60/61]  eta: 0:00:00  entropy: 0.2965  uncertainty: 2.2857  uncertainty_coeffi: 0.0100  loss: 2.4416  lr: 0.000003  time: 0.0613  data: 0.0001  max mem: 2671
+      TTA Epoch: [33] Total time: 0:00:04 (0.0711 s / it)
+     Averaged stats: entropy: 0.2536  uncertainty: 2.2131  uncertainty_coeffi: 0.0100  loss: 2.3489  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [34] [ 0/61]  eta: 0:00:27  entropy: 0.3640  uncertainty: 1.8855  uncertainty_coeffi: 0.0100  loss: 2.0834  lr: 0.000003  time: 0.4552  data: 0.3477  max mem: 2671
+      TTA Epoch: [34] [60/61]  eta: 0:00:00  entropy: 0.2240  uncertainty: 2.1135  uncertainty_coeffi: 0.0100  loss: 2.2054  lr: 0.000002  time: 0.0618  data: 0.0001  max mem: 2671
+      TTA Epoch: [34] Total time: 0:00:04 (0.0692 s / it)
+     Averaged stats: entropy: 0.2508  uncertainty: 2.2118  uncertainty_coeffi: 0.0100  loss: 2.3461  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [35] [ 0/61]  eta: 0:00:35  entropy: 0.2592  uncertainty: 2.6865  uncertainty_coeffi: 0.0100  loss: 2.8294  lr: 0.000002  time: 0.5743  data: 0.4618  max mem: 2671
+      TTA Epoch: [35] [60/61]  eta: 0:00:00  entropy: 0.1774  uncertainty: 2.7296  uncertainty_coeffi: 0.0100  loss: 2.8116  lr: 0.000002  time: 0.0619  data: 0.0001  max mem: 2671
+      TTA Epoch: [35] Total time: 0:00:04 (0.0711 s / it)
+     Averaged stats: entropy: 0.2486  uncertainty: 2.2258  uncertainty_coeffi: 0.0100  loss: 2.3586  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [36] [ 0/61]  eta: 0:00:34  entropy: 0.2378  uncertainty: 2.0650  uncertainty_coeffi: 0.0100  loss: 2.2104  lr: 0.000002  time: 0.5610  data: 0.4368  max mem: 2671
+      TTA Epoch: [36] [60/61]  eta: 0:00:00  entropy: 0.2269  uncertainty: 2.3693  uncertainty_coeffi: 0.0100  loss: 2.5151  lr: 0.000002  time: 0.0618  data: 0.0001  max mem: 2671
+      TTA Epoch: [36] Total time: 0:00:04 (0.0710 s / it)
+     Averaged stats: entropy: 0.2508  uncertainty: 2.2140  uncertainty_coeffi: 0.0100  loss: 2.3477  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [37] [ 0/61]  eta: 0:00:31  entropy: 0.1482  uncertainty: 2.1477  uncertainty_coeffi: 0.0100  loss: 2.2235  lr: 0.000002  time: 0.5167  data: 0.3960  max mem: 2671
+      TTA Epoch: [37] [60/61]  eta: 0:00:00  entropy: 0.2091  uncertainty: 2.5229  uncertainty_coeffi: 0.0100  loss: 2.6323  lr: 0.000002  time: 0.0613  data: 0.0001  max mem: 2671
+      TTA Epoch: [37] Total time: 0:00:04 (0.0698 s / it)
+     Averaged stats: entropy: 0.2501  uncertainty: 2.2244  uncertainty_coeffi: 0.0100  loss: 2.3585  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [38] [ 0/61]  eta: 0:00:30  entropy: 0.2747  uncertainty: 1.7901  uncertainty_coeffi: 0.0100  loss: 1.9563  lr: 0.000002  time: 0.4982  data: 0.3931  max mem: 2671
+      TTA Epoch: [38] [60/61]  eta: 0:00:00  entropy: 0.3144  uncertainty: 2.4969  uncertainty_coeffi: 0.0100  loss: 2.6559  lr: 0.000002  time: 0.0610  data: 0.0001  max mem: 2671
+      TTA Epoch: [38] Total time: 0:00:04 (0.0694 s / it)
+     Averaged stats: entropy: 0.2482  uncertainty: 2.2242  uncertainty_coeffi: 0.0100  loss: 2.3554  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [39] [ 0/61]  eta: 0:00:38  entropy: 0.2013  uncertainty: 2.1707  uncertainty_coeffi: 0.0100  loss: 2.2658  lr: 0.000002  time: 0.6262  data: 0.5117  max mem: 2671
+      TTA Epoch: [39] [60/61]  eta: 0:00:00  entropy: 0.1930  uncertainty: 1.7884  uncertainty_coeffi: 0.0100  loss: 1.9020  lr: 0.000002  time: 0.0612  data: 0.0001  max mem: 2671
+      TTA Epoch: [39] Total time: 0:00:04 (0.0718 s / it)
+     Averaged stats: entropy: 0.2475  uncertainty: 2.2196  uncertainty_coeffi: 0.0100  loss: 2.3522  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:26    time: 0.0743  data: 0.0065  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:07    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0676  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:46    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:39    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:12    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:45    time: 0.0674  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0675  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:14 (0.0679 s / it)
+     Computing matching score time 0:02:14
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
+|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
+|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
+|         19        | 84.580 | 98.837 | 99.494 | 91.331 | 91.331 |
+|         29        | 84.681 | 98.736 | 99.494 | 91.361 | 91.361 |
+|         39        | 84.783 | 98.736 | 99.393 | 91.401 | 91.401 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 39, 'R1': 84.783, 'R5': 98.736, 'R10': 99.393, 'mAP': 91.401, 'mINP': 91.401, 'entropy': 0.247453, 'uncertainty': 2.21958, 'uncertainty_coeffi': 0.01, 'loss': 2.352229, 'lr': 2e-06}
+      TTA Epoch: [40] [ 0/61]  eta: 0:00:29  entropy: 0.2040  uncertainty: 2.5705  uncertainty_coeffi: 0.0100  loss: 2.6869  lr: 0.000002  time: 0.4870  data: 0.3904  max mem: 2671
+      TTA Epoch: [40] [60/61]  eta: 0:00:00  entropy: 0.2647  uncertainty: 2.4281  uncertainty_coeffi: 0.0100  loss: 2.5455  lr: 0.000002  time: 0.0619  data: 0.0001  max mem: 2671
+      TTA Epoch: [40] Total time: 0:00:04 (0.0692 s / it)
+     Averaged stats: entropy: 0.2476  uncertainty: 2.2254  uncertainty_coeffi: 0.0100  loss: 2.3576  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [41] [ 0/61]  eta: 0:00:32  entropy: 0.2651  uncertainty: 1.8657  uncertainty_coeffi: 0.0100  loss: 2.0221  lr: 0.000002  time: 0.5280  data: 0.4143  max mem: 2671
+      TTA Epoch: [41] [60/61]  eta: 0:00:00  entropy: 0.2423  uncertainty: 2.1270  uncertainty_coeffi: 0.0100  loss: 2.2728  lr: 0.000002  time: 0.0617  data: 0.0001  max mem: 2671
+      TTA Epoch: [41] Total time: 0:00:04 (0.0703 s / it)
+     Averaged stats: entropy: 0.2479  uncertainty: 2.2160  uncertainty_coeffi: 0.0100  loss: 2.3485  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [42] [ 0/61]  eta: 0:00:33  entropy: 0.2576  uncertainty: 2.3223  uncertainty_coeffi: 0.0100  loss: 2.4638  lr: 0.000002  time: 0.5515  data: 0.4743  max mem: 2671
+      TTA Epoch: [42] [60/61]  eta: 0:00:00  entropy: 0.1810  uncertainty: 1.8406  uncertainty_coeffi: 0.0100  loss: 1.9387  lr: 0.000002  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [42] Total time: 0:00:04 (0.0703 s / it)
+     Averaged stats: entropy: 0.2504  uncertainty: 2.2219  uncertainty_coeffi: 0.0100  loss: 2.3536  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [43] [ 0/61]  eta: 0:00:31  entropy: 0.2101  uncertainty: 2.3599  uncertainty_coeffi: 0.0100  loss: 2.4718  lr: 0.000002  time: 0.5209  data: 0.4278  max mem: 2671
+      TTA Epoch: [43] [60/61]  eta: 0:00:00  entropy: 0.1474  uncertainty: 1.7770  uncertainty_coeffi: 0.0100  loss: 1.8862  lr: 0.000002  time: 0.0600  data: 0.0001  max mem: 2671
+      TTA Epoch: [43] Total time: 0:00:04 (0.0686 s / it)
+     Averaged stats: entropy: 0.2447  uncertainty: 2.2165  uncertainty_coeffi: 0.0100  loss: 2.3473  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [44] [ 0/61]  eta: 0:00:26  entropy: 0.2309  uncertainty: 2.1977  uncertainty_coeffi: 0.0100  loss: 2.3281  lr: 0.000002  time: 0.4300  data: 0.3337  max mem: 2671
+      TTA Epoch: [44] [60/61]  eta: 0:00:00  entropy: 0.1708  uncertainty: 2.5352  uncertainty_coeffi: 0.0100  loss: 2.6122  lr: 0.000002  time: 0.0608  data: 0.0001  max mem: 2671
+      TTA Epoch: [44] Total time: 0:00:04 (0.0676 s / it)
+     Averaged stats: entropy: 0.2466  uncertainty: 2.2212  uncertainty_coeffi: 0.0100  loss: 2.3521  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [45] [ 0/61]  eta: 0:00:29  entropy: 0.2916  uncertainty: 2.1992  uncertainty_coeffi: 0.0100  loss: 2.3648  lr: 0.000002  time: 0.4854  data: 0.3878  max mem: 2671
+      TTA Epoch: [45] [60/61]  eta: 0:00:00  entropy: 0.3664  uncertainty: 2.2271  uncertainty_coeffi: 0.0100  loss: 2.4122  lr: 0.000001  time: 0.0603  data: 0.0001  max mem: 2671
+      TTA Epoch: [45] Total time: 0:00:04 (0.0688 s / it)
+     Averaged stats: entropy: 0.2434  uncertainty: 2.2262  uncertainty_coeffi: 0.0100  loss: 2.3561  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [46] [ 0/61]  eta: 0:00:32  entropy: 0.1833  uncertainty: 2.1420  uncertainty_coeffi: 0.0100  loss: 2.2432  lr: 0.000001  time: 0.5329  data: 0.4177  max mem: 2671
+      TTA Epoch: [46] [60/61]  eta: 0:00:00  entropy: 0.0910  uncertainty: 1.8482  uncertainty_coeffi: 0.0100  loss: 1.9058  lr: 0.000001  time: 0.0608  data: 0.0001  max mem: 2671
+      TTA Epoch: [46] Total time: 0:00:04 (0.0697 s / it)
+     Averaged stats: entropy: 0.2469  uncertainty: 2.2199  uncertainty_coeffi: 0.0100  loss: 2.3514  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [47] [ 0/61]  eta: 0:00:26  entropy: 0.3073  uncertainty: 1.9122  uncertainty_coeffi: 0.0100  loss: 2.1014  lr: 0.000001  time: 0.4371  data: 0.3418  max mem: 2671
+      TTA Epoch: [47] [60/61]  eta: 0:00:00  entropy: 0.2122  uncertainty: 2.0891  uncertainty_coeffi: 0.0100  loss: 2.2038  lr: 0.000001  time: 0.0613  data: 0.0001  max mem: 2671
+      TTA Epoch: [47] Total time: 0:00:04 (0.0685 s / it)
+     Averaged stats: entropy: 0.2489  uncertainty: 2.2263  uncertainty_coeffi: 0.0100  loss: 2.3574  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [48] [ 0/61]  eta: 0:00:29  entropy: 0.3190  uncertainty: 2.5880  uncertainty_coeffi: 0.0100  loss: 2.7333  lr: 0.000001  time: 0.4824  data: 0.3895  max mem: 2671
+      TTA Epoch: [48] [60/61]  eta: 0:00:00  entropy: 0.3312  uncertainty: 2.7627  uncertainty_coeffi: 0.0100  loss: 2.8803  lr: 0.000001  time: 0.0613  data: 0.0001  max mem: 2671
+      TTA Epoch: [48] Total time: 0:00:04 (0.0692 s / it)
+     Averaged stats: entropy: 0.2439  uncertainty: 2.2277  uncertainty_coeffi: 0.0100  loss: 2.3570  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [49] [ 0/61]  eta: 0:00:31  entropy: 0.1891  uncertainty: 1.6984  uncertainty_coeffi: 0.0100  loss: 1.8079  lr: 0.000001  time: 0.5096  data: 0.4118  max mem: 2671
+      TTA Epoch: [49] [60/61]  eta: 0:00:00  entropy: 0.2302  uncertainty: 2.4439  uncertainty_coeffi: 0.0100  loss: 2.5832  lr: 0.000001  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [49] Total time: 0:00:04 (0.0697 s / it)
+     Averaged stats: entropy: 0.2450  uncertainty: 2.2248  uncertainty_coeffi: 0.0100  loss: 2.3551  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:29    time: 0.0758  data: 0.0048  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:07    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:00    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:53    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:47    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:40    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:33    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:26    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:19    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:13    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:06    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:00:59    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:52    time: 0.0680  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:46    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0678  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:25    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:18    time: 0.0680  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0679  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0677  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:14 (0.0679 s / it)
+     Computing matching score time 0:02:14
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
+|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
+|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
+|         19        | 84.580 | 98.837 | 99.494 | 91.331 | 91.331 |
+|         29        | 84.681 | 98.736 | 99.494 | 91.361 | 91.361 |
+|         39        | 84.783 | 98.736 | 99.393 | 91.401 | 91.401 |
+|         49        | 84.732 | 98.736 | 99.343 | 91.374 | 91.374 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 49, 'R1': 84.732, 'R5': 98.736, 'R10': 99.343, 'mAP': 91.374, 'mINP': 91.374, 'entropy': 0.245049, 'uncertainty': 2.224805, 'uncertainty_coeffi': 0.01, 'loss': 2.355068, 'lr': 1e-06}
+      TTA Epoch: [50] [ 0/61]  eta: 0:00:28  entropy: 0.2373  uncertainty: 1.9502  uncertainty_coeffi: 0.0100  loss: 2.0546  lr: 0.000001  time: 0.4632  data: 0.3855  max mem: 2671
+      TTA Epoch: [50] [60/61]  eta: 0:00:00  entropy: 0.3016  uncertainty: 2.7331  uncertainty_coeffi: 0.0100  loss: 2.8693  lr: 0.000001  time: 0.0596  data: 0.0001  max mem: 2671
+      TTA Epoch: [50] Total time: 0:00:04 (0.0669 s / it)
+     Averaged stats: entropy: 0.2455  uncertainty: 2.2254  uncertainty_coeffi: 0.0100  loss: 2.3555  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [51] [ 0/61]  eta: 0:00:32  entropy: 0.2173  uncertainty: 2.7191  uncertainty_coeffi: 0.0100  loss: 2.8088  lr: 0.000001  time: 0.5280  data: 0.4288  max mem: 2671
+      TTA Epoch: [51] [60/61]  eta: 0:00:00  entropy: 0.2332  uncertainty: 2.0810  uncertainty_coeffi: 0.0100  loss: 2.2158  lr: 0.000001  time: 0.0600  data: 0.0001  max mem: 2671
+      TTA Epoch: [51] Total time: 0:00:04 (0.0686 s / it)
+     Averaged stats: entropy: 0.2463  uncertainty: 2.2269  uncertainty_coeffi: 0.0100  loss: 2.3566  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [52] [ 0/61]  eta: 0:00:31  entropy: 0.1879  uncertainty: 2.5969  uncertainty_coeffi: 0.0100  loss: 2.6712  lr: 0.000001  time: 0.5206  data: 0.4230  max mem: 2671
+      TTA Epoch: [52] [60/61]  eta: 0:00:00  entropy: 0.2693  uncertainty: 2.0373  uncertainty_coeffi: 0.0100  loss: 2.1732  lr: 0.000001  time: 0.0607  data: 0.0001  max mem: 2671
+      TTA Epoch: [52] Total time: 0:00:04 (0.0690 s / it)
+     Averaged stats: entropy: 0.2430  uncertainty: 2.2276  uncertainty_coeffi: 0.0100  loss: 2.3555  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [53] [ 0/61]  eta: 0:00:23  entropy: 0.3320  uncertainty: 2.2883  uncertainty_coeffi: 0.0100  loss: 2.4788  lr: 0.000001  time: 0.3856  data: 0.3048  max mem: 2671
+      TTA Epoch: [53] [60/61]  eta: 0:00:00  entropy: 0.2018  uncertainty: 2.2741  uncertainty_coeffi: 0.0100  loss: 2.4023  lr: 0.000001  time: 0.0606  data: 0.0001  max mem: 2671
+      TTA Epoch: [53] Total time: 0:00:04 (0.0677 s / it)
+     Averaged stats: entropy: 0.2416  uncertainty: 2.2213  uncertainty_coeffi: 0.0100  loss: 2.3490  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [54] [ 0/61]  eta: 0:00:33  entropy: 0.3178  uncertainty: 2.7247  uncertainty_coeffi: 0.0100  loss: 2.8329  lr: 0.000001  time: 0.5560  data: 0.4395  max mem: 2671
+      TTA Epoch: [54] [60/61]  eta: 0:00:00  entropy: 0.2333  uncertainty: 2.7447  uncertainty_coeffi: 0.0100  loss: 2.8320  lr: 0.000001  time: 0.0606  data: 0.0001  max mem: 2671
+      TTA Epoch: [54] Total time: 0:00:04 (0.0698 s / it)
+     Averaged stats: entropy: 0.2472  uncertainty: 2.2302  uncertainty_coeffi: 0.0100  loss: 2.3592  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [55] [ 0/61]  eta: 0:00:28  entropy: 0.3781  uncertainty: 2.0503  uncertainty_coeffi: 0.0100  loss: 2.2543  lr: 0.000001  time: 0.4686  data: 0.3762  max mem: 2671
+      TTA Epoch: [55] [60/61]  eta: 0:00:00  entropy: 0.1833  uncertainty: 2.2221  uncertainty_coeffi: 0.0100  loss: 2.3262  lr: 0.000000  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [55] Total time: 0:00:04 (0.0695 s / it)
+     Averaged stats: entropy: 0.2468  uncertainty: 2.2267  uncertainty_coeffi: 0.0100  loss: 2.3571  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [56] [ 0/61]  eta: 0:00:29  entropy: 0.2620  uncertainty: 2.2691  uncertainty_coeffi: 0.0100  loss: 2.4021  lr: 0.000000  time: 0.4808  data: 0.3905  max mem: 2671
+      TTA Epoch: [56] [60/61]  eta: 0:00:00  entropy: 0.2319  uncertainty: 2.5396  uncertainty_coeffi: 0.0100  loss: 2.6500  lr: 0.000000  time: 0.0616  data: 0.0001  max mem: 2671
+      TTA Epoch: [56] Total time: 0:00:04 (0.0695 s / it)
+     Averaged stats: entropy: 0.2447  uncertainty: 2.2193  uncertainty_coeffi: 0.0100  loss: 2.3484  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [57] [ 0/61]  eta: 0:00:29  entropy: 0.2614  uncertainty: 2.3138  uncertainty_coeffi: 0.0100  loss: 2.4463  lr: 0.000000  time: 0.4849  data: 0.3871  max mem: 2671
+      TTA Epoch: [57] [60/61]  eta: 0:00:00  entropy: 0.3886  uncertainty: 2.2863  uncertainty_coeffi: 0.0100  loss: 2.4788  lr: 0.000000  time: 0.0614  data: 0.0001  max mem: 2671
+      TTA Epoch: [57] Total time: 0:00:04 (0.0691 s / it)
+     Averaged stats: entropy: 0.2473  uncertainty: 2.2255  uncertainty_coeffi: 0.0100  loss: 2.3569  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [58] [ 0/61]  eta: 0:00:27  entropy: 0.2485  uncertainty: 2.4934  uncertainty_coeffi: 0.0100  loss: 2.6304  lr: 0.000000  time: 0.4575  data: 0.3741  max mem: 2671
+      TTA Epoch: [58] [60/61]  eta: 0:00:00  entropy: 0.3393  uncertainty: 2.6554  uncertainty_coeffi: 0.0100  loss: 2.8137  lr: 0.000000  time: 0.0609  data: 0.0001  max mem: 2671
+      TTA Epoch: [58] Total time: 0:00:04 (0.0689 s / it)
+     Averaged stats: entropy: 0.2458  uncertainty: 2.2180  uncertainty_coeffi: 0.0100  loss: 2.3493  lr: 0.0000
+     itm tta time 0:00:04
+      TTA Epoch: [59] [ 0/61]  eta: 0:00:30  entropy: 0.2164  uncertainty: 2.1671  uncertainty_coeffi: 0.0100  loss: 2.2973  lr: 0.000000  time: 0.5050  data: 0.4110  max mem: 2671
+      TTA Epoch: [59] [60/61]  eta: 0:00:00  entropy: 0.2153  uncertainty: 3.1437  uncertainty_coeffi: 0.0100  loss: 3.2466  lr: 0.000000  time: 0.0615  data: 0.0001  max mem: 2671
+      TTA Epoch: [59] Total time: 0:00:04 (0.0699 s / it)
+     Averaged stats: entropy: 0.2420  uncertainty: 2.2273  uncertainty_coeffi: 0.0100  loss: 2.3554  lr: 0.0000
+     itm tta time 0:00:04
+     Computing matching score
+      Evaluation: [   0/1978]  eta: 0:02:18    time: 0.0698  data: 0.0034  max mem: 2671
+      Evaluation: [ 100/1978]  eta: 0:02:09    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [ 200/1978]  eta: 0:02:02    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [ 300/1978]  eta: 0:01:55    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [ 400/1978]  eta: 0:01:48    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [ 500/1978]  eta: 0:01:41    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [ 600/1978]  eta: 0:01:35    time: 0.0690  data: 0.0000  max mem: 2671
+      Evaluation: [ 700/1978]  eta: 0:01:28    time: 0.0695  data: 0.0000  max mem: 2671
+      Evaluation: [ 800/1978]  eta: 0:01:21    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [ 900/1978]  eta: 0:01:14    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1000/1978]  eta: 0:01:07    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1100/1978]  eta: 0:01:00    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1200/1978]  eta: 0:00:53    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1300/1978]  eta: 0:00:46    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1400/1978]  eta: 0:00:39    time: 0.0687  data: 0.0000  max mem: 2671
+      Evaluation: [1500/1978]  eta: 0:00:32    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1600/1978]  eta: 0:00:26    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1700/1978]  eta: 0:00:19    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1800/1978]  eta: 0:00:12    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: [1900/1978]  eta: 0:00:05    time: 0.0689  data: 0.0000  max mem: 2671
+      Evaluation: [1977/1978]  eta: 0:00:00    time: 0.0688  data: 0.0000  max mem: 2671
+      Evaluation: Total time: 0:02:16 (0.0689 s / it)
+     Computing matching score time 0:02:16
+### TTA ITM Score: 
++-------------------+--------+--------+--------+--------+--------+
+|       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
++-------------------+--------+--------+--------+--------+--------+
+|  cos_sim_wo/norm  | 58.544 | 91.860 | 95.703 | 73.596 | 73.596 |
+|        -999       | 69.414 | 95.197 | 97.776 | 81.233 | 81.233 |
+| itm_score_wo/norm | 84.328 | 98.989 | 99.494 | 91.293 | 91.293 |
+|        -999       | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         0         | 84.328 | 99.039 | 99.596 | 91.301 | 91.301 |
+|         1         | 84.277 | 99.039 | 99.596 | 91.276 | 91.276 |
+|         2         | 84.328 | 99.039 | 99.596 | 91.292 | 91.292 |
+|         4         | 84.631 | 99.039 | 99.596 | 91.440 | 91.440 |
+|         9         | 84.783 | 98.888 | 99.545 | 91.488 | 91.488 |
+|         14        | 84.631 | 98.888 | 99.494 | 91.387 | 91.387 |
+|         19        | 84.580 | 98.837 | 99.494 | 91.331 | 91.331 |
+|         29        | 84.681 | 98.736 | 99.494 | 91.361 | 91.361 |
+|         39        | 84.783 | 98.736 | 99.393 | 91.401 | 91.401 |
+|         49        | 84.732 | 98.736 | 99.343 | 91.374 | 91.374 |
+|         59        | 84.783 | 98.787 | 99.343 | 91.400 | 91.400 |
++-------------------+--------+--------+--------+--------+--------+
+     logs:  {'epo': 59, 'R1': 84.783, 'R5': 98.787, 'R10': 99.343, 'mAP': 91.4, 'mINP': 91.4, 'entropy': 0.241982, 'uncertainty': 2.227329, 'uncertainty_coeffi': 0.01, 'loss': 2.355429, 'lr': 0.0}
 ### best epoch: 9
-### Time 0:19:15
+### Time 0:29:11
 NNODES,  1
 NODE_RANK,  0
 MASTER_ADDR,  127.0.0.1
@@ -819,5 +817,5 @@ MASTER_PORT,  1612
 NPROC_PER_NODE,  2
 task:  exp6.1.4
 config:  configs_rerun3/exp6.1.4.yaml
-output_dir:  output_rerun3/exp6.1.4/2025091709030
-python3 tta.py --config configs_rerun3/exp6.1.4.yaml --task exp6.1.4 --output_dir output_rerun3/exp6.1.4/2025091709030 --checkpoint checkpoint/cmp.pth --bs 0 --epo 0 --lr 0.0 --seed 42 --tta
+output_dir:  output_rerun3/exp6.1.4/2025092103090
+python3 tta.py --config configs_rerun3/exp6.1.4.yaml --task exp6.1.4 --output_dir output_rerun3/exp6.1.4/2025092103090 --checkpoint checkpoint/cmp.pth --bs 0 --epo 0 --lr 0.0 --seed 42 --tta

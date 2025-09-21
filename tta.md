@@ -1351,8 +1351,8 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 
 # exp rerun 3
 - 全新的uncertainty和sample_selection策略
-- uncertainty: |a-b|/(a+b)  and  |log(a)-log(b)|
-- sample_selection: 放宽到互为topk
+    - uncertainty: |a-b|/(a+b)  and  |log(a)-log(b)|
+    - sample_selection: 放宽到互为topk
 
 - 修复了随机数种子未生效的问题
 
