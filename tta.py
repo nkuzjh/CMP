@@ -109,13 +109,13 @@ def main(args, config):
     ## 由于使用run.py调用tta.py开启新的子进程，会导致 itc阶段输出的特征 和 itm tta前创建tta_loader输入的特征 被不同进程的device加载，从而产生关于多进程共用cuda的报错；
     ## 因此，进行首次tta前，先运行evaluation_itc和np.save保存itc 特征到本地，后续每次tta实验使用np.load加载即可。
     ## run only at first time to avoid error, then using np.load() to load itm input features.
-    # sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(
-    #     model,
-    #     test_loader,
-    #     tokenizer,
-    #     device,
-    #     config
-    # )
+    sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(
+        model,
+        test_loader,
+        tokenizer,
+        device,
+        config
+    )
     # sims_matrix_t2i_wo_norm = (image_feats @ text_feats.t()).t()
 
     # np.save("data/debug_embeddings/q_pids.npy", np.array(test_loader.dataset.q_pids))
@@ -123,14 +123,11 @@ def main(args, config):
     # np.save("data/debug_embeddings/image_feats.npy", image_feats.detach().cpu().numpy())
     # np.save("data/debug_embeddings/text_feats.npy", text_feats.detach().cpu().numpy())
     # np.save("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy", sims_matrix_t2i_wo_norm.detach().cpu().numpy())
-    # np.save("data/debug_embeddings/sims_matrix_t2i.npy", sims_matrix_t2i.detach().cpu().numpy())
-    # np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
-    # np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
-    # np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
-    # sims_matrix_t2i = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
-    # image_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/image_embeds.npy"))#.to(device)
-    # text_embeds = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_embeds.npy"))#.to(device)
-    # text_atts = torch.from_numpy(np.load("/data/jiahao/PAB_TTA/debug_embeddings/text_atts.npy"))#.to(device)
+    np.save("data/debug_embeddings/sims_matrix_t2i.npy", sims_matrix_t2i.detach().cpu().numpy())
+    np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
+    np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
+    np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
+
     # q_pids = torch.from_numpy(np.load("data/debug_embeddings/q_pids.npy"))
     # g_pids = torch.from_numpy(np.load("data/debug_embeddings/g_pids.npy"))
     # image_feats = torch.from_numpy(np.load("data/debug_embeddings/image_feats.npy"))
@@ -140,18 +137,19 @@ def main(args, config):
     image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
     text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
     text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
+
     # sims_test_result_wo_norm = mAP(sims_matrix_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
     # table.add_row([
     #     'cos_sim_wo/norm', sims_test_result_wo_norm['R1'], sims_test_result_wo_norm['R5'], sims_test_result_wo_norm['R10'], sims_test_result_wo_norm['mAP'], sims_test_result_wo_norm['mINP']
     # ])
     # print("### Zero-Shot ITC Score wo/norm: ")
     # print(table)
-    # sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
-    # ])
-    # print("### Zero-Shot ITC Score: ")
-    # print(table)
+    sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
+    ])
+    print("### Zero-Shot ITC Score: ")
+    print(table)
     # # labels = test_loader.dataset.g_pids, test_loader.dataset.q_pids #TODO
 
     # score_test_t2i_wo_norm = evaluation_itm(
@@ -165,17 +163,17 @@ def main(args, config):
     # ])
     # print("### Zero-Shot ITM Score wo/norm: ")
     # print(table)
-    # score_test_t2i = evaluation_itm(
-    #     model,
-    #     device, config, args,
-    #     sims_matrix_t2i, image_embeds, text_embeds, text_atts
-    # )
-    # test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
-    # ])
-    # print("### Zero-Shot ITM Score: ")
-    # print(table)
+    score_test_t2i = evaluation_itm(
+        model,
+        device, config, args,
+        sims_matrix_t2i, image_embeds, text_embeds, text_atts
+    )
+    test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
+    ])
+    print("### Zero-Shot ITM Score: ")
+    print(table)
 
     table.add_row(["cos_sim_wo/norm", 58.544, 91.860, 95.703, 73.596, 73.596])
     table.add_row([-999, 69.414, 95.197, 97.776, 81.233, 81.233])
