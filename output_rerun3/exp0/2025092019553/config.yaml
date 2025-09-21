@@ -1,0 +1,37 @@
+batch_size_test: 22
+batch_size_test_text: 150
+batch_size_tta: 16
+be_hard: true
+be_pose_img: true
+eda_p: 1
+embed_dim: 2048
+erasing_p: 0.6
+h: 224
+image_root: data/PAB/
+itc_dp: 0.5
+k_test: 128
+k_tta: 8
+label_smooth: 0.2
+load_params: true
+load_pretrained: true
+mask_prob: 0.25
+mask_whole_word: true
+max_masks: 10
+max_tokens: 56
+max_words: 56
+optimizer: {lr: 0.001, lr_mult: 2, opt: adamW, weight_decay: 0.01}
+pose_conv: true
+sample_selection: all
+schedular: {epochs: 60, lr: 0.001, num_warmup_steps: 500, sched: step}
+score_temper: 1.0
+skipgram_prb: 0.2
+skipgram_size: 3
+temp: 0.07
+test_file: data/PAB/annotation/test/attr.json
+text_config: configs/config_bert.json
+text_encoder: checkpoint/jizheng/bert-base-uncased
+tta_file: data/PAB/annotation/test/attr.json
+tta_model: ''
+tta_steps: 1
+vision_config: configs/config_swinB.json
+w: 224
