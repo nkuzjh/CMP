@@ -53,7 +53,7 @@ def run(args):
             f"{'--evaluate' if args.evaluate else ''}")
 
     elif 'tta' in args.task or 'exp' in args.task:
-        args.config = 'configs_rerun4/' + args.task + '.yaml'
+        args.config = 'configs_rerun5/' + args.task + '.yaml'
         args.output_dir = 'output_rerun4/' + args.task + f'/{datetime.now().strftime("%Y%m%d%H%M%S")[:-1]}'
         print("task: ", args.task)
         print("config: ", args.config)
