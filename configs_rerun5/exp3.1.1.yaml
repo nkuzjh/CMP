@@ -1,0 +1,84 @@
+image_root: 'data/PAB/'
+test_file: 'data/PAB/annotation/test/attr.json'
+# OOD test set
+#test_file: 'data/PAB/annotation/test/ucc.json'
+
+tta_file: 'data/PAB/annotation/test/attr.json'
+
+
+## Image Encoder
+vision_config: 'configs/config_swinB.json'
+h: 224
+w: 224
+
+## Text Encoder
+text_config: 'configs/config_bert.json' #'checkpoint/bert-base-uncased/config.json' #'configs/config_bert.json'
+text_encoder:  'checkpoint/jizheng/bert-base-uncased' #'checkpoint/bert-base-uncased'
+
+load_params: True
+load_pretrained: True
+
+
+max_words: 56
+max_tokens: 56
+eda_p: 1
+erasing_p: 0.6
+
+batch_size_test: 22
+batch_size_test_text: 150
+
+# embed_dim: 2048 # for cmp
+embed_dim: 256 # for xvl
+itc_dp: 0.5
+temp: 0.07
+label_smooth: 0.2
+
+## mlm loss
+mask_prob: 0.25
+max_masks: 10
+skipgram_prb: 0.2
+skipgram_size: 3
+mask_whole_word: True
+
+
+k_test: 128
+
+be_hard: False
+be_pose_img: False
+pose_conv: False
+
+
+
+## Test Time Adapt
+tta_model: '' #需要进行tta的model.modules()
+
+# sample_selection: 'all'
+sample_selection: 'topk'
+k_sample_selection: 5
+# sample_selection: 'top1'
+
+batch_size_tta: 32
+k_tta: 4
+
+optimizer: {opt: adamW, lr: 5e-4, weight_decay: 0.01, lr_mult: 2}
+schedular: {sched: step, lr: 5e-4, epochs: 60, num_warmup_steps: 500}
+
+score_temper: 1.0
+tta_steps: 1
+
+uncertainty_coeffi: 0.01 #1e-3 #1e-4
+temperature: 0.03
+# uncertainty: 'inversed_recall_proba'
+uncertainty: 'diff_div_mean'
+# uncertainty: 'abs_diff_log'
+uncertainty_temper: 1.0
+uncertainty_temper_is_learnable: False
+uncertainty_t2i_temper: 1.0
+uncertainty_i2t_temper: 1.0
+
+# is_prompt_learning: True
+# prompt_learning_token_num: 1
+
+# is_image_augmentation: True
+
+

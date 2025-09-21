@@ -1435,3 +1435,71 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 ## tta_debug
     CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_rerun3/exp_debug.yaml --task exp_debug --output_dir output_rerun3/exp_debug --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
 
+## exp0
+- ss=all
+    {'epo': '9', 'R1': '85.288', 'R5': '98.635', 'R10': '99.393', 'mAP': '91.646', 'mINP': '91.646',
+## exp1
+- ss=topk
+    {'epo': '29', 'R1': '85.187', 'R5': '98.686', 'R10': '99.393', 'mAP': '91.618', 'mINP': '91.618'
+## exp2
+- ss=top1
+    {'epo': '59', 'R1': '84.934', 'R5': '98.686', 'R10': '99.393', 'mAP': '91.484', 'mINP': '91.484'
+## exp3
+- ss=topk
+- diff_div_mean
+    {'epo': '49', 'R1': '85.187', 'R5': '98.736', 'R10': '99.343', 'mAP': '91.626', 'mINP': '91.626'
+## exp4
+- ss=topk
+- abs_diff_log
+    {'epo': '0', 'R1': '84.833', 'R5': '98.938', 'R10': '99.494', 'mAP': '91.499', 'mINP': '91.499'
+## exp5
+- ss=topk
+- inversed_recall_proba
+    {'epo': '39', 'R1': '85.137', 'R5': '98.686', 'R10': '99.444', 'mAP': '91.548', 'mINP': '91.548'
+## exp6
+- ss=all
+- diff_div_mean
+    {'epo': '29', 'R1': '85.086', 'R5': '98.736', 'R10': '99.393', 'mAP': '91.587', 'mINP': '91.587'
+## exp7
+- ss=top1
+- diff_div_mean
+    {'epo': '9', 'R1': '85.49', 'R5': '98.888', 'R10': '99.343', 'mAP': '91.764', 'mINP': '91.764'
+
+
+# exp rerun 5
+- 使用pretrain XVLM进行tta
+
+- 所有随机数已经都固定，重跑rerun3的exp0_7
+
+## tta_debug
+    CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_rerun5/exp0.yaml --task exp_debug --output_dir output_rerun5/exp0_debug --checkpoint checkpoint/16m_base_model_state_step_199999.th --tta --bs 3 --epo 10 --lr 0.001 --seed 42
+
+## exp0
+- ss=all
+    {'epo': '9', 'R1': '85.288', 'R5': '98.635', 'R10': '99.393', 'mAP': '91.646', 'mINP': '91.646',
+## exp1
+- ss=topk
+    {'epo': '29', 'R1': '85.187', 'R5': '98.686', 'R10': '99.393', 'mAP': '91.618', 'mINP': '91.618'
+## exp2
+- ss=top1
+    {'epo': '59', 'R1': '84.934', 'R5': '98.686', 'R10': '99.393', 'mAP': '91.484', 'mINP': '91.484'
+## exp3
+- ss=topk
+- diff_div_mean
+    {'epo': '49', 'R1': '85.187', 'R5': '98.736', 'R10': '99.343', 'mAP': '91.626', 'mINP': '91.626'
+## exp4
+- ss=topk
+- abs_diff_log
+    {'epo': '0', 'R1': '84.833', 'R5': '98.938', 'R10': '99.494', 'mAP': '91.499', 'mINP': '91.499'
+## exp5
+- ss=topk
+- inversed_recall_proba
+    {'epo': '39', 'R1': '85.137', 'R5': '98.686', 'R10': '99.444', 'mAP': '91.548', 'mINP': '91.548'
+## exp6
+- ss=all
+- diff_div_mean
+    {'epo': '29', 'R1': '85.086', 'R5': '98.736', 'R10': '99.393', 'mAP': '91.587', 'mINP': '91.587'
+## exp7
+- ss=top1
+- diff_div_mean
+    {'epo': '9', 'R1': '85.49', 'R5': '98.888', 'R10': '99.343', 'mAP': '91.764', 'mINP': '91.764'

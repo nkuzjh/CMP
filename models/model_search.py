@@ -1,6 +1,6 @@
 from torch.nn import init
 
-from models.cmp import CMP
+from models.cmp_xvlm import CMP
 from models.pose import Block, ConvExpandReduce
 
 import torch
