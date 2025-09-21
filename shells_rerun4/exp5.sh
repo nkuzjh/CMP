@@ -2,7 +2,7 @@
 
 # 设置基础参数
 # num_gpus=1
-log_dir="./logs_rerun3"
+log_dir="./logs_rerun4"
 mkdir -p $log_dir
 
 # 定义参数文件名
