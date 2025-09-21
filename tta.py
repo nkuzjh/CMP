@@ -247,6 +247,7 @@ def main(args, config):
         start_time = time.time()
         best = 0
         best_epoch = 0
+        best_logs = {}
         max_epoch = config['schedular']['epochs']
         for epoch in range(0, max_epoch):
 
@@ -286,13 +287,14 @@ def main(args, config):
                     # torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth'))
                     best = result
                     best_epoch = epoch
+                    best_logs = logs
 
             # del sims_matrix_t2i, image_embeds, text_embeds, text_atts
             torch.cuda.empty_cache()
 
         with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
-            f.write("best epoch: %d" % best_epoch)
-        print("### best epoch: %d" % best_epoch)
+            f.write(f"best epoch {best_epoch} : {best_logs}")
+        print(f"### best epoch {best_epoch} : {best_logs}")
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
         print('### Time {}'.format(total_time_str))

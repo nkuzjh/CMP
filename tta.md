@@ -1432,5 +1432,6 @@ model: {'', 'itm_head', 'pose_block', 'text_proj', 'vision_proj', 'pose_conv', '
 # exp rerun 4
 - 所有随机数已经都固定，重跑rerun3的exp0_7
 
-
+## tta_debug
+    CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_rerun3/exp_debug.yaml --task exp_debug --output_dir output_rerun3/exp_debug --checkpoint checkpoint/cmp.pth --tta --bs 3 --epo 10 --lr 0.001 --seed 42
 
