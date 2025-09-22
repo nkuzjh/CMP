@@ -33,7 +33,7 @@ do
     echo "Start Time: $(date +"%Y-%m-%d %T")"
 
     # CUDA_VISIBLE_DEVICES=1
-    CUDA_VISIBLE_DEVICES=1 nohup python3 run.py --tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --task $task_name > $log_file 2>&1 &
+    CUDA_VISIBLE_DEVICES=0 nohup python3 run.py --tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --task $task_name > $log_file 2>&1 &
 
     # 等待当前任务完成
     wait
