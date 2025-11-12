@@ -130,8 +130,8 @@ def main(args, config):
 
     start_time = time.time()
 
-    if args.online_tta:
-        print("### Start online tta")
+    if args.epochs_tta:
+        print("### Start epochs tta")
         model_without_ddp = freeze_tta_parameters(model_without_ddp)
         params = collect_tta_params(model_without_ddp)[0]
         optimizer = set_tta_optimizer(params, config, args=args)
@@ -142,9 +142,22 @@ def main(args, config):
                                     num_workers=[4],
                                     is_trains=[False],
                                     collate_fns=[None])[0]
-        sims_matrix_t2i, sims_matrix_t2i_online, image_embeds, text_embeds, text_atts, image_feats, text_feats = online_tta_itc(tta_model, test_loader, tokenizer, device, config, args)
+
+        start_time = time.time()
+        for epoch in range(config['max_epoch']):
+            print(f"\n\n### Epoch: {epoch}")
+            sims_matrix_t2i, sims_matrix_t2i_online, image_embeds, text_embeds, text_atts, image_feats, text_feats = online_tta_itc(tta_model, test_loader, tokenizer, device, config, args)
+
+        print("### Finish epochs tta")
+        sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
+
         # score_test_t2i = online_tta_itm(tta_model, device, config, args, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
         score_test_t2i = evaluation_itm(tta_model.model, device, config, args, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
+
+        total_time = time.time() - start_time
+        total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+        print('### Epochs TTA time {}'.format(total_time_str))
+
         if utils.is_main_process():
             print('evaluating result:')
             mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids)
@@ -184,7 +197,7 @@ if __name__ == '__main__':
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     parser.add_argument('--distributed', action='store_false')
 
-    parser.add_argument('--online_tta', action='store_true')
+    parser.add_argument('--epochs_tta', action='store_true')
     parser.add_argument('--method', default='tcr')
     parser.add_argument('--tta_steps', type=int, default=3)
     parser.add_argument('--con_ratio', type=float, default=0.3)
@@ -204,7 +217,7 @@ if __name__ == '__main__':
     main(args, config)
 
 
-# CUDA_VISIBLE_DEVICES=1 python3 -m torch.distributed.run --nproc_per_node=1 --master_port=10000 tta_online.py --online_tta --seed 42 --method tcr --config configs_online_tta --output_dir output_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th
+# CUDA_VISIBLE_DEVICES=2 python3 -m torch.distributed.run --nproc_per_node=1 --master_port=10000 tta_epoches.py --epochs_tta --seed 42 --method tcr --config configs_epochs_tta --output_dir output_epochs_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th
 
 # checkpoint/cmp.pth
 # checkpoint/16m_base_model_state_step_199999.th
@@ -217,33 +230,12 @@ if __name__ == '__main__':
 # +------+--------+--------+--------+--------+--------+
 # | t2i  | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
 # +------+--------+--------+--------+--------+--------+
-    # # tent
-    # +------+--------+--------+--------+--------+--------+
-    # | task |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-    # +------+--------+--------+--------+--------+--------+
-    # | t2i  | 72.447 | 97.776 | 99.090 | 84.222 | 84.222 |
-    # +------+--------+--------+--------+--------+--------+
-    # # tcr
-    # +------+--------+--------+--------+--------+--------+
-    # | task |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-    # +------+--------+--------+--------+--------+--------+
-    # | t2i  | 72.396 | 97.877 | 99.191 | 84.286 | 84.286 |
-    # +------+--------+--------+--------+--------+--------+
-    # # shot
-    # +------+--------+--------+--------+--------+--------+
-    # | task |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-    # +------+--------+--------+--------+--------+--------+
-    # | t2i  | 72.396 | 97.826 | 99.090 | 84.248 | 84.248 |
-    # +------+--------+--------+--------+--------+--------+
-    # sar
-    # +------+--------+--------+--------+--------+--------+
-    # | task |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-    # +------+--------+--------+--------+--------+--------+
-    # | t2i  | 72.497 | 97.826 | 99.090 | 84.268 | 84.268 |
-    # +------+--------+--------+--------+--------+--------+
-    # read
-    # +------+--------+--------+--------+--------+--------+
-    # | task |   R1   |   R5   |  R10   |  mAP   |  mINP  |
-    # +------+--------+--------+--------+--------+--------+
-    # | t2i  | 72.144 | 97.573 | 98.938 | 83.966 | 83.966 |
-    # +------+--------+--------+--------+--------+--------+
+    # # tent max_epoch = 50
+
+    # # tcr max_epoch = 50
+
+    # # shot max_epoch = 50
+
+    # sar max_epoch = 50
+
+    # read max_epoch = 50

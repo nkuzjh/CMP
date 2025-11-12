@@ -124,7 +124,7 @@ def online_tta_itc(tta_model, data_loader, tokenizer, device, config, args):
         update_signal = True
 
     metric_logger = utils.MetricLogger(delimiter="  ")
-    header = '      Online TTA itc :'
+    header = '          Online TTA itc :'
     print('     Online TTA text features for itm')
     texts = data_loader.dataset.text
     num_text = len(texts)
