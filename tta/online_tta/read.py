@@ -87,9 +87,10 @@ def forward_and_adapt(
     logits = model.itm_head(output) # (bs*tta, 2)
     logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
     outputs = logits[..., 1] # (bs, tta)
-    
+
     # adapt
-    p_sum = outputs.softmax(dim=-1).sum(dim=-2)
+    # p_sum = outputs.softmax(dim=-1).sum(dim=-2)
+    p_sum = outputs.softmax(dim=-1).sum(dim=-1)
     loss_bal = - (p_sum.softmax(dim=0) * p_sum.log_softmax(dim=0)).sum()
 
     pred = outputs.softmax(dim=-1)
