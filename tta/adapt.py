@@ -404,19 +404,27 @@ def test_time_adapt_imgaug_itm(model, tokenizer, optimizer, scaler, epoch, devic
 
 
 @torch.enable_grad()
-def online_test_time_adapt_itm(tta_model, optimizer, scaler, epoch, device, scheduler, config, dataloader):#sims_matrix, image_embeds, text_embeds, text_atts):
+def online_test_time_adapt_itm(args, tta_model, optimizer, scaler, epoch, device, scheduler, config, dataloader):#sims_matrix, image_embeds, text_embeds, text_atts):
     tta_model.eval()
     # model.train()
 
     start_time = time.time()
 
+
+    if "tcr" in args.method:
+        queue_list = []
+        max_queue_size = config["batch_size_tta"]
+        num_update_signal = 10
+        update_signal = True
+
+
     metric_logger = utils.MetricLogger(delimiter="  ")
 
-    metric_logger.add_meter('entropy', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
-    metric_logger.add_meter('uncertainty', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
-    metric_logger.add_meter('uncertainty_coeffi', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
-    metric_logger.add_meter('loss', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
-    metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
+    # metric_logger.add_meter('entropy', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    # # metric_logger.add_meter('uncertainty', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    # # metric_logger.add_meter('uncertainty_coeffi', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    # metric_logger.add_meter('loss', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))
+    # metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
 
     header = '      TTA Epoch: [{}]'.format(epoch)
     print_freq = 10
@@ -444,39 +452,39 @@ def online_test_time_adapt_itm(tta_model, optimizer, scaler, epoch, device, sche
                     queue_list, score = tta_model(
                         encoder_output,
                         encoder_att,
-                        text_embeds[start + i].repeat(config['k_tta'], 1, 1).to(device),
-                        text_atts[start + i].repeat(config['k_tta'], 1).to(device),
-                        config, device, None, metric_logger,
+                        text_embeds.to(device),
+                        text_atts.to(device),
+                        config, device, args, metric_logger,
                         queue_list, max_queue_size, update_signal
                     )
                 else:
                     score = tta_model(
                         encoder_output,
                         encoder_att,
-                        text_embeds[start + i].repeat(config['k_tta'], 1, 1).to(device),
-                        text_atts[start + i].repeat(config['k_tta'], 1).to(device),
+                        text_embeds.to(device),
+                        text_atts.to(device),
                         config, device, None, metric_logger
                     )
 
-                entropy = -(F.softmax(score, dim=-1) * F.log_softmax(score, dim=-1)).sum(-1)
+        #         entropy = -(F.softmax(score, dim=-1) * F.log_softmax(score, dim=-1)).sum(-1)
 
-                loss = entropy
-                loss = loss.mean()
+        #         loss = entropy
+        #         loss = loss.mean()
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scale = scaler.get_scale()
-            scaler.update()
-            # skip_lr_sched = (scale > scaler.get_scale())
-            # if not skip_lr_sched:
-            #     scheduler.step()
-            optimizer.zero_grad()
+        #     scaler.scale(loss).backward()
+        #     scaler.step(optimizer)
+        #     scale = scaler.get_scale()
+        #     scaler.update()
+        #     # skip_lr_sched = (scale > scaler.get_scale())
+        #     # if not skip_lr_sched:
+        #     #     scheduler.step()
+        #     optimizer.zero_grad()
 
-        metric_logger.update(entropy=entropy.mean().item())
-        metric_logger.update(uncertainty=uncertainty.mean().item())
-        metric_logger.update(uncertainty_coeffi=uncertainty_coeffi.mean().item())
-        metric_logger.update(loss=loss.item())
-        metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        # metric_logger.update(entropy=entropy.mean().item())
+        # # metric_logger.update(uncertainty=uncertainty.mean().item())
+        # # metric_logger.update(uncertainty_coeffi=uncertainty_coeffi.mean().item())
+        # metric_logger.update(loss=loss.item())
+        # metric_logger.update(lr=optimizer.param_groups[0]["lr"])
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()

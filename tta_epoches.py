@@ -149,7 +149,7 @@ def main(args, config):
             sims_matrix_t2i, sims_matrix_t2i_online, image_embeds, text_embeds, text_atts, image_feats, text_feats = online_tta_itc(tta_model, test_loader, tokenizer, device, config, args)
 
         print("### Finish epochs tta")
-        sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
+        sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(tta_model.model, test_loader, tokenizer, device, config)
 
         # score_test_t2i = online_tta_itm(tta_model, device, config, args, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
         score_test_t2i = evaluation_itm(tta_model.model, device, config, args, sims_matrix_t2i, image_embeds, text_embeds, text_atts)

@@ -3,7 +3,7 @@ import torch.jit
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
+from tta.online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
 
 class READ(nn.Module):
     """READ adapts a model by entropy minimization during testing.
@@ -29,7 +29,7 @@ class READ(nn.Module):
             encoder_att,
             text_embeds,
             text_atts,
-            device, args, metric_logger, if_adapt=True, counter=None, if_vis=False
+            config, device, args, metric_logger, if_adapt=True, counter=None, if_vis=False
         ):
         if self.episodic:
             self.reset()
@@ -42,7 +42,7 @@ class READ(nn.Module):
                     encoder_att,
                     text_embeds,
                     text_atts,
-                    device, args, metric_logger, self.model, self.optimizer
+                    config, device, args, metric_logger, self.model, self.optimizer
                 )
         else:
             self.model.eval()
@@ -70,7 +70,7 @@ def forward_and_adapt(
         encoder_att,
         text_embeds,
         text_atts,
-        device, args, metric_logger, model, optimizer
+        config, device, args, metric_logger, model, optimizer
     ):
     """Forward and adapt model on batch of data.
 
@@ -84,7 +84,10 @@ def forward_and_adapt(
         text_embeds,
         text_atts
     )[:, 0, :]
-    outputs = model.itm_head(output)[:, 1]
+    logits = model.itm_head(output) # (bs*tta, 2)
+    logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
+    outputs = logits[..., 1] # (bs, tta)
+    
     # adapt
     p_sum = outputs.softmax(dim=-1).sum(dim=-2)
     loss_bal = - (p_sum.softmax(dim=0) * p_sum.log_softmax(dim=0)).sum()

@@ -3,7 +3,7 @@ import torch.jit
 import torch.nn as nn
 import torch.nn.functional as F
 
-from online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
+from tta.online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
 
 class Tent(nn.Module):
     """Tent adapts a model by entropy minimization during testing.
@@ -70,7 +70,7 @@ def forward_and_adapt(
         encoder_att,
         text_embeds,
         text_atts,
-        device, args, metric_logger, model, optimizer, config
+        config, device, args, metric_logger, model, optimizer
     ):
     """Forward and adapt model on batch of data.
 
@@ -79,11 +79,11 @@ def forward_and_adapt(
     # forward
     # outputs = model.module.forward_output(x, device, args)
     output = model.get_cross_embeds(
-        encoder_output,
-        encoder_att,
-        text_embeds,
-        text_atts
-    )[:, 0, :]
+        encoder_output,#torch.Size([128, 50, 1024])
+        encoder_att,#torch.Size([128, 50])
+        text_embeds,#torch.Size([128, 56, 768])
+        text_atts#torch.Size([128, 56])
+    )[:, 0, :]#torch.Size([128, 768])
     # outputs = model.itm_head(output)[:, 1]
     logits = model.itm_head(output) # (bs*tta, 2)
     logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)

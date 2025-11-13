@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.jit
 import math
 import numpy as np
-from online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
+from tta.online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
 
 def update_ema(ema, new_data):
     if ema is None:
@@ -47,7 +47,7 @@ class SAR(nn.Module):
             encoder_att,
             text_embeds,
             text_atts,
-            device, args, metric_logger
+            config, device, args, metric_logger
         ):
         if self.episodic:
             self.reset()
@@ -58,7 +58,7 @@ class SAR(nn.Module):
                 encoder_att,
                 text_embeds,
                 text_atts,
-                device, args, metric_logger, self.model, self.optimizer, self.margin_e0, self.reset_constant_em, self.ema
+                config, device, args, metric_logger, self.model, self.optimizer, self.margin_e0, self.reset_constant_em, self.ema
             )
             if reset_flag:
                 self.reset()
@@ -86,7 +86,7 @@ def forward_and_adapt_sar(
         encoder_att,
         text_embeds,
         text_atts,
-        device, args, metric_logger, model, optimizer, margin, reset_constant, ema
+        config, device, args, metric_logger, model, optimizer, margin, reset_constant, ema
     ):
     """Forward and adapt model input data.
     Measure entropy of the model prediction, take gradients, and update params.
@@ -102,7 +102,9 @@ def forward_and_adapt_sar(
         text_embeds,
         text_atts
     )[:, 0, :]
-    outputs = model.itm_head(output)[:, 1]
+    logits = model.itm_head(output) # (bs*tta, 2)
+    logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
+    outputs = logits[..., 1] # (bs, tta)
 
     # Adaptation step
     entropys = softmax_entropy(outputs)

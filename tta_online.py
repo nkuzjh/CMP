@@ -114,8 +114,8 @@ def main(args, config):
             print(f"  - {module_name}")
     else:
         print("[诊断] 所有模块都已在实体设备上。")
-
     del model.text_encoder.cls.predictions
+
     model = model.to(device)
 
     print("Total Params: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
@@ -247,3 +247,6 @@ if __name__ == '__main__':
     # +------+--------+--------+--------+--------+--------+
     # | t2i  | 72.144 | 97.573 | 98.938 | 83.966 | 83.966 |
     # +------+--------+--------+--------+--------+--------+
+
+
+    # CUDA_VISIBLE_DEVICES=2 python3 -m torch.distributed.run --nproc_per_node=1 --master_port=10000 tta_online.py --online_tta --seed 42 --method tcr --config configs_online_tta --output_dir output_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --tta_steps 50

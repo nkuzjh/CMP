@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.jit
 import torch.nn.functional as F
 
-from online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
+from tta.online_tta.param import load_model_and_optimizer, copy_model_and_optimizer
 
 
 class SHOT(nn.Module):
@@ -41,7 +41,7 @@ class SHOT(nn.Module):
             encoder_att,
             text_embeds,
             text_atts,
-            device, args, metric_logger, if_adapt=True, counter=None, if_vis=False
+            config, device, args, metric_logger, if_adapt=True, counter=None, if_vis=False
         ):
         if if_adapt:
             if self.episodic:
@@ -57,7 +57,7 @@ class SHOT(nn.Module):
                     encoder_att,
                     text_embeds,
                     text_atts,
-                    device, args, metric_logger, self.model, self.optimizer
+                    config, device, args, metric_logger, self.model, self.optimizer
                 )
                 self.model.train()
         else:
@@ -69,11 +69,12 @@ class SHOT(nn.Module):
 
     @torch.enable_grad()  # ensure grads in possible no grad context for testing
     def forward_and_adapt(
+            self,
             encoder_output,
             encoder_att,
             text_embeds,
             text_atts,
-            device, args, metric_logger, model, optimizer
+            config, device, args, metric_logger, model, optimizer
         ):
         """Forward and adapt model on batch of data.
         Measure entropy of the model prediction, take gradients, and update params.
@@ -87,7 +88,9 @@ class SHOT(nn.Module):
             text_embeds,
             text_atts
         )[:, 0, :]
-        outputs = model.itm_head(output)[:, 1]
+        logits = model.itm_head(output) # (bs*tta, 2)
+        logits = logits.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
+        outputs = logits[..., 1] # (bs, tta)
 
         loss = self.loss(outputs)
         loss.backward()
@@ -101,8 +104,9 @@ class SHOT(nn.Module):
         ent_loss = softmax_entropy(outputs).mean(0)
 
         # (2) diversity
-        softmax_out = F.softmax(outputs, dim=-1)
-        msoftmax = softmax_out.mean(dim=0)
+        softmax_out = F.softmax(outputs, dim=-1)#16,8
+        # msoftmax = softmax_out.mean(dim=0)#8
+        msoftmax = softmax_out.mean(dim=1)#16
         ent_loss += torch.sum(msoftmax * torch.log(msoftmax + 1e-5))
 
         # (3) pseudo label

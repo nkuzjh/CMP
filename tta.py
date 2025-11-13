@@ -12,6 +12,8 @@ yaml = YAML(typ='safe')
 from prettytable import PrettyTable
 
 import torch
+import torch.nn as nn
+from typing import List
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 from torch.cuda.amp import GradScaler
@@ -35,6 +37,8 @@ from tta.dataset import create_test_dataset, create_test_loader, create_tta_data
 from tta.optim import configure_tta_model, create_tta_optimizer, create_tta_scheduler
 from tta.adapt import test_time_adapt_itm, test_time_adapt_imgaug_itm, online_test_time_adapt_itm #, test_time_adapt_itm_itc
 from tta.utils import preprocess_tta_coefficients
+
+from tta.online_tta.set_tta_model import set_tta_model, freeze_tta_parameters, collect_tta_params, set_tta_optimizer
 
 
 
@@ -557,6 +561,53 @@ def main_img_aug(args, config):
 
 
 
+
+def find_meta_modules(model: nn.Module) -> List[str]:
+    """
+    遍历一个 PyTorch 模型，并返回所有在 'meta' 设备上
+    持有参数(parameters)或缓冲区(buffers)的模块名称列表。
+
+    Args:
+        model (nn.Module): 要检查的 PyTorch 模型。
+
+    Returns:
+        List[str]: 一个包含所有 "meta 模块" 名称的字符串列表。
+                   (根模块的名称将是 'root_model')
+    """
+    meta_module_names = []
+
+    # model.named_modules() 会深度优先遍历所有模块
+    # (包括根模块、子模块和子模块的子模块等)
+    for name, module in model.named_modules():
+        is_meta = False
+
+        # 我们设置 recurse=False，因为 named_modules() 已经在为我们处理递归了。
+        # 我们只想检查*直接*属于当前'module'实例的参数和缓冲区。
+
+        # 1. 检查参数 (Parameters)
+        for param in module.parameters(recurse=False):
+            if param.device.type == 'meta':
+                is_meta = True
+                break
+
+        if is_meta:
+            # 如果根模块 (name == '') 是 meta，我们给它一个更清晰的名字
+            meta_module_names.append(name if name else "root_model")
+            # 既然已经确认是 meta，就跳过缓冲区的检查，继续下一个模块
+            continue
+
+        # 2. 检查缓冲区 (Buffers) - 比如 BatchNorm 的 running_mean
+        for buffer in module.buffers(recurse=False):
+            if buffer.device.type == 'meta':
+                is_meta = True
+                break
+
+        if is_meta:
+            meta_module_names.append(name if name else "root_model")
+
+    return meta_module_names
+
+
 def main_online_tta(args, config):
     # utils.init_distributed_mode(args)
     print('Not using distributed mode')
@@ -617,6 +668,16 @@ def main_online_tta(args, config):
     model = Search(config=config)
     if config['load_pretrained']:
         model.load_pretrained(args.checkpoint)
+
+    meta_list = find_meta_modules(model)
+    if meta_list:
+        print("[诊断] 发现以下模块在 'meta' 设备上:")
+        for module_name in meta_list:
+            print(f"  - {module_name}")
+    else:
+        print("[诊断] 所有模块都已在实体设备上。")
+    del model.text_encoder.cls.predictions
+
     model = model.to(device)
     print("     Total Params Sum: ", sum(p.numel() for p in model.parameters()))# if p.requires_grad))
 
@@ -624,13 +685,13 @@ def main_online_tta(args, config):
     ## 由于使用run.py调用tta.py开启新的子进程，会导致 itc阶段输出的特征 和 itm tta前创建tta_loader输入的特征 被不同进程的device加载，从而产生关于多进程共用cuda的报错；
     ## 因此，进行首次tta前，先运行evaluation_itc和np.save保存itc 特征到本地，后续每次tta实验使用np.load加载即可。
     ## run only at first time to avoid error, then using np.load() to load itm input features.
-    sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(
-        model,
-        test_loader,
-        tokenizer,
-        device,
-        config
-    )
+    # sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(
+    #     model,
+    #     test_loader,
+    #     tokenizer,
+    #     device,
+    #     config
+    # )
     # sims_matrix_t2i_wo_norm = (image_feats @ text_feats.t()).t()
 
     # np.save("data/debug_embeddings/q_pids.npy", np.array(test_loader.dataset.q_pids))
@@ -638,10 +699,10 @@ def main_online_tta(args, config):
     # np.save("data/debug_embeddings/image_feats.npy", image_feats.detach().cpu().numpy())
     # np.save("data/debug_embeddings/text_feats.npy", text_feats.detach().cpu().numpy())
     # np.save("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy", sims_matrix_t2i_wo_norm.detach().cpu().numpy())
-    np.save("data/debug_embeddings/sims_matrix_t2i.npy", sims_matrix_t2i.detach().cpu().numpy())
-    np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
-    np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
-    np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/sims_matrix_t2i.npy", sims_matrix_t2i.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
+    # np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
 
     # q_pids = torch.from_numpy(np.load("data/debug_embeddings/q_pids.npy"))
     # g_pids = torch.from_numpy(np.load("data/debug_embeddings/g_pids.npy"))
@@ -659,12 +720,12 @@ def main_online_tta(args, config):
     # ])
     # print("### Zero-Shot ITC Score wo/norm: ")
     # print(table)
-    sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    table.add_row([
-        -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
-    ])
-    print("### Zero-Shot ITC Score: ")
-    print(table)
+    # sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    # table.add_row([
+    #     -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
+    # ])
+    # print("### Zero-Shot ITC Score: ")
+    # print(table)
     # # labels = test_loader.dataset.g_pids, test_loader.dataset.q_pids #TODO
 
     # score_test_t2i_wo_norm = evaluation_itm(
@@ -678,17 +739,17 @@ def main_online_tta(args, config):
     # ])
     # print("### Zero-Shot ITM Score wo/norm: ")
     # print(table)
-    score_test_t2i = evaluation_itm(
-        model,
-        device, config, args,
-        sims_matrix_t2i, image_embeds, text_embeds, text_atts
-    )
-    test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    table.add_row([
-        -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
-    ])
-    print("### Zero-Shot ITM Score: ")
-    print(table)
+    # score_test_t2i = evaluation_itm(
+    #     model,
+    #     device, config, args,
+    #     sims_matrix_t2i, image_embeds, text_embeds, text_atts
+    # )
+    # test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    # table.add_row([
+    #     -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
+    # ])
+    # print("### Zero-Shot ITM Score: ")
+    # print(table)
 
     # table.add_row(["cos_sim_wo/norm", 58.544, 91.860, 95.703, 73.596, 73.596])
     # table.add_row([-999, 69.414, 95.197, 97.776, 81.233, 81.233])
@@ -749,7 +810,7 @@ def main_online_tta(args, config):
             collate_fns=[None]
         )[0]
         print(f"     tta_loader: {len(tta_loader)}")
-        # sample = `next(iter(tta_loader))`
+        # sample = next(iter(tta_loader))
         # print(sample)
 
         print("### Configure adapted weights")
@@ -767,20 +828,21 @@ def main_online_tta(args, config):
         lr_scheduler = None#create_tta_scheduler(arg_sche, optimizer)
         scaler = GradScaler()  # bf16
 
-        tta_model = set_tta_model(model_without_ddp, optimizer, args)
+        tta_model = set_tta_model(model, optimizer, args)
 
         print("### Start ITM Test Time Adaptation")
         start_time = time.time()
         best = 0
         best_epoch = 0
         best_logs = {}
-        max_epoch = 1 #config['schedular']['epochs']
+        max_epoch = config['schedular']['epochs']
         for epoch in range(0, max_epoch):
 
             # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
-            train_stats = online_test_time_adapt_itm(tta_model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
+            train_stats = online_test_time_adapt_itm(args, tta_model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
 
-            if (epoch+1 in [1,2,3,5,10,15,20,30,40,50,60]) or (epoch+1 == max_epoch):
+            # if (epoch+1 in [1,2,3,5,10,15,20,30,40,50,60]) or (epoch+1 == max_epoch):
+            if (epoch+1 == 1) or (epoch+1 == max_epoch):
                 # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
                 score_test_t2i = evaluation_itm(
                     tta_model.model,
@@ -838,6 +900,13 @@ if __name__ == '__main__':
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--tta', action='store_true')
     parser.add_argument('--device', default='cuda')
+    parser.add_argument('--method', type=str, default='tcr')
+
+    parser.add_argument('--tta_steps', type=int, default=3)
+    parser.add_argument('--con_ratio', type=float, default=0.3)
+    parser.add_argument('--temperature', type=float, default=0.02)
+    parser.add_argument('--t', type=float, default=0.1)
+
     args = parser.parse_args()
 
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
@@ -851,3 +920,47 @@ if __name__ == '__main__':
         main_img_aug(args, config)
     else:
         main(args, config)
+
+
+
+# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/tent.yaml --method tent --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+
+# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/tcr.yaml --method tcr --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+
+# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/shot.yaml --method shot --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+
+# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/sar.yaml --method sar --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+
+# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/read.yaml --method read --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+
+
+# # xvlm
+# +------+--------+--------+--------+--------+--------+
+# | task |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+# +------+--------+--------+--------+--------+--------+
+# | t2i  | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+# +------+--------+--------+--------+--------+--------+
+    # # tent max_epoch = 50
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 74.621 | 97.422 | 98.787 | 85.117 | 85.117 |
+        # |   49  | 74.115 | 95.956 | 98.180 | 84.179 | 84.179 |
+        # +-------+--------+--------+--------+--------+--------+
+    # # tcr max_epoch = 50
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 75.430 | 97.624 | 98.837 | 85.653 | 85.653 |
+        # |   49  | 73.913 | 94.590 | 96.461 | 83.598 | 83.598 |
+        # +-------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:23
+        # Computing matching score time 0:02:30
+        ### Time 0:37:43
+
+    # # shot max_epoch = 50
+
+    # sar max_epoch = 50
+
+    # read max_epoch = 50
+

@@ -1,11 +1,11 @@
 import torch
 from torch import nn
-from online_tta.tent import Tent
-from online_tta.sar import SAR, SAM
+from tta.online_tta.tent import Tent
+from tta.online_tta.sar import SAR, SAM
 # from online_tta.eata import EATA
-from online_tta.read import READ
-from online_tta.shot import SHOT
-from online_tta.tcr import TCR
+from tta.online_tta.read import READ
+from tta.online_tta.shot import SHOT
+from tta.online_tta.tcr import TCR
 # from online_tta.deyo import DeYO
 # from online_tta.tcr_untrain import TCR_Untrain
 

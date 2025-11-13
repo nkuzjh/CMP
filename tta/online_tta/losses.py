@@ -36,7 +36,7 @@ def get_current_value(queue_list):
 
 
 @torch.no_grad()
-def update_queue(modality_1_feat, modality_2_feat, queue_list, con_ratio, max_queue_size, args):
+def update_queue(outputs, modality_1_feat, modality_2_feat, queue_list, con_ratio, max_queue_size, args):
     num_to_select = int(con_ratio * modality_1_feat.size(0))
 
     sample_gap=torch.norm(modality_1_feat - modality_2_feat, p=2, dim=1)
@@ -46,7 +46,8 @@ def update_queue(modality_1_feat, modality_2_feat, queue_list, con_ratio, max_qu
     sample_2_diversity=torch.norm(modality_2_feat - modality_2_center, p=2, dim=1)
     indictor=2*sample_gap-sample_1_diversity-sample_2_diversity
 
-    entropys=softmax_entropy(modality_1_feat@modality_2_feat.t()/args.temperature).sum(1)
+    # entropys=softmax_entropy(modality_1_feat@modality_2_feat.t()/args.temperature).sum(1)
+    entropys = softmax_entropy(outputs).sum(1)
 
     sorted_indices = torch.argsort(indictor)[:num_to_select]
 
@@ -71,9 +72,9 @@ def center_uniform_loss(x, t=0.1):
 
 
 def observation(image_embeds, text_embeds, prefix='After TTA:'):
-    modality_gap = compute_modality_gap(image_embeds, text_embeds)     
+    modality_gap = compute_modality_gap(image_embeds, text_embeds)
     print(f"{prefix} Modality gap:", modality_gap.item())
-    
+
     image_center = image_embeds.mean(0)
     image_intra_sim = torch.norm(image_embeds - image_center, dim=1)
     image_intra_sim = image_intra_sim.mean()
