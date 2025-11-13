@@ -685,14 +685,14 @@ def main_online_tta(args, config):
     ## 由于使用run.py调用tta.py开启新的子进程，会导致 itc阶段输出的特征 和 itm tta前创建tta_loader输入的特征 被不同进程的device加载，从而产生关于多进程共用cuda的报错；
     ## 因此，进行首次tta前，先运行evaluation_itc和np.save保存itc 特征到本地，后续每次tta实验使用np.load加载即可。
     ## run only at first time to avoid error, then using np.load() to load itm input features.
-    # sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(
-    #     model,
-    #     test_loader,
-    #     tokenizer,
-    #     device,
-    #     config
-    # )
-    # sims_matrix_t2i_wo_norm = (image_feats @ text_feats.t()).t()
+    sims_matrix_t2i, image_embeds, text_embeds, text_atts, image_feats, text_feats = evaluation_itc(
+        model,
+        test_loader,
+        tokenizer,
+        device,
+        config
+    )
+    sims_matrix_t2i_wo_norm = (image_feats @ text_feats.t()).t()
 
     # np.save("data/debug_embeddings/q_pids.npy", np.array(test_loader.dataset.q_pids))
     # np.save("data/debug_embeddings/g_pids.npy", np.array(test_loader.dataset.g_pids))
@@ -709,47 +709,47 @@ def main_online_tta(args, config):
     # image_feats = torch.from_numpy(np.load("data/debug_embeddings/image_feats.npy"))
     # text_feats = torch.from_numpy(np.load("data/debug_embeddings/text_feats.npy"))
     # sims_matrix_t2i_wo_norm = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy"))
-    sims_matrix_t2i = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
-    image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
-    text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
-    text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
+    # sims_matrix_t2i = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
+    # image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
+    # text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
+    # text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
 
-    # sims_test_result_wo_norm = mAP(sims_matrix_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     'cos_sim_wo/norm', sims_test_result_wo_norm['R1'], sims_test_result_wo_norm['R5'], sims_test_result_wo_norm['R10'], sims_test_result_wo_norm['mAP'], sims_test_result_wo_norm['mINP']
-    # ])
-    # print("### Zero-Shot ITC Score wo/norm: ")
-    # print(table)
-    # sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
-    # ])
-    # print("### Zero-Shot ITC Score: ")
-    # print(table)
-    # # labels = test_loader.dataset.g_pids, test_loader.dataset.q_pids #TODO
+    sims_test_result_wo_norm = mAP(sims_matrix_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        'cos_sim_wo/norm', sims_test_result_wo_norm['R1'], sims_test_result_wo_norm['R5'], sims_test_result_wo_norm['R10'], sims_test_result_wo_norm['mAP'], sims_test_result_wo_norm['mINP']
+    ])
+    print("### Zero-Shot ITC Score wo/norm: ")
+    print(table)
+    sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
+    ])
+    print("### Zero-Shot ITC Score: ")
+    print(table)
+    # labels = test_loader.dataset.g_pids, test_loader.dataset.q_pids #TODO
 
-    # score_test_t2i_wo_norm = evaluation_itm(
-    #     model,
-    #     device, config, args,
-    #     sims_matrix_t2i_wo_norm, image_embeds, text_embeds, text_atts
-    # )
-    # test_result_wo_norm = mAP(score_test_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     'itm_score_wo/norm', test_result_wo_norm['R1'], test_result_wo_norm['R5'], test_result_wo_norm['R10'], test_result_wo_norm['mAP'], test_result_wo_norm['mINP']
-    # ])
-    # print("### Zero-Shot ITM Score wo/norm: ")
-    # print(table)
-    # score_test_t2i = evaluation_itm(
-    #     model,
-    #     device, config, args,
-    #     sims_matrix_t2i, image_embeds, text_embeds, text_atts
-    # )
-    # test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
-    # ])
-    # print("### Zero-Shot ITM Score: ")
-    # print(table)
+    score_test_t2i_wo_norm = evaluation_itm(
+        model,
+        device, config, args,
+        sims_matrix_t2i_wo_norm, image_embeds, text_embeds, text_atts
+    )
+    test_result_wo_norm = mAP(score_test_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        'itm_score_wo/norm', test_result_wo_norm['R1'], test_result_wo_norm['R5'], test_result_wo_norm['R10'], test_result_wo_norm['mAP'], test_result_wo_norm['mINP']
+    ])
+    print("### Zero-Shot ITM Score wo/norm: ")
+    print(table)
+    score_test_t2i = evaluation_itm(
+        model,
+        device, config, args,
+        sims_matrix_t2i, image_embeds, text_embeds, text_atts
+    )
+    test_result = mAP(score_test_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        -999, test_result['R1'], test_result['R5'], test_result['R10'], test_result['mAP'], test_result['mINP']
+    ])
+    print("### Zero-Shot ITM Score: ")
+    print(table)
 
     # table.add_row(["cos_sim_wo/norm", 58.544, 91.860, 95.703, 73.596, 73.596])
     # table.add_row([-999, 69.414, 95.197, 97.776, 81.233, 81.233])
@@ -947,6 +947,7 @@ if __name__ == '__main__':
         # |   0   | 74.621 | 97.422 | 98.787 | 85.117 | 85.117 |
         # |   49  | 74.115 | 95.956 | 98.180 | 84.179 | 84.179 |
         # +-------+--------+--------+--------+--------+--------+
+
     # # tcr max_epoch = 50
         # +-------+--------+--------+--------+--------+--------+
         # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
@@ -968,6 +969,8 @@ if __name__ == '__main__':
         # itm tta time 0:00:49
         # Computing matching score time 0:04:23
         ### Time 0:50:09
+
+
     # sar max_epoch = 50
         ### TTA ITM Score: lr=3e-4
         # +-------+--------+--------+--------+--------+--------+
@@ -983,6 +986,31 @@ if __name__ == '__main__':
         # |   0   | 76.744 | 97.017 | 98.483 | 86.221 | 86.221 |
         # |   49  | 74.823 | 97.219 | 98.686 | 85.278 | 85.278 |
         # +-------+--------+--------+--------+--------+--------+
+        ### TTA ITM Score: 5e-5 debug_embedding重新推理
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 72.700 | 97.877 | 99.090 | 84.332 | 84.332 |
+        # |         49        | 72.750 | 97.877 | 99.090 | 84.358 | 84.358 |
+        # +-------------------+--------+--------+--------+--------+--------+
+        ### TTA ITM Score: 3e-4 debug_embedding重新推理
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 73.256 | 97.877 | 99.090 | 84.627 | 84.627 |
+        # |         49        | 73.205 | 97.877 | 99.090 | 84.580 | 84.580 |
+        # +-------------------+--------+--------+--------+--------+--------+
+            #  itm tta time 0:00:24
+        #   Computing matching score time 0:01:20
+        ### Time 0:23:19
 
     # read max_epoch = 50
         # ### TTA ITM Score:
@@ -995,4 +1023,43 @@ if __name__ == '__main__':
         # itm tta time 0:00:42
         ### Time 0:43:56
         # Computing matching score time 0:04:21
+
+        ### TTA ITM Score:  lr=5e-5 可能哪里出问题了?
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 78.665 | 97.422 | 98.332 | 87.422 | 87.422 |
+        # |   49  | 80.991 | 97.371 | 98.332 | 88.661 | 88.661 |
+        # +-------+--------+--------+--------+--------+--------+
+
+
+        ### TTA ITM Score: lr=5e-5  debug_embedding重新推理
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 74.216 | 97.674 | 98.938 | 85.108 | 85.108 |
+        # |         49        | 74.166 | 96.764 | 98.332 | 84.388 | 84.388 |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:12
+        # Computing matching score time 0:01:20
+        ### Time 0:13:02
+
+        # ### TTA ITM Score:  lr=3e-4  debug_embedding重新推理
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 74.823 | 97.523 | 98.938 | 85.270 | 85.270 |
+        # |         49        | 74.621 | 96.006 | 98.180 | 84.611 | 84.611 |
+        # +-------------------+--------+--------+--------+--------+--------+
+        #   itm tta time 0:00:20
+        # Computing matching score time 0:01:41
+        #### Time 0:14:30
 
