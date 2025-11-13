@@ -135,7 +135,10 @@ def forward_and_adapt_sar(
         text_embeds,
         text_atts
     )[:, 0, :]
-    outputs2 = model.itm_head(output2)[:, 1]
+    logits2 = model.itm_head(output2) # (bs*tta, 2)
+    logits2 = logits2.reshape(-1, config['k_tta'], 2) # (bs, tta, 2)
+    outputs2 = logits2[..., 1] # (bs, tta)
+
     entropys2 = softmax_entropy(outputs2)
 
     if filter_ids_1[0].numel() > 0:  # Ensure there are valid elements after the first filtering
@@ -186,12 +189,13 @@ def check_model(model):
 from https://github.com/davda54/sam
 """
 class SAM(torch.optim.Optimizer):
-    def __init__(self, params, base_optimizer, rho=0.05, adaptive=False, **kwargs):
+    def __init__(self, device, params, base_optimizer, rho=0.05, adaptive=False, **kwargs):
         assert rho >= 0.0, f"Invalid rho, should be non-negative: {rho}"
 
         defaults = dict(rho=rho, adaptive=adaptive, **kwargs)
         super(SAM, self).__init__(params, defaults)
 
+        self.device = device
         self.base_optimizer = base_optimizer(self.param_groups, **kwargs)
         self.param_groups = self.base_optimizer.param_groups
         self.defaults.update(self.base_optimizer.defaults)
@@ -231,7 +235,8 @@ class SAM(torch.optim.Optimizer):
         self.second_step()
 
     def _grad_norm(self):
-        shared_device = self.param_groups[0]["params"][0].device  # put everything on the same device, in case of model parallelism
+        # shared_device = self.param_groups[0]["params"][0].device  # put everything on the same device, in case of model parallelism
+        shared_device = self.device
         norm = torch.norm(
                     torch.stack([
                         ((torch.abs(p) if group["adaptive"] else 1.0) * p.grad).norm(p=2).to(shared_device)

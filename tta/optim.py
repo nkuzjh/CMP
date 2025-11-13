@@ -6,6 +6,10 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch import nn
 
 
+import torch
+from tta.online_tta.sar import SAR, SAM
+
+
 
 def configure_model_xvlm_itm(model):
     """Configure model for use with tent."""
@@ -81,7 +85,7 @@ def configure_tta_model(config, model):
     return model
 
 
-def create_tta_optimizer(args, model):
+def create_tta_optimizer(args, model, device):
     lr = args.lr
     wd = args.weight_decay
     lr_mult = getattr(args, 'lr_mult', 1)
@@ -125,7 +129,13 @@ def create_tta_optimizer(args, model):
             else:
                 optimizer_grouped_parameters[0]['params'].append(p)
 
-    optimizer = AdamW(optimizer_grouped_parameters, lr=lr, eps=1e-8, betas=(0.9, 0.98))
+    # optimizer = AdamW(optimizer_grouped_parameters, lr=lr, eps=1e-8, betas=(0.9, 0.98))
+    if args.method=='sar':
+        base_optimizer = torch.optim.AdamW
+        optimizer = SAM(device=device, params=optimizer_grouped_parameters, base_optimizer=base_optimizer, lr=lr, eps=1e-8, betas=(0.9, 0.98))
+    else:
+        optimizer = torch.optim.AdamW(params=optimizer_grouped_parameters, lr=lr, eps=1e-8, betas=(0.9, 0.98))
+
 
     return optimizer
 

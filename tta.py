@@ -822,7 +822,7 @@ def main_online_tta(args, config):
         print("     TTA Require Gradient Params Sum: \r\n", sum(p.numel() for p in model.parameters() if p.requires_grad) )
 
         arg_opt = utils.AttrDict(config['optimizer'])
-        optimizer = create_tta_optimizer(arg_opt, model)
+        optimizer = create_tta_optimizer(arg_opt, model, device)
         # arg_sche = utils.AttrDict(config['schedular'])
         # arg_sche['step_per_epoch'] = math.ceil( len(tta_dataset) / config['batch_size_tta'] ) * config.get('tta_steps', 1)
         lr_scheduler = None#create_tta_scheduler(arg_sche, optimizer)
@@ -959,8 +959,40 @@ if __name__ == '__main__':
         ### Time 0:37:43
 
     # # shot max_epoch = 50
-
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 74.924 | 97.472 | 98.837 | 85.335 | 85.335 |
+        # |   49  | 73.407 | 95.956 | 97.927 | 83.727 | 83.727 |
+        # +-------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:49
+        # Computing matching score time 0:04:23
+        ### Time 0:50:09
     # sar max_epoch = 50
+        ### TTA ITM Score: lr=3e-4
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 76.593 | 97.219 | 98.382 | 86.183 | 86.183 |
+        # |   49  | 76.997 | 97.270 | 98.382 | 86.406 | 86.406 |
+        # +-------+--------+--------+--------+--------+--------+
+        ### TTA ITM Score: lr=5e-5
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 76.744 | 97.017 | 98.483 | 86.221 | 86.221 |
+        # |   49  | 74.823 | 97.219 | 98.686 | 85.278 | 85.278 |
+        # +-------+--------+--------+--------+--------+--------+
 
     # read max_epoch = 50
+        # ### TTA ITM Score:
+        # +-------+--------+--------+--------+--------+--------+
+        # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------+--------+--------+--------+--------+--------+
+        # |   0   | 74.520 | 97.523 | 98.635 | 85.086 | 85.086 |
+        # |   49  | 74.671 | 96.714 | 98.231 | 84.857 | 84.857 |
+        # +-------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:42
+        ### Time 0:43:56
+        # Computing matching score time 0:04:21
 
