@@ -923,11 +923,11 @@ if __name__ == '__main__':
 
 
 
-# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/tent.yaml --method tent --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+# CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_tta_online_tta/tent.yaml --method tent --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
 
-# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/tcr.yaml --method tcr --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+# CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_tta_online_tta/tcr.yaml --method tcr --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
 
-# CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/shot.yaml --method shot --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+# CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_tta_online_tta/shot.yaml --method shot --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
 
 # CUDA_VISIBLE_DEVICES=2 python3 tta.py --config configs_tta_online_tta/sar.yaml --method sar --task placeholder --output_dir output_tta_online_tta --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
 
@@ -947,6 +947,20 @@ if __name__ == '__main__':
         # |   0   | 74.621 | 97.422 | 98.787 | 85.117 | 85.117 |
         # |   49  | 74.115 | 95.956 | 98.180 | 84.179 | 84.179 |
         # +-------+--------+--------+--------+--------+--------+
+        ### TTA ITM Score: 3e-4 debug_embedding重新推理
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 74.722 | 97.472 | 98.888 | 85.234 | 85.234 |
+        # |         49        | 73.509 | 95.652 | 97.573 | 83.714 | 83.714 |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:11
+        # Computing matching score time 0:01:24
+        ### Time 0:14:24
 
     # # tcr max_epoch = 50
         # +-------+--------+--------+--------+--------+--------+
@@ -959,6 +973,22 @@ if __name__ == '__main__':
         # Computing matching score time 0:02:30
         ### Time 0:37:43
 
+        ### TTA ITM Score:  3e-4 debug_embedding重新推理
+        ### TTA ITM Score:
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 75.430 | 98.028 | 98.938 | 85.790 | 85.790 |
+        # |         49        | 74.924 | 96.158 | 97.978 | 84.728 | 84.728 |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:15
+        #  Computing matching score time 0:01:26
+        ### Time 0:15:32
+
     # # shot max_epoch = 50
         # +-------+--------+--------+--------+--------+--------+
         # | epoch |   R1   |   R5   |  R10   |  mAP   |  mINP  |
@@ -970,6 +1000,21 @@ if __name__ == '__main__':
         # Computing matching score time 0:04:23
         ### Time 0:50:09
 
+        ### TTA ITM Score:  3e-4 debug_embedding重新推理
+        ### TTA ITM Score:
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |       epoch       |   R1   |   R5   |  R10   |  mAP   |  mINP  |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # |  cos_sim_wo/norm  | 43.023 | 79.828 | 88.726 | 59.082 | 59.082 |
+        # |        -999       | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
+        # | itm_score_wo/norm | 72.750 | 97.877 | 99.090 | 84.370 | 84.370 |
+        # |        -999       | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
+        # |         0         | 74.874 | 97.472 | 98.787 | 85.296 | 85.296 |
+        # |         49        | 73.660 | 95.804 | 97.826 | 83.977 | 83.977 |
+        # +-------------------+--------+--------+--------+--------+--------+
+        # itm tta time 0:00:14
+        # Computing matching score time 0:01:23
+        ### Time 0:16:47
 
     # sar max_epoch = 50
         ### TTA ITM Score: lr=3e-4
