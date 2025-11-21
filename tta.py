@@ -46,6 +46,108 @@ from tta.online_tta.set_tta_model import set_tta_model, freeze_tta_parameters, c
 
 
 
+import torch
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+from PIL import Image, ImageOps, ImageDraw
+
+def visualize_topk_results(dataset, scores_t2i, q_indices, topk=5, output_dir=None):
+    """
+    可视化 T2I 检索结果
+
+    Args:
+        dataset: search_test_dataset 的实例
+        scores_t2i: (Tensor or numpy array) 维度为 [num_queries, num_gallery] 的相似度矩阵
+        q_indices: (list) 手动选择的 query 索引列表，例如 [0, 10, 50, 100, 120]
+        topk: (int) 展示前多少张检索结果
+        output_dir: (str, optional) 如果提供，将结果保存到该目录
+    """
+
+    # 确保 scores 是 tensor
+    if not isinstance(scores_t2i, torch.Tensor):
+        scores_t2i = torch.tensor(scores_t2i)
+
+    # 获取所有 gallery 和 query 的 PID (直接从 dataset 中读取列表)
+    # 注意：Dataset 中 self.g_pids 和 self.q_pids 是列表
+    g_pids = torch.tensor(dataset.g_pids)
+    q_pids = torch.tensor(dataset.q_pids)
+
+    # 图像根目录
+    image_root = dataset.image_root
+
+    # 遍历手动选择的每一个 Query Index
+    for i, q_idx in enumerate(q_indices):
+
+        # 1. 获取当前 Query 的信息
+        query_text = dataset.text[q_idx]
+        query_pid = q_pids[q_idx].item()
+
+        # 2. 获取该 Query 对应的所有 Gallery 分数
+        # scores_t2i 的形状应该是 [num_queries, num_gallery]
+        current_scores = scores_t2i[q_idx]
+
+        # 3. 排序并取 Top-K
+        # indices 是 gallery 中图片的索引
+        values, indices = torch.sort(current_scores, descending=True)
+        topk_indices = indices[:topk].cpu().numpy()
+
+        # 4. 开始绘图
+        fig = plt.figure(figsize=(topk * 3, 4))
+        plt.suptitle(f"Query [{q_idx}] (PID: {query_pid}):\n{query_text}",
+                     fontsize=12, wrap=True, y=1.1)
+
+        for rank, g_idx in enumerate(topk_indices):
+            ax = plt.subplot(1, topk, rank + 1)
+
+            # 获取 Gallery 图片路径和 PID
+            img_name = dataset.image[g_idx]
+            gallery_pid = g_pids[g_idx].item()
+            img_path = os.path.join(image_root, img_name)
+
+            try:
+                img = Image.open(img_path).convert('RGB')
+            except Exception as e:
+                print(f"无法加载图片: {img_path}")
+                continue
+
+            # 5. 判断是否匹配 (Label是否一致)
+            is_match = (gallery_pid == query_pid)
+
+            # 6. 添加边框颜色 (绿色=正确, 红色=错误)
+            border_color = "green" if is_match else "red"
+
+            # 使用 ImageOps 添加边框，或者在 plt 中画框
+            # 这里为了方便直接在 matplotlib 的坐标轴上画框
+
+            ax.imshow(img)
+
+            # 设置边框颜色和标题
+            for spine in ax.spines.values():
+                spine.set_edgecolor(border_color)
+                spine.set_linewidth(4) # 加粗边框
+
+            ax.set_title(f"Rank {rank+1}\nPID: {gallery_pid}\nScore: {values[rank]:.3f}",
+                         color=border_color, fontsize=10)
+
+            # 移除刻度
+            ax.set_xticks([])
+            ax.set_yticks([])
+
+        plt.tight_layout()
+
+        # 7. 显示或保存
+        if output_dir:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            save_path = os.path.join(output_dir, f"vis_query_{q_idx}_pid_{query_pid}.png")
+            plt.savefig(save_path, bbox_inches='tight')
+            print(f"Saved visualization to {save_path}")
+
+        plt.show()
+
+
+
 def main(args, config):
     # utils.init_distributed_mode(args)
     print('Not using distributed mode')
@@ -203,6 +305,24 @@ def main(args, config):
     # |  -999 | 53.438 | 86.855 | 92.922 | 68.348 | 68.348 |
     # |  -999 | 72.700 | 97.776 | 99.090 | 84.322 | 84.322 |
     # +-------+--------+--------+--------+--------+--------+
+
+
+
+# CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_rebuttal_vis/exp3.0.3.yaml --task exp3.0.3 --output_dir rebuttal_vis --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
+
+    np.save("rebuttal_vis/score_test_t2i.npy", score_test_t2i.detach().cpu().numpy())
+    np.save("rebuttal_vis/q_pids.npy", np.array(test_loader.dataset.q_pids))
+    np.save("rebuttal_vis/g_pids.npy", np.array(test_loader.dataset.g_pids))
+
+    selected_indices = [0, 10, 25, 33, 100]
+    # 注意：image_root 必须是你硬盘上存放图片的真实路径
+    visualize_topk_results(
+        dataset=test_dataset,       # 你的 dataset 实例
+        scores_t2i=score_test_t2i,      # 你的分数矩阵
+        q_indices=selected_indices, # 你选择的索引
+        topk=5,                     # 显示前5张图
+        output_dir="rebuttal_vis"     # 结果保存的文件夹
+    )
 
 
     if args.tta:
