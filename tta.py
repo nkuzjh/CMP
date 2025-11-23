@@ -46,6 +46,222 @@ from tta.online_tta.set_tta_model import set_tta_model, freeze_tta_parameters, c
 
 
 
+
+def find_meta_modules(model: nn.Module) -> List[str]:
+    """
+    遍历一个 PyTorch 模型，并返回所有在 'meta' 设备上
+    持有参数(parameters)或缓冲区(buffers)的模块名称列表。
+
+    Args:
+        model (nn.Module): 要检查的 PyTorch 模型。
+
+    Returns:
+        List[str]: 一个包含所有 "meta 模块" 名称的字符串列表。
+                   (根模块的名称将是 'root_model')
+    """
+    meta_module_names = []
+
+    # model.named_modules() 会深度优先遍历所有模块
+    # (包括根模块、子模块和子模块的子模块等)
+    for name, module in model.named_modules():
+        is_meta = False
+
+        # 我们设置 recurse=False，因为 named_modules() 已经在为我们处理递归了。
+        # 我们只想检查*直接*属于当前'module'实例的参数和缓冲区。
+
+        # 1. 检查参数 (Parameters)
+        for param in module.parameters(recurse=False):
+            if param.device.type == 'meta':
+                is_meta = True
+                break
+
+        if is_meta:
+            # 如果根模块 (name == '') 是 meta，我们给它一个更清晰的名字
+            meta_module_names.append(name if name else "root_model")
+            # 既然已经确认是 meta，就跳过缓冲区的检查，继续下一个模块
+            continue
+
+        # 2. 检查缓冲区 (Buffers) - 比如 BatchNorm 的 running_mean
+        for buffer in module.buffers(recurse=False):
+            if buffer.device.type == 'meta':
+                is_meta = True
+                break
+
+        if is_meta:
+            meta_module_names.append(name if name else "root_model")
+
+    return meta_module_names
+
+
+
+
+import torch
+import os
+import textwrap
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+
+def resize_with_padding(img, target_size, bg_color=(255, 255, 255)):
+    """
+    将图片等比例缩放以适应 target_size，并填充背景色保持长宽比。
+    """
+    img_ratio = img.width / img.height
+    target_ratio = target_size[0] / target_size[1]
+
+    if target_ratio > img_ratio:
+        # 图片太高，以高度为基准缩放
+        new_height = target_size[1]
+        new_width = int(new_height * img_ratio)
+    else:
+        # 图片太宽，以宽度为基准缩放
+        new_width = target_size[0]
+        new_height = int(new_width / img_ratio)
+
+    img = img.resize((new_width, new_height), Image.BICUBIC)
+
+    # 创建新背景并粘贴
+    new_img = Image.new("RGB", target_size, bg_color)
+    paste_x = (target_size[0] - new_width) // 2
+    paste_y = (target_size[1] - new_height) // 2
+    new_img.paste(img, (paste_x, paste_y))
+
+    return new_img
+
+def create_merged_visualization(dataset, scores_t2i, q_indices, topk=5,
+                                slot_size=(200, 300), output_path="merged_result.jpg"):
+    """
+    将多个 Query 的 Top-K 检索结果合并到一张大图中。
+
+    Args:
+        dataset: search_test_dataset 实例
+        scores_t2i: (Tensor) [num_queries, num_gallery]
+        q_indices: (list) 需要可视化的 Query Index 列表
+        topk: (int) 展示前 K 张
+        slot_size: (tuple) (width, height) 单张图片显示的格子大小
+        output_path: (str) 保存路径
+    """
+
+    if not isinstance(scores_t2i, torch.Tensor):
+        scores_t2i = torch.tensor(scores_t2i)
+
+    g_pids = torch.tensor(dataset.g_pids)
+    q_pids = torch.tensor(dataset.q_pids)
+    image_root = dataset.image_root
+
+    # --- 1. 布局设置 ---
+    num_queries = len(q_indices)
+
+    # 文本区域宽度 (通常需要比图片宽一些以容纳 Caption)
+    text_area_width = 400
+
+    # 计算大画布的总尺寸
+    # 宽度 = 文本区 + (TopK * 图片槽宽)
+    total_width = text_area_width + (topk * slot_size[0])
+    # 高度 = Query数量 * 图片槽高
+    total_height = num_queries * slot_size[1]
+
+    # 创建画布 (白色背景)
+    canvas = Image.new('RGB', (total_width, total_height), (255, 255, 255))
+    draw = ImageDraw.Draw(canvas)
+
+    # 尝试加载字体，如果失败则使用默认
+    try:
+        # Linux 常见路径，Windows 可换成 "arial.ttf"
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
+        font_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
+    except:
+        font = ImageFont.load_default()
+        font_bold = font
+
+    print(f"正在生成合并图，画布大小: {total_width}x{total_height} ...")
+
+    # --- 2. 逐行绘制 ---
+    for i, q_idx in enumerate(q_indices):
+        # 当前行的起始 Y 坐标
+        y_offset = i * slot_size[1]
+
+        # 获取数据
+        query_text = dataset.text[q_idx]
+        query_pid = q_pids[q_idx].item()
+        current_scores = scores_t2i[q_idx]
+
+        # 排序取 TopK
+        values, indices = torch.sort(current_scores, descending=True)
+        topk_indices = indices[:topk].cpu().numpy()
+
+        # --- 2.1 绘制左侧文本 (Query) ---
+        # 添加一些 Padding
+        text_x = 20
+        text_y = y_offset + 20
+
+        # 绘制 PID
+        draw.text((text_x, text_y), f"Query ID: {q_idx} (PID: {query_pid})", fill="black", font=font_bold)
+
+        # 自动换行绘制 Caption
+        lines = textwrap.wrap(query_text, width=35) # width 是字符数，不是像素
+        current_text_y = text_y + 40
+        for line in lines:
+            draw.text((text_x, current_text_y), line, fill=(50, 50, 50), font=font)
+            current_text_y += 25
+
+        # 画一条横线分隔不同 Query (除了最后一行)
+        if i < num_queries - 1:
+            line_y = y_offset + slot_size[1] - 1
+            draw.line([(0, line_y), (total_width, line_y)], fill=(200, 200, 200), width=2)
+
+        # --- 2.2 绘制右侧图片 (Gallery Matches) ---
+        for rank, g_idx in enumerate(topk_indices):
+            # 当前图片的 X 坐标
+            x_offset = text_area_width + (rank * slot_size[0])
+
+            # 加载图片
+            img_name = dataset.image[g_idx]
+            gallery_pid = g_pids[g_idx].item()
+            img_path = os.path.join(image_root, img_name)
+
+            try:
+                img_obj = Image.open(img_path).convert('RGB')
+            except:
+                # 如果图片损坏，生成一个灰色占位图
+                img_obj = Image.new('RGB', (100, 100), color='gray')
+
+            # 调整图片大小并填充 (保持比例)
+            # 稍微留出一点边距用于画边框 (例如 slot 缩小 10 像素)
+            img_display_size = (slot_size[0] - 10, slot_size[1] - 40)
+            img_resized = resize_with_padding(img_obj, img_display_size)
+
+            # 判断对错
+            is_match = (gallery_pid == query_pid)
+            border_color = (0, 200, 0) if is_match else (255, 50, 50) # 绿 vs 红
+
+            # 给图片加边框
+            img_with_border = ImageOps.expand(img_resized, border=4, fill=border_color)
+
+            # 粘贴图片到画布 (居中)
+            paste_x = x_offset + (slot_size[0] - img_with_border.width) // 2
+            paste_y = y_offset + 10 # 顶部留白
+            canvas.paste(img_with_border, (paste_x, paste_y))
+
+            # 绘制 Rank 和 Score 信息
+            info_text = f"R{rank+1}: {values[rank]:.3f}"
+            pid_text = f"PID: {gallery_pid}"
+
+            # 计算文字宽度以居中
+            # getbbox 返回 (left, top, right, bottom)
+            bbox_info = draw.textbbox((0, 0), info_text, font=font)
+            text_w_info = bbox_info[2] - bbox_info[0]
+
+            draw.text((x_offset + (slot_size[0] - text_w_info)/2, paste_y + img_with_border.height + 5),
+                      info_text, fill=border_color, font=font_bold)
+
+            # 绘制 PID (可选)
+            # draw.text((x_offset + 10, paste_y + img_with_border.height + 25), pid_text, fill="gray", font=font)
+
+    # --- 3. 保存 ---
+    canvas.save(output_path, quality=95)
+    print(f"可视化结果已保存至: {output_path}")
+    return canvas
+
+
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
@@ -208,6 +424,16 @@ def main(args, config):
     model = Search(config=config)
     if config['load_pretrained']:
         model.load_pretrained(args.checkpoint)
+
+    meta_list = find_meta_modules(model)
+    if meta_list:
+        print("[诊断] 发现以下模块在 'meta' 设备上:")
+        for module_name in meta_list:
+            print(f"  - {module_name}")
+    else:
+        print("[诊断] 所有模块都已在实体设备上。")
+    del model.text_encoder.cls.predictions
+
     model = model.to(device)
     print("     Total Params Sum: ", sum(p.numel() for p in model.parameters()))# if p.requires_grad))
 
@@ -222,34 +448,35 @@ def main(args, config):
         device,
         config
     )
-    # sims_matrix_t2i_wo_norm = (image_feats @ text_feats.t()).t()
+    sims_matrix_t2i_wo_norm = (image_feats @ text_feats.t()).t()
 
-    # np.save("data/debug_embeddings/q_pids.npy", np.array(test_loader.dataset.q_pids))
-    # np.save("data/debug_embeddings/g_pids.npy", np.array(test_loader.dataset.g_pids))
-    # np.save("data/debug_embeddings/image_feats.npy", image_feats.detach().cpu().numpy())
-    # np.save("data/debug_embeddings/text_feats.npy", text_feats.detach().cpu().numpy())
-    # np.save("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy", sims_matrix_t2i_wo_norm.detach().cpu().numpy())
+    np.save("data/debug_embeddings/q_pids.npy", np.array(test_loader.dataset.q_pids))
+    np.save("data/debug_embeddings/g_pids.npy", np.array(test_loader.dataset.g_pids))
+    np.save("data/debug_embeddings/image_feats.npy", image_feats.detach().cpu().numpy())
+    np.save("data/debug_embeddings/text_feats.npy", text_feats.detach().cpu().numpy())
+    np.save("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy", sims_matrix_t2i_wo_norm.detach().cpu().numpy())
     np.save("data/debug_embeddings/sims_matrix_t2i.npy", sims_matrix_t2i.detach().cpu().numpy())
     np.save("data/debug_embeddings/image_embeds.npy", image_embeds.detach().cpu().numpy())
     np.save("data/debug_embeddings/text_embeds.npy", text_embeds.detach().cpu().numpy())
     np.save("data/debug_embeddings/text_atts.npy", text_atts.detach().cpu().numpy())
 
-    # q_pids = torch.from_numpy(np.load("data/debug_embeddings/q_pids.npy"))
-    # g_pids = torch.from_numpy(np.load("data/debug_embeddings/g_pids.npy"))
-    # image_feats = torch.from_numpy(np.load("data/debug_embeddings/image_feats.npy"))
-    # text_feats = torch.from_numpy(np.load("data/debug_embeddings/text_feats.npy"))
-    # sims_matrix_t2i_wo_norm = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy"))
+    q_pids = torch.from_numpy(np.load("data/debug_embeddings/q_pids.npy"))
+    g_pids = torch.from_numpy(np.load("data/debug_embeddings/g_pids.npy"))
+    image_feats = torch.from_numpy(np.load("data/debug_embeddings/image_feats.npy"))
+    text_feats = torch.from_numpy(np.load("data/debug_embeddings/text_feats.npy"))
+    sims_matrix_t2i_wo_norm = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i_wo_norm.npy"))
     sims_matrix_t2i = torch.from_numpy(np.load("data/debug_embeddings/sims_matrix_t2i.npy"))#.to(device)
     image_embeds = torch.from_numpy(np.load("data/debug_embeddings/image_embeds.npy"))#.to(device)
     text_embeds = torch.from_numpy(np.load("data/debug_embeddings/text_embeds.npy"))#.to(device)
     text_atts = torch.from_numpy(np.load("data/debug_embeddings/text_atts.npy"))#.to(device)
 
-    # sims_test_result_wo_norm = mAP(sims_matrix_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
-    # table.add_row([
-    #     'cos_sim_wo/norm', sims_test_result_wo_norm['R1'], sims_test_result_wo_norm['R5'], sims_test_result_wo_norm['R10'], sims_test_result_wo_norm['mAP'], sims_test_result_wo_norm['mINP']
-    # ])
-    # print("### Zero-Shot ITC Score wo/norm: ")
-    # print(table)
+    sims_test_result_wo_norm = mAP(sims_matrix_t2i_wo_norm, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
+    table.add_row([
+        'cos_sim_wo/norm', sims_test_result_wo_norm['R1'], sims_test_result_wo_norm['R5'], sims_test_result_wo_norm['R10'], sims_test_result_wo_norm['mAP'], sims_test_result_wo_norm['mINP']
+    ])
+    print("### Zero-Shot ITC Score wo/norm: ")
+    print(table)
+
     sims_test_result = mAP(sims_matrix_t2i, test_loader.dataset.g_pids, test_loader.dataset.q_pids, table)
     table.add_row([
         -999, sims_test_result['R1'], sims_test_result['R5'], sims_test_result['R10'], sims_test_result['mAP'], sims_test_result['mINP']
@@ -269,6 +496,7 @@ def main(args, config):
     # ])
     # print("### Zero-Shot ITM Score wo/norm: ")
     # print(table)
+
     score_test_t2i = evaluation_itm(
         model,
         device, config, args,
@@ -310,20 +538,34 @@ def main(args, config):
 
 # CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_rebuttal_vis/exp3.0.3.yaml --task exp3.0.3 --output_dir rebuttal_vis --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
 
-    np.save("rebuttal_vis/score_test_t2i.npy", score_test_t2i.detach().cpu().numpy())
-    np.save("rebuttal_vis/q_pids.npy", np.array(test_loader.dataset.q_pids))
-    np.save("rebuttal_vis/g_pids.npy", np.array(test_loader.dataset.g_pids))
+# CUDA_VISIBLE_DEVICES=1 python3 tta.py --config configs_rerun5/exp3.0.3.yaml --task exp3.0.3 --output_dir rebuttal_vis/rerun5_exp3.0.3 --checkpoint checkpoint/16m_base_model_state_step_199999.th --seed 42 --tta
 
-    selected_indices = [0, 10, 25, 33, 100]
+
+    np.save("rebuttal_vis/score_test_t2i_orig.npy", score_test_t2i)
+    np.save("rebuttal_vis/q_pids_orig.npy", np.array(test_loader.dataset.q_pids))
+    np.save("rebuttal_vis/g_pids_orig.npy", np.array(test_loader.dataset.g_pids))
+
+    selected_indices = [2,5,6,7,8,9]#[0, 10, 25, 33, 100]
     # 注意：image_root 必须是你硬盘上存放图片的真实路径
     visualize_topk_results(
         dataset=test_dataset,       # 你的 dataset 实例
         scores_t2i=score_test_t2i,      # 你的分数矩阵
         q_indices=selected_indices, # 你选择的索引
         topk=5,                     # 显示前5张图
-        output_dir="rebuttal_vis"     # 结果保存的文件夹
+        output_dir="rebuttal_vis/orig"     # 结果保存的文件夹
     )
 
+    # 3. 运行生成
+    # slot_size=(宽, 高): 根据你的数据集图片比例调整。
+    # 行人重识别图片通常是高瘦的，所以 (150, 300) 或者 (200, 350) 比较合适。
+    create_merged_visualization(
+        dataset=test_dataset,
+        scores_t2i=score_test_t2i,
+        q_indices=selected_indices,
+        topk=5,  # 显示 Top-10
+        slot_size=(300, 300), # 单个格子大小
+        output_path="rebuttal_vis/orig/t2i_retrieval_vis.jpg"
+    )
 
     if args.tta:
         print("### TTA:")
@@ -370,7 +612,7 @@ def main(args, config):
         print("     TTA Require Gradient Params Sum: \r\n", sum(p.numel() for p in model.parameters() if p.requires_grad) )
 
         arg_opt = utils.AttrDict(config['optimizer'])
-        optimizer = create_tta_optimizer(arg_opt, model)
+        optimizer = create_tta_optimizer(arg_opt, model, device)
         arg_sche = utils.AttrDict(config['schedular'])
         arg_sche['step_per_epoch'] = math.ceil( len(tta_dataset) / config['batch_size_tta'] ) * config.get('tta_steps', 1)
         lr_scheduler = create_tta_scheduler(arg_sche, optimizer)
@@ -387,7 +629,7 @@ def main(args, config):
             # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
             train_stats = test_time_adapt_itm(model, optimizer, scaler, epoch, device, lr_scheduler, config, tta_loader)#, sims_matrix_t2i, image_embeds, text_embeds, text_atts)
 
-            if (epoch+1 in [1,2,3,5,10,15,20,30,40,50,60]) or (epoch+1 == max_epoch):
+            if (epoch+1 in [1,10,50,60]) or (epoch+1 == max_epoch):
                 # sims_matrix_t2i, image_embeds, text_embeds, text_atts = evaluation_itc(model, test_loader, tokenizer, device, config)
                 score_test_t2i = evaluation_itm(
                     model,
@@ -422,8 +664,61 @@ def main(args, config):
                     best_epoch = epoch
                     best_logs = logs
 
+            if epoch+1 == 50:
+                np.save("rebuttal_vis/score_test_t2i_tta.npy", score_test_t2i)
+                np.save("rebuttal_vis/q_pids_tta.npy", np.array(test_loader.dataset.q_pids))
+                np.save("rebuttal_vis/g_pids_tta.npy", np.array(test_loader.dataset.g_pids))
+
+                selected_indices = [2,5,6,7,8,9]#[0, 10, 25, 33, 100]
+                # 注意：image_root 必须是你硬盘上存放图片的真实路径
+                visualize_topk_results(
+                    dataset=test_dataset,       # 你的 dataset 实例
+                    scores_t2i=score_test_t2i,      # 你的分数矩阵
+                    q_indices=selected_indices, # 你选择的索引
+                    topk=5,                     # 显示前5张图
+                    output_dir="rebuttal_vis/tta_50"     # 结果保存的文件夹
+                )
+
+                # 3. 运行生成
+                # slot_size=(宽, 高): 根据你的数据集图片比例调整。
+                # 行人重识别图片通常是高瘦的，所以 (150, 300) 或者 (200, 350) 比较合适。
+                create_merged_visualization(
+                    dataset=test_dataset,
+                    scores_t2i=score_test_t2i,
+                    q_indices=selected_indices,
+                    topk=5,  # 显示 Top-10
+                    slot_size=(300, 300), # 单个格子大小
+                    output_path="rebuttal_vis/tta_50/t2i_retrieval_vis.jpg"
+                )
+
             # del sims_matrix_t2i, image_embeds, text_embeds, text_atts
             torch.cuda.empty_cache()
+
+        np.save("rebuttal_vis/score_test_t2i_tta.npy", score_test_t2i)
+        np.save("rebuttal_vis/q_pids_tta.npy", np.array(test_loader.dataset.q_pids))
+        np.save("rebuttal_vis/g_pids_tta.npy", np.array(test_loader.dataset.g_pids))
+
+        selected_indices = [2,5,6,7,8,9]#[0, 10, 25, 33, 100]
+        # 注意：image_root 必须是你硬盘上存放图片的真实路径
+        visualize_topk_results(
+            dataset=test_dataset,       # 你的 dataset 实例
+            scores_t2i=score_test_t2i,      # 你的分数矩阵
+            q_indices=selected_indices, # 你选择的索引
+            topk=5,                     # 显示前5张图
+            output_dir="rebuttal_vis/tta"     # 结果保存的文件夹
+        )
+
+        # 3. 运行生成
+        # slot_size=(宽, 高): 根据你的数据集图片比例调整。
+        # 行人重识别图片通常是高瘦的，所以 (150, 300) 或者 (200, 350) 比较合适。
+        create_merged_visualization(
+            dataset=test_dataset,
+            scores_t2i=score_test_t2i,
+            q_indices=selected_indices,
+            topk=5,  # 显示 Top-10
+            slot_size=(300, 300), # 单个格子大小
+            output_path="rebuttal_vis/tta/t2i_retrieval_vis.jpg"
+        )
 
         with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
             f.write(f"best epoch {best_epoch} : {best_logs}")
@@ -678,54 +973,6 @@ def main_img_aug(args, config):
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
         print('### Time {}'.format(total_time_str))
-
-
-
-
-def find_meta_modules(model: nn.Module) -> List[str]:
-    """
-    遍历一个 PyTorch 模型，并返回所有在 'meta' 设备上
-    持有参数(parameters)或缓冲区(buffers)的模块名称列表。
-
-    Args:
-        model (nn.Module): 要检查的 PyTorch 模型。
-
-    Returns:
-        List[str]: 一个包含所有 "meta 模块" 名称的字符串列表。
-                   (根模块的名称将是 'root_model')
-    """
-    meta_module_names = []
-
-    # model.named_modules() 会深度优先遍历所有模块
-    # (包括根模块、子模块和子模块的子模块等)
-    for name, module in model.named_modules():
-        is_meta = False
-
-        # 我们设置 recurse=False，因为 named_modules() 已经在为我们处理递归了。
-        # 我们只想检查*直接*属于当前'module'实例的参数和缓冲区。
-
-        # 1. 检查参数 (Parameters)
-        for param in module.parameters(recurse=False):
-            if param.device.type == 'meta':
-                is_meta = True
-                break
-
-        if is_meta:
-            # 如果根模块 (name == '') 是 meta，我们给它一个更清晰的名字
-            meta_module_names.append(name if name else "root_model")
-            # 既然已经确认是 meta，就跳过缓冲区的检查，继续下一个模块
-            continue
-
-        # 2. 检查缓冲区 (Buffers) - 比如 BatchNorm 的 running_mean
-        for buffer in module.buffers(recurse=False):
-            if buffer.device.type == 'meta':
-                is_meta = True
-                break
-
-        if is_meta:
-            meta_module_names.append(name if name else "root_model")
-
-    return meta_module_names
 
 
 def main_online_tta(args, config):

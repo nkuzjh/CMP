@@ -60,7 +60,7 @@ k_sample_selection: 5
 batch_size_tta: 16
 k_tta: 8
 
-optimizer: {opt: adamW, lr: 5e-5, weight_decay: 0.01, lr_mult: 2}
+optimizer: {opt: adamW, lr: 5e-5, weight_decay: 0.01, lr_mult: 2, method: ''}
 schedular: {sched: step, lr: 5e-5, epochs: 60, num_warmup_steps: 500}
 
 score_temper: 1.0
